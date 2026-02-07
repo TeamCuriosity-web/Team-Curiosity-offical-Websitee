@@ -27,10 +27,8 @@ const SuperAdminDashboard = () => {
 
     const fetchData = async () => {
         try {
-            const [usersRes, logsRes, featuresRes] = await Promise.all([
+            const [usersRes, projectsRes, hackathonsRes] = await Promise.all([
                 api.get('/admin/users'),
-                api.get('/admin/audit-logs'),
-                api.get('/admin/features')
                 api.get('/projects'),
                 api.get('/hackathons')
             ]);
