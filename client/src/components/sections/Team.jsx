@@ -13,11 +13,14 @@ const Team = () => {
             // Augment real data with aesthetic attributes
             const enhancedData = data.map((user, idx) => ({
                 ...user,
+                // Hardcode Super Admin Name as requested
+                name: user.role === 'superadmin' ? 'Naseer Pasha' : user.name,
                 codename: `OPERATIVE_0${idx + 1}`,
                 status: "Active",
-                image: `https://api.dicebear.com/7.x/notionists/svg?seed=${user.name}`
+                image: `https://api.dicebear.com/7.x/notionists/svg?seed=${user.role === 'superadmin' ? 'Naseer Pasha' : user.name}`
             }));
-            setMembers(enhancedData);
+            const sortedMembers = enhancedData.sort((a, b) => (a.role === 'superadmin' ? -1 : 1));
+            setMembers(sortedMembers);
         } catch (err) {
             console.error('Failed to load team data');
         } finally {
