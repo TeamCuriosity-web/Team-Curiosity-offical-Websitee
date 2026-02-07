@@ -97,4 +97,33 @@ router.post('/create-admin', protect, superAdmin, async (req, res) => {
     }
 });
 
+// @desc    Generate Invite Link
+// @route   POST /api/admin/invite
+// @access  Private/Admin
+router.post('/invite', protect, admin, async (req, res) => {
+    try {
+        const { expiresInHours } = req.body;
+        const token = crypto.randomBytes(20).toString('hex');
+        
+        // Default 24 hours if not specified
+        const expires = new Date(Date.now() + (expiresInHours || 24 || 24) * 60 * 60 * 1000); 
+
+        await InviteLink.create({
+            token,
+            expiresAt: expires,
+            createdBy: req.user._id
+        });
+
+        // Return the full link (frontend will handle domain adjustment)
+        // We return a generic structure, frontend can adjust origin
+        res.json({ 
+            inviteLink: `${req.protocol}://${req.get('host')}/join?token=${token}`,
+            token,
+            expiresAt: expires
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 module.exports = router;
