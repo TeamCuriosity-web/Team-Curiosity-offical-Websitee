@@ -81,17 +81,48 @@ const AppContent = () => {
       
       <div className="w-full min-h-screen bg-white text-black selection:bg-black selection:text-white">
         <Navbar />
+// Protected Route Component
+const RequireApproval = ({ children }) => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    
+    // If not logged in, they can view public pages (Team, etc.) normally 
+    // OR if we want to force login for these pages, we'd redirect to login.
+    // Based on user request: "every section should be locked until admin approves... for new user"
+    // implies if they ARE a user (new user), it's locked.
+    
+    if (user && !user.isApproved) {
+        // Redirect to profile if they try to access restricted areas
+        // But we need to allow them to see the landing page probably?
+        // Actually, user said "every section should be locked".
+        return <Navigate to="/profile" replace />;
+    }
+    return children;
+};
+
+import { Navigate } from 'react-router-dom';
+import ProfilePage from './components/pages/ProfilePage';
+
+// ... (existing imports)
+
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/team" element={<TeamPage />} />
-          <Route path="/projects" element={<Projects />} />
-          <Route path="/projects/:id" element={<ProjectDetails />} />
-          <Route path="/hackathons" element={<HackathonsPage />} />
-          <Route path="/missions" element={<MissionsPage />} />
+          
+          {/* Public access allowed for now, but if logged in & unapproved, we might want to block? 
+              User said "locked until admin approves". 
+              Let's Wrap the main operational pages. 
+          */}
+          <Route path="/team" element={<RequireApproval><TeamPage /></RequireApproval>} />
+          <Route path="/projects" element={<RequireApproval><Projects /></RequireApproval>} />
+          <Route path="/projects/:id" element={<RequireApproval><ProjectDetails /></RequireApproval>} />
+          <Route path="/hackathons" element={<RequireApproval><HackathonsPage /></RequireApproval>} />
+          <Route path="/missions" element={<RequireApproval><MissionsPage /></RequireApproval>} />
+          
           <Route path="/manifesto" element={<ManifestoPage />} />
           <Route path="/start" element={<StartBuildingPage />} />
           <Route path="/join" element={<JoinPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/super-admin" element={<SuperAdminDashboard />} />
         </Routes>

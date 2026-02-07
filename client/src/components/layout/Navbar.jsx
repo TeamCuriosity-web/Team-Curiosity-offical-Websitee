@@ -50,11 +50,19 @@ const Navbar = () => {
             </div>
 
             <div className="hidden md:flex items-center gap-4">
-                <Link to="/join">
-                    <Button variant="primary" className="h-9 px-4 text-xs font-mono tracking-wide flex items-center gap-2">
-                        Join Project <ChevronRight size={12} />
-                    </Button>
-                </Link>
+                {localStorage.getItem('user') ? (
+                    <Link to="/profile">
+                        <Button variant="outline" className="h-9 px-4 text-xs font-mono tracking-wide flex items-center gap-2 border-black hover:bg-black hover:text-white transition-colors">
+                            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Profile
+                        </Button>
+                    </Link>
+                ) : (
+                    <Link to="/join">
+                        <Button variant="primary" className="h-9 px-4 text-xs font-mono tracking-wide flex items-center gap-2">
+                            Join Project <ChevronRight size={12} />
+                        </Button>
+                    </Link>
+                )}
             </div>
 
             {/* Mobile Hamburger */}
@@ -102,11 +110,19 @@ const Navbar = () => {
                 </div>
                 
                 <div className="mt-auto pt-8 pb-4">
-                     <Link to="/join" onClick={() => setMobileMenuOpen(false)}>
-                        <button className="w-full bg-black text-white font-mono text-sm py-4 border border-black hover:bg-gray-900 transition-colors uppercase tracking-widest flex items-center justify-center gap-2">
-                            Join Project <ChevronRight size={14} />
-                        </button>
-                     </Link>
+                     {localStorage.getItem('user') ? (
+                         <Link to="/profile" onClick={() => setMobileMenuOpen(false)}>
+                            <button className="w-full bg-white text-black font-mono text-sm py-4 border border-black hover:bg-black hover:text-white transition-colors uppercase tracking-widest flex items-center justify-center gap-2">
+                                <span className="w-2 h-2 rounded-full bg-green-500"></span> User Profile
+                            </button>
+                         </Link>
+                     ) : (
+                         <Link to="/join" onClick={() => setMobileMenuOpen(false)}>
+                            <button className="w-full bg-black text-white font-mono text-sm py-4 border border-black hover:bg-gray-900 transition-colors uppercase tracking-widest flex items-center justify-center gap-2">
+                                Join Project <ChevronRight size={14} />
+                            </button>
+                         </Link>
+                     )}
                 </div>
             </div>
             
