@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Card from '../ui/Card';
 import Button from '../ui/Button';
-import api from '../../services/api';
+import api from '../../services/adminApi'; // Use Admin Authenticated API
 import { Copy, Users, Shield, Terminal, Database, Code, Trash2, Plus } from 'lucide-react';
 
 const AdminDashboard = () => {
@@ -23,7 +23,7 @@ const AdminDashboard = () => {
     const [currentUser, setCurrentUser] = useState(null);
 
     useEffect(() => {
-        const user = JSON.parse(localStorage.getItem('user'));
+        const user = JSON.parse(localStorage.getItem('adminUser')); // Check Admin User
         if (user) {
             if (user.role === 'superadmin') {
                 navigate('/super-admin');
@@ -31,9 +31,8 @@ const AdminDashboard = () => {
             }
             setCurrentUser(user);
         } else {
-             // Optional: redirect to login if no user, handled by error catch usually but safe to add
-             // navigate('/login'); 
-             // Leaving existing logic for now
+             navigate('/admin/login'); 
+             return;
         }
         fetchData();
     }, []);
@@ -50,7 +49,7 @@ const AdminDashboard = () => {
             setHackathons(hackathonsRes.data);
         } catch (err) {
             console.error(err);
-            if (err.response?.status === 401) navigate('/login');
+            if (err.response?.status === 401) navigate('/admin/login');
         } finally {
             setLoading(false);
         }
@@ -60,9 +59,9 @@ const AdminDashboard = () => {
 
     const handleLogout = () => {
         if (window.confirm('Terminate session?')) {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            navigate('/');
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('adminUser');
+            navigate('/admin/login');
         }
     };
 

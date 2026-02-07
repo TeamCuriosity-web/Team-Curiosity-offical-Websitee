@@ -29,17 +29,8 @@ const LoginPage = () => {
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data));
       
-      // Redirect based on role
-      if (data.role === 'superadmin') {
-          navigate('/super-admin');
-      } else if (data.role === 'admin') {
-          navigate('/admin');
-      } else {
-          // If approved (either before or just now via token), go to profile/home
-          // If still not approved (invalid token?), go to admin but they will hit the wall there?
-          // Actually, standard users go to profile or home.
-          navigate('/profile'); 
-      }
+      // Standard login always goes to profile/home interactions
+      navigate('/profile'); 
     } catch (err) {
       setError(err.response?.data?.message || 'Access Denied: Invalid Credentials');
     } finally {

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Card from '../ui/Card';
 import Button from '../ui/Button';
-import api from '../../services/api';
+import api from '../../services/adminApi'; // Use Admin Authenticated API
 import { Shield, Users, Trash2, Lock, Cpu, Activity, Database, Code, Key, UserPlus, Zap, LayoutGrid, Layers, Globe, GitBranch, Server } from 'lucide-react';
 
     // --- UI HELPERS ---
@@ -58,7 +58,7 @@ const SuperAdminDashboard = () => {
     });
 
     useEffect(() => {
-        const user = JSON.parse(localStorage.getItem('user'));
+        const user = JSON.parse(localStorage.getItem('adminUser')); // Check Admin User
         if (!user || user.role !== 'superadmin') {
             navigate('/admin');
             return;
@@ -78,7 +78,7 @@ const SuperAdminDashboard = () => {
             setHackathons(hackathonsRes.data);
         } catch (err) {
             console.error(err);
-            if (err.response?.status === 401) navigate('/login');
+            if (err.response?.status === 401) navigate('/admin/login');
         } finally {
             setLoading(false);
         }
@@ -228,7 +228,7 @@ const SuperAdminDashboard = () => {
                             Welcome, <span className="text-red-600 font-bold">Naseer Pasha</span>
                         </p>
                     </div>
-                    <button onClick={() => { localStorage.removeItem('token'); localStorage.removeItem('user'); navigate('/'); }} className="text-xs font-bold text-gray-500 hover:text-red-600 transition-colors uppercase tracking-widest border border-gray-200 hover:border-red-200 hover:bg-red-50 px-4 py-2 rounded flex items-center gap-2">
+                    <button onClick={() => { localStorage.removeItem('adminToken'); localStorage.removeItem('adminUser'); navigate('/admin/login'); }} className="text-xs font-bold text-gray-500 hover:text-red-600 transition-colors uppercase tracking-widest border border-gray-200 hover:border-red-200 hover:bg-red-50 px-4 py-2 rounded flex items-center gap-2">
                         <Lock size={12}/> Log Out [Terminate Session]
                     </button>
                 </div>

@@ -20,6 +20,7 @@ import MissionsPage from './components/pages/MissionsPage';
 import JoinPage from './components/pages/JoinPage'; 
 import LoginPage from './components/pages/LoginPage';
 import AdminDashboard from './components/pages/AdminDashboard';
+import AdminLoginPage from './components/pages/AdminLoginPage';
 import SuperAdminDashboard from './components/pages/SuperAdminDashboard';
 import ManifestoPage from './components/pages/ManifestoPage';
 import StartBuildingPage from './components/pages/StartBuildingPage';
@@ -104,6 +105,7 @@ const AppContent = () => {
           <Route path="/profile" element={<ProfilePage />} />
           
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route path="/super-admin" element={<SuperAdminDashboard />} />
         </Routes>
       </div>
