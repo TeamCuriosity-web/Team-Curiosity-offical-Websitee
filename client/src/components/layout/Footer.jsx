@@ -1,5 +1,6 @@
 import React from 'react';
 import { Github, Instagram, Shield } from 'lucide-react';
+import { Link } from 'react-router-dom'; // Assuming Link comes from react-router-dom
 
 const Footer = () => {
   return (
@@ -19,10 +20,10 @@ const Footer = () => {
                 <Instagram size={18} />
                 <span>Instagram</span>
             </a>
-            <a href="/admin" className="flex items-center gap-2 hover:text-black transition-colors">
+            <Link to="/admin" className="flex items-center gap-2 hover:text-black transition-colors">
                 <Shield size={18} />
                 <span>Command Center</span>
-            </a>
+            </Link>
         </div>
       </div>
     </footer>
