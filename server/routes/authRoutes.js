@@ -11,33 +11,50 @@ const generateToken = (id) => {
 
 // @desc    Register a new user
 // @route   POST /api/auth/register
-// @access  Public (Requires Invite Token)
+// @access  Public
 router.post('/register', async (req, res) => {
-  console.log("Register Request Body:", req.body); // DEBUGGING
-  const { name, email, password, inviteToken } = req.body;
+  console.log("Register Request Body:", req.body);
+  const { 
+    name, email, password, inviteToken,
+    avatar, college, branch, section, programmingLanguages 
+  } = req.body;
 
   try {
-    // 1. Validate Invite Token
-    // Special case: If NO users exist, allow first registration as Admin without token
     const userCount = await User.countDocuments({});
     
-    if (userCount > 0) {
-        if (!inviteToken) {
-            return res.status(400).json({ message: 'Invite Token Required' });
-        }
-        const invite = await InviteLink.findOne({ token: inviteToken, isValid: true });
-        
-        if (!invite) {
-            return res.status(400).json({ message: 'Invalid or Expired Invite Token' });
-        }
-        
-        if (invite.expiresAt && invite.expiresAt < Date.now()) {
-            return res.status(400).json({ message: 'Invite Token Expired' });
-        }
+    // Logic:
+    // 1. First user is SuperAdmin/Admin -> Approved
+    // 2. Verified Invite Token -> Approved
+    // 3. No Token/Public -> Pending Approval (isApproved: false)
 
-        // Invalidate token
-        invite.isValid = false;
-        invite.save(); // Don't await, let it handle in background or await if critical
+    let isApproved = false;
+    let role = 'member';
+
+    if (userCount === 0) {
+        isApproved = true;
+        role = 'admin'; // First user is admin
+    } else {
+        if (inviteToken) {
+            const invite = await InviteLink.findOne({ token: inviteToken, isValid: true });
+            
+            if (!invite) {
+                return res.status(400).json({ message: 'Invalid or Expired Invite Token' });
+            }
+            
+            if (invite.expiresAt && invite.expiresAt < Date.now()) {
+                return res.status(400).json({ message: 'Invite Token Expired' });
+            }
+
+            // Valid Invite -> Approve
+            isApproved = true;
+            
+            // Invalidate token
+            invite.isValid = false;
+            await invite.save();
+        } else {
+            // No token -> Public Registration -> Pending Approval
+            isApproved = false;
+        }
     }
 
     const userExists = await User.findOne({ email });
@@ -45,19 +62,24 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    // First user is always Admin
-    const role = userCount === 0 ? 'admin' : 'member';
-
     const user = await User.create({
       name,
       email,
       password,
-      role
+      role,
+      avatar,
+      college,
+      branch,
+      section,
+      programmingLanguages,
+      isApproved,
+      // Default profile image to avatar if selected, or dicebear fallback
+      profileImage: avatar || `https://api.dicebear.com/7.x/notionists/svg?seed=${name}` 
     });
 
-    // Mark invite as used by this user
-    if (userCount > 0 && req.body.inviteToken) {
-       await InviteLink.findOneAndUpdate({ token: req.body.inviteToken }, { usedBy: user._id });
+    // Mark invite as used if applicable
+    if (inviteToken) {
+       await InviteLink.findOneAndUpdate({ token: inviteToken }, { usedBy: user._id });
     }
 
     if (user) {
@@ -66,6 +88,7 @@ router.post('/register', async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        isApproved: user.isApproved, // Frontend needs this to decide redirect
         token: generateToken(user._id),
       });
     } else {
