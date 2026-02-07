@@ -258,7 +258,7 @@ const JoinPage = () => {
           <div className="text-center mt-4">
               <p className="text-gray-500 text-xs">
                   Already have an operative account?{' '}
-                  <Link to="/login" className="text-black font-bold hover:underline">
+                  <Link to={`/login${token ? `?token=${token}` : ''}`} className="text-black font-bold hover:underline">
                       Login Access
                   </Link>
               </p>

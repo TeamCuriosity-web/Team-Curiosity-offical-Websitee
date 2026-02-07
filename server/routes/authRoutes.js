@@ -103,17 +103,35 @@ router.post('/register', async (req, res) => {
 // @route   POST /api/auth/login
 // @access  Public
 router.post('/login', async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, inviteToken } = req.body;
 
   try {
     const user = await User.findOne({ email });
 
     if (user && (await user.comparePassword(password))) {
+      
+      // Check for invite token to upgrade status
+      if (inviteToken && !user.isApproved) {
+           const invite = await InviteLink.findOne({ token: inviteToken, isValid: true });
+           if (invite) {
+                if (!invite.expiresAt || invite.expiresAt > Date.now()) {
+                    user.isApproved = true;
+                    await user.save();
+                    
+                    // Invalidate token
+                    invite.isValid = false;
+                    invite.usedBy = user._id;
+                    await invite.save();
+                }
+           }
+      }
+
       res.json({
         _id: user._id,
         name: user.name,
         email: user.email,
         role: user.role,
+        isApproved: user.isApproved,
         token: generateToken(user._id),
         profileImage: user.profileImage,
       });

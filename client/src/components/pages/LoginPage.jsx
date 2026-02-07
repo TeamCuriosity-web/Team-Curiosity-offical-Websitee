@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import Card from '../ui/Card';
 import Button from '../ui/Button';
 import api from '../../services/api';
@@ -7,6 +7,9 @@ import { Terminal, Lock, AlertCircle } from 'lucide-react';
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get('token');
+
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -20,7 +23,8 @@ const LoginPage = () => {
     setError('');
 
     try {
-      const { data } = await api.post('/auth/login', formData);
+      const payload = { ...formData, inviteToken: token };
+      const { data } = await api.post('/auth/login', payload);
       
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data));
@@ -31,7 +35,10 @@ const LoginPage = () => {
       } else if (data.role === 'admin') {
           navigate('/admin');
       } else {
-          navigate('/');
+          // If approved (either before or just now via token), go to profile/home
+          // If still not approved (invalid token?), go to admin but they will hit the wall there?
+          // Actually, standard users go to profile or home.
+          navigate('/profile'); 
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Access Denied: Invalid Credentials');
