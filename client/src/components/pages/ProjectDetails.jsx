@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Clock, Shield, Code2, GitBranch, Globe, Cpu } from 'lucide-react';
+import { ArrowLeft, Clock, Shield, Code2, GitBranch, Globe, Cpu, UserPlus, Lock } from 'lucide-react';
 import api from '../../services/api';
 import Button from '../ui/Button';
 
@@ -8,6 +8,11 @@ const ProjectDetails = () => {
     const { id } = useParams();
     const [project, setProject] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [joining, setJoining] = useState(false);
+    
+    const user = JSON.parse(localStorage.getItem('user'));
+    // Safe check if teamMembers exists and is array, and if user is in it
+    const isMember = project?.teamMembers?.includes(user?._id);
 
     useEffect(() => {
         const fetchProject = async () => {
@@ -22,6 +27,19 @@ const ProjectDetails = () => {
         };
         fetchProject();
     }, [id]);
+
+    const handleJoinProject = async () => {
+        if (!user) return;
+        setJoining(true);
+        try {
+            const { data } = await api.post(`/projects/${id}/join`);
+            setProject(data);
+        } catch (err) {
+            alert(err.response?.data?.message || 'Failed to join project');
+        } finally {
+            setJoining(false);
+        }
+    };
 
     if (loading) return <div className="min-h-screen flex items-center justify-center font-mono text-xs">DECRYPTING FILE...</div>;
     if (!project) return <div className="min-h-screen flex items-center justify-center font-mono text-xs text-red-500">FILE CORRUPTED OR NOT FOUND</div>;
@@ -139,6 +157,25 @@ const ProjectDetails = () => {
                                     <Globe size={16} /> LAUNCH LIVE UPLINK
                                 </Button>
                             </a>
+                        )}
+
+                        {/* Join Project Button */}
+                        {user ? (
+                            isMember ? (
+                                <div className="w-full bg-green-50 text-green-700 border border-green-200 p-4 rounded text-center font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-2">
+                                    <Shield size={16} /> Active Operative
+                                </div>
+                            ) : (
+                                <Button onClick={handleJoinProject} variant="outline" className="w-full justify-center gap-2 py-4 border-black hover:bg-black hover:text-white transition-all">
+                                    <UserPlus size={16} /> REQUEST ASSIGNMENT (JOIN)
+                                </Button>
+                            )
+                        ) : (
+                            <Link to="/login" className="w-full">
+                                <Button variant="outline" className="w-full justify-center gap-2 py-4 opacity-50 hover:opacity-100">
+                                    <Lock size={16} /> LOGIN TO JOIN OPERATION
+                                </Button>
+                            </Link>
                         )}
                     </div>
                 </div>
