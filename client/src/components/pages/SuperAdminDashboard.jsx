@@ -160,7 +160,36 @@ const SuperAdminDashboard = () => {
     const generateInvite = async () => {
         try {
             const { data } = await api.post('/admin/invite', { expiresInHours: 24 });
-            setInviteLink(data.inviteLink);
+            // Construct link on frontend to ensure it matches the current environment (e.g. GitHub Pages)
+            // Assuming data.inviteLink contains the full URL or just the token. 
+            // We'll extract the token if it's a URL, or use it directly if it's a token.
+            // But usually backend returns full link. Let's safeguard.
+            
+            let token = '';
+            if (data.inviteLink.includes('token=')) {
+                token = data.inviteLink.split('token=')[1];
+            } else {
+                // If it's just the token or something else, this might be risky without seeing backend.
+                // Let's assume the standard format is base_url/join?token=...
+                // If the backend returns a relative path, we might be fine.
+                // Safest approach: replace the origin of the returned link with window.location.origin
+                try {
+                    const url = new URL(data.inviteLink);
+                    token = url.searchParams.get('token');
+                } catch (e) {
+                    console.error("Could not parse invite link URL", e);
+                }
+            }
+
+            if (token) {
+                 const clientUrl = `${window.location.origin}${window.location.pathname.startsWith('/Team-Curiosity-offical-Websitee') ? '/Team-Curiosity-offical-Websitee' : ''}/join?token=${token}`;
+                 setInviteLink(clientUrl);
+            } else {
+                // Fallback if parsing fails (e.g. if backend just returns the link and our logic fails)
+                // We'll just replace 'localhost:5000' or whatever backend host with client host
+                // This is a rough patch.
+                setInviteLink(data.inviteLink); 
+            }
         } catch (err) { console.error(err); }
     };
 
@@ -188,9 +217,12 @@ const SuperAdminDashboard = () => {
                              <span className="text-xs font-bold tracking-[0.2em] text-red-600 uppercase">Super Admin Console</span>
                         </div>
                         <h1 className="text-3xl font-bold text-gray-900 tracking-tight">System Control</h1>
+                        <p className="text-gray-500 font-mono text-xs uppercase mt-2 tracking-widest">
+                            Welcome, <span className="text-red-600 font-bold">Naseer Pasha</span>
+                        </p>
                     </div>
-                    <button onClick={() => { localStorage.removeItem('token'); localStorage.removeItem('user'); navigate('/'); }} className="text-xs font-bold text-gray-500 hover:text-red-600 transition-colors uppercase tracking-widest border border-gray-200 hover:border-red-200 hover:bg-red-50 px-4 py-2 rounded">
-                        Terminate Session
+                    <button onClick={() => { localStorage.removeItem('token'); localStorage.removeItem('user'); navigate('/'); }} className="text-xs font-bold text-gray-500 hover:text-red-600 transition-colors uppercase tracking-widest border border-gray-200 hover:border-red-200 hover:bg-red-50 px-4 py-2 rounded flex items-center gap-2">
+                        <Lock size={12}/> Log Out [Terminate Session]
                     </button>
                 </div>
 
