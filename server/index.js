@@ -21,7 +21,12 @@ app.use('/api/team', require('./routes/teamRoutes'));
 
 // Database Connection
 mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/legendary-team')
-.then(() => console.log('MongoDB Connected [Elite Mode]'))
+.then(async () => {
+    console.log('MongoDB Connected [Elite Mode]');
+    // Seed Admins on Startup to ensure access
+    const seedAdmins = require('./create_admin');
+    await seedAdmins();
+})
 .catch(err => console.error('MongoDB Error:', err));
 
 // Basic Route

@@ -5,11 +5,8 @@ const User = require('./models/User');
 const path = require('path');
 dotenv.config({ path: path.join(__dirname, '.env') });
 
-const createAdmin = async () => {
+const seedAdmins = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log('MongoDB Connected...');
-
     // 1. Create/Update SUPER ADMIN
     const superEmail = 'super@legendary.com';
     const superPassword = 'super123';
@@ -20,7 +17,7 @@ const createAdmin = async () => {
       superUser.role = 'superadmin';
       superUser.name = 'The Architect';
       await superUser.save();
-      console.log('Super Admin updated.');
+      console.log('Super Admin ensured.');
     } else {
       await User.create({
         name: 'The Architect',
@@ -41,7 +38,7 @@ const createAdmin = async () => {
         adminUser.role = 'admin'; // FORCE STANDARD ADMIN
         adminUser.name = 'Commander';
         await adminUser.save();
-        console.log('Standard Admin updated.');
+        console.log('Standard Admin ensured.');
     } else {
         await User.create({
             name: 'Commander',
@@ -51,28 +48,9 @@ const createAdmin = async () => {
         });
         console.log('Standard Admin created.');
     }
-
-    console.log(`
-    ---------------------------------------
-    CREDENTIALS GENERATED
-    ---------------------------------------
-    [SUPER ADMIN]
-    Email:    ${superEmail}
-    Password: ${superPassword}
-    Role:     superadmin
-    ---------------------------------------
-    [STANDARD ADMIN]
-    Email:    ${adminEmail}
-    Password: ${adminPassword}
-    Role:     admin
-    ---------------------------------------
-    `);
-
-    process.exit();
   } catch (err) {
-    console.error(err);
-    process.exit(1);
+    console.error('Admin Seeding Error:', err);
   }
 };
 
-createAdmin();
+module.exports = seedAdmins;
