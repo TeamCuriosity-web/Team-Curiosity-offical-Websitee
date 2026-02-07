@@ -254,6 +254,15 @@ const JoinPage = () => {
           <div className="text-center pt-2">
               <Link to="/" className="text-[10px] font-bold uppercase text-gray-400 hover:text-black hover:underline">Abort Sequence</Link>
           </div>
+
+          <div className="text-center mt-4">
+              <p className="text-gray-500 text-xs">
+                  Already have an operative account?{' '}
+                  <Link to="/login" className="text-black font-bold hover:underline">
+                      Login Access
+                  </Link>
+              </p>
+          </div>
         </form>
       </Card>
     </div>

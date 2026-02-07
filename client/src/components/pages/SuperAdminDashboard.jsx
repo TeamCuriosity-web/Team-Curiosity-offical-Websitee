@@ -40,7 +40,7 @@ import { Shield, Users, Trash2, Lock, Cpu, Activity, Database, Code, Key, UserPl
 const SuperAdminDashboard = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState('admins'); // admins, members, projects, hackathons
+    const [activeTab, setActiveTab] = useState('requests'); // requests, admins, members, projects, hackathons
     const [users, setUsers] = useState([]);
     const [projects, setProjects] = useState([]);
     const [hackathons, setHackathons] = useState([]);
@@ -142,6 +142,13 @@ const SuperAdminDashboard = () => {
         } catch (err) { alert('Deletion failed'); }
     };
 
+    const handleApproveUser = async (id) => {
+        try {
+            await api.put(`/admin/users/${id}/approve`);
+            setUsers(users.map(u => u._id === id ? { ...u, isApproved: true } : u));
+        } catch (err) { alert('Approval failed'); }
+    };
+
     const handleEditClick = (project) => {
         setEditingId(project._id);
         setProjectForm({
@@ -228,12 +235,75 @@ const SuperAdminDashboard = () => {
 
                 {/* Tabs */}
                 <div className="flex mb-8 border-b border-gray-200">
+                    <TabButton id="requests" label="Requests" icon={Lock} activeTab={activeTab} setActiveTab={setActiveTab} />
                     <TabButton id="admins" label="Admins" icon={Shield} activeTab={activeTab} setActiveTab={setActiveTab} />
                     <TabButton id="members" label="Members" icon={Users} activeTab={activeTab} setActiveTab={setActiveTab} />
                     <TabButton id="projects" label="Projects" icon={Cpu} activeTab={activeTab} setActiveTab={setActiveTab} />
                     <TabButton id="hackathons" label="Hackathons" icon={Zap} activeTab={activeTab} setActiveTab={setActiveTab} />
                 </div>
 
+                {/* --- REQUESTS TAB --- */}
+                {activeTab === 'requests' && (
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div className="lg:col-span-3">
+                             <LightCard>
+                                <div className="flex items-center justify-between mb-6">
+                                    <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">Pending Access Requests</h3>
+                                    <Badge color="yellow">{users.filter(u => !u.isApproved).length} Pending</Badge>
+                                </div>
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-left border-collapse">
+                                        <thead>
+                                            <tr className="border-b border-gray-100 text-xs text-gray-400 uppercase tracking-widest">
+                                                <th className="py-3 font-semibold">Candidate</th>
+                                                <th className="py-3 font-semibold">Details</th>
+                                                <th className="py-3 font-semibold text-right">Protocol</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-gray-50">
+                                            {users.filter(u => !u.isApproved).length === 0 ? (
+                                                <tr>
+                                                    <td colSpan="3" className="py-8 text-center text-gray-400 text-xs font-mono">NO PENDING REQUESTS // ALL SYSTEMS SECURE</td>
+                                                </tr>
+                                            ) : (
+                                                users.filter(u => !u.isApproved).map(user => (
+                                                    <tr key={user._id} className="group hover:bg-gray-50 transition-colors">
+                                                        <td className="py-4">
+                                                            <div className="flex items-center gap-3">
+                                                                <img src={user.profileImage || `https://api.dicebear.com/7.x/notionists/svg?seed=${user.name}`} className="w-8 h-8 rounded-full bg-gray-100" alt="" />
+                                                                <div>
+                                                                    <div className="font-bold text-gray-900 text-sm">{user.name}</div>
+                                                                    <div className="text-[10px] text-gray-400 font-mono">{user.email}</div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td className="py-4">
+                                                            <div className="flex flex-col gap-1">
+                                                                <div className="text-xs"><span className="font-bold text-gray-400">INST:</span> {user.college || 'N/A'}</div>
+                                                                <div className="text-xs"><span className="font-bold text-gray-400">BR/SEC:</span> {user.branch || '-'}/{user.section || '-'}</div>
+                                                            </div>
+                                                        </td>
+                                                        <td className="py-4 text-right">
+                                                            <div className="flex justify-end gap-2">
+                                                                <button onClick={() => handleApproveUser(user._id)} className="px-3 py-1 bg-green-50 text-green-600 hover:bg-green-600 hover:text-white rounded text-[10px] font-bold uppercase tracking-widest transition-colors border border-green-100">
+                                                                    Approve
+                                                                </button>
+                                                                <button onClick={() => deleteUser(user._id)} className="px-3 py-1 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white rounded text-[10px] font-bold uppercase tracking-widest transition-colors border border-red-100">
+                                                                    Reject
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                ))
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </LightCard>
+                        </div>
+                    </div>
+                )}
+                
                 {/* --- ADMINS TAB --- */}
                 {activeTab === 'admins' && (
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
