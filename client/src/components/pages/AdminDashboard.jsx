@@ -24,7 +24,17 @@ const AdminDashboard = () => {
 
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem('user'));
-        if (user) setCurrentUser(user);
+        if (user) {
+            if (user.role === 'superadmin') {
+                navigate('/super-admin');
+                return;
+            }
+            setCurrentUser(user);
+        } else {
+             // Optional: redirect to login if no user, handled by error catch usually but safe to add
+             // navigate('/login'); 
+             // Leaving existing logic for now
+        }
         fetchData();
     }, []);
 
@@ -141,11 +151,6 @@ const AdminDashboard = () => {
                     </div>
                 </div>
                 <div className="flex gap-4">
-                    {currentUser?.role === 'superadmin' && (
-                         <Link to="/super-admin" className="text-sm border border-red-200 text-red-600 px-4 py-2 rounded hover:bg-red-50 transition-colors font-bold">
-                            Enter Super Admin Console
-                        </Link>
-                    )}
                     <Link to="/" className="text-sm border border-border px-4 py-2 rounded hover:bg-black hover:text-white transition-colors">
                         Exit Console
                     </Link>
