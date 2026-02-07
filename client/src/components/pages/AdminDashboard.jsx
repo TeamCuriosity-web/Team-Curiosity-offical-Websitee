@@ -20,8 +20,11 @@ const AdminDashboard = () => {
     const [hackathonForm, setHackathonForm] = useState({ name: '', description: '', achievement: '', status: 'upcoming' });
     const [inviteLink, setInviteLink] = useState('');
     const [editingId, setEditingId] = useState(null);
+    const [currentUser, setCurrentUser] = useState(null);
 
     useEffect(() => {
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (user) setCurrentUser(user);
         fetchData();
     }, []);
 
@@ -131,7 +134,12 @@ const AdminDashboard = () => {
                     </div>
                     <div>
                         <h1 className="text-2xl font-bold text-black tracking-tight">Command Center</h1>
-                        <p className="text-secondary font-mono text-xs uppercase">Welcome, Admin. System Control: 100%</p>
+                        <p className="text-secondary font-mono text-xs uppercase flex items-center gap-2">
+                            Welcome, {currentUser?.name}. 
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${currentUser?.role === 'superadmin' ? 'bg-red-600 text-white' : 'bg-gray-200 text-black'}`}>
+                                {currentUser?.role === 'superadmin' ? 'SUPER ADMIN' : 'ADMIN'}
+                            </span>
+                        </p>
                     </div>
                 </div>
                 <Link to="/" className="text-sm border border-border px-4 py-2 rounded hover:bg-black hover:text-white transition-colors">
@@ -177,10 +185,16 @@ const AdminDashboard = () => {
                                             <tr key={user._id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50">
                                                 <td className="py-3 px-6 font-medium text-sm">{user.name} <span className="block text-[10px] text-gray-400">{user.email}</span></td>
                                                 <td className="py-3 px-6">
-                                                     <button onClick={() => updateUserRole(user._id, user.role)} className="px-2 py-1 border text-[10px] uppercase font-bold">{user.role}</button>
+                                                     {currentUser?.role === 'superadmin' ? (
+                                                        <button onClick={() => updateUserRole(user._id, user.role)} className="px-2 py-1 border text-[10px] uppercase font-bold hover:bg-black hover:text-white transition-colors">{user.role}</button>
+                                                     ) : (
+                                                        <span className="px-2 py-1 border text-[10px] uppercase font-bold bg-gray-50 text-gray-400 cursor-not-allowed">{user.role}</span>
+                                                     )}
                                                 </td>
                                                 <td className="py-3 px-6">
-                                                     <button onClick={() => deleteItem('user', user._id)} className="text-red-500 hover:text-red-700"><Trash2 size={14} /></button>
+                                                     {currentUser?.role === 'superadmin' && (
+                                                        <button onClick={() => deleteItem('user', user._id)} className="text-red-500 hover:text-red-700"><Trash2 size={14} /></button>
+                                                     )}
                                                 </td>
                                             </tr>
                                         ))}

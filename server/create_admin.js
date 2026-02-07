@@ -18,17 +18,17 @@ const createAdmin = async () => {
 
     if (user) {
       user.password = password; // Will be hashed by pre-save hook
-      user.role = 'admin';
+      user.role = 'superadmin';
       await user.save();
-      console.log('Admin user updated.');
+      console.log('Super Admin user updated.');
     } else {
       user = await User.create({
         name: 'The Architect',
         email,
         password,
-        role: 'admin'
+        role: 'superadmin'
       });
-      console.log('Admin user created.');
+      console.log('Super Admin user created.');
     }
 
     console.log(`
