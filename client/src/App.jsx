@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import Button from './components/ui/Button';
@@ -15,7 +15,7 @@ import Projects from './components/sections/Projects';
 import Hackathons from './components/sections/Hackathons';
 
 // Pages
-import TeamPage from './components/pages/TeamPage'; // Assuming this exists or using inline
+import TeamPage from './components/pages/TeamPage'; 
 import MissionsPage from './components/pages/MissionsPage';
 import JoinPage from './components/pages/JoinPage'; 
 import LoginPage from './components/pages/LoginPage';
@@ -23,9 +23,20 @@ import AdminDashboard from './components/pages/AdminDashboard';
 import SuperAdminDashboard from './components/pages/SuperAdminDashboard';
 import ManifestoPage from './components/pages/ManifestoPage';
 import StartBuildingPage from './components/pages/StartBuildingPage';
+import ProfilePage from './components/pages/ProfilePage';
 
 // UI
 import LegendaryLoader from './components/ui/LegendaryLoader';
+
+// Protected Route Component
+const RequireApproval = ({ children }) => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    
+    if (user && !user.isApproved) {
+        return <Navigate to="/profile" replace />;
+    }
+    return children;
+};
 
 const Home = () => (
   <>
@@ -45,8 +56,6 @@ const Home = () => (
   </>
 );
 
-// Inline pages wrapper for cleanliness
-// HackathonsPage is still inline for now
 const HackathonsPage = () => (
     <>
         <main className="container mx-auto px-6 pt-32 pb-20">
@@ -58,16 +67,14 @@ const HackathonsPage = () => (
 
 const AppContent = () => {
   const location = useLocation();
-  const [loading, setLoading] = useState(false); // No loader on initial load
+  const [loading, setLoading] = useState(false); 
   const isFirstMount = React.useRef(true);
 
   useEffect(() => {
-    // Skip the first execution (on mount)
     if (isFirstMount.current) {
         isFirstMount.current = false;
         return;
     }
-    // Trigger loader on subsequent route changes
     setLoading(true);
   }, [location.pathname]);
   
@@ -81,36 +88,9 @@ const AppContent = () => {
       
       <div className="w-full min-h-screen bg-white text-black selection:bg-black selection:text-white">
         <Navbar />
-// Protected Route Component
-const RequireApproval = ({ children }) => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    
-    // If not logged in, they can view public pages (Team, etc.) normally 
-    // OR if we want to force login for these pages, we'd redirect to login.
-    // Based on user request: "every section should be locked until admin approves... for new user"
-    // implies if they ARE a user (new user), it's locked.
-    
-    if (user && !user.isApproved) {
-        // Redirect to profile if they try to access restricted areas
-        // But we need to allow them to see the landing page probably?
-        // Actually, user said "every section should be locked".
-        return <Navigate to="/profile" replace />;
-    }
-    return children;
-};
-
-import { Navigate } from 'react-router-dom';
-import ProfilePage from './components/pages/ProfilePage';
-
-// ... (existing imports)
-
         <Routes>
           <Route path="/" element={<Home />} />
           
-          {/* Public access allowed for now, but if logged in & unapproved, we might want to block? 
-              User said "locked until admin approves". 
-              Let's Wrap the main operational pages. 
-          */}
           <Route path="/team" element={<RequireApproval><TeamPage /></RequireApproval>} />
           <Route path="/projects" element={<RequireApproval><Projects /></RequireApproval>} />
           <Route path="/projects/:id" element={<RequireApproval><ProjectDetails /></RequireApproval>} />
