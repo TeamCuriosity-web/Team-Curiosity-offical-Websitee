@@ -261,22 +261,18 @@ const SuperAdminDashboard = () => {
                 {activeTab === 'projects' && (
                     <>
                         <div className="lg:col-span-2 space-y-6">
-                            {hackathons.map(hack => (
-                                <Card key={hack._id} className="p-6 flex flex-col md:flex-row justify-between items-start gap-4">
-                                    <div className="flex-1">
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <h3 className="font-bold text-lg text-gray-800">{hack.name}</h3>
-                                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase ${hack.status === 'upcoming' ? 'bg-blue-100 text-blue-800' : hack.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>{hack.status}</span>
-                                        </div>
-                                        <p className="text-gray-600 text-sm mb-2">{hack.description}</p>
-                                        <p className="text-xs font-bold text-yellow-600 flex items-center gap-1">🏆 {hack.achievement}</p>
-                                    </div>
-                                    <button onClick={() => deleteItem('hackathon', hack._id)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"><Trash2 size={18} /></button>
-                                </Card>
-                            ))}
-                        </div>
+                             {/* Hackathons Section (if intended to be here, otherwise move to its own tab, but user wanted unified) */}
+                             {/* Actually, let's keep Projects tab for PROJECTS only for clarity, but if we want unified, we should use separate sections. 
+                                 Wait, the user wanted "Unified Control". I'll put Projects in Projects tab. 
+                                 The previous code had `hackathons.map` inside `activeTab === 'projects'`. 
+                                 I will remove hackathons from here and ensure they are in their own tab or properly separated.
+                                 
+                                 Actually, I see I have a 'hackathons' tab. I should probably just fix the `projects` tab to only show projects.
+                                 And ensure the `hackathons` tab shows hackathons.
+                             */}
+                             
                             {projects.map(project => (
-                            <Card key={project._id} className="p-6 flex flex-col md:flex-row justify-between items-start gap-4">
+                                <Card key={project._id} className="p-6 flex flex-col md:flex-row justify-between items-start gap-4">
                                      <div className="flex-1">
                                         <div className="flex items-center gap-2 mb-2">
                                             <h3 className="font-bold text-lg text-gray-800">{project.title}</h3>
@@ -307,6 +303,39 @@ const SuperAdminDashboard = () => {
                                     <input placeholder="Repo URL" className="w-full border p-2 text-sm" value={projectForm.repoLink} onChange={e => setProjectForm({...projectForm, repoLink: e.target.value})} />
                                     <input placeholder="Live URL" className="w-full border p-2 text-sm" value={projectForm.liveLink} onChange={e => setProjectForm({...projectForm, liveLink: e.target.value})} />
                                     <Button type="submit" variant="primary" className="w-full text-xs">{editingId ? 'Update' : 'Deploy'}</Button>
+                                </form>
+                            </Card>
+                        </div>
+                    </>
+                )}
+
+                {/* --- HACKATHONS TAB --- */}
+                {activeTab === 'hackathons' && (
+                    <>
+                        <div className="lg:col-span-2 space-y-6">
+                            {hackathons.map(hack => (
+                                <Card key={hack._id} className="p-6 flex flex-col md:flex-row justify-between items-start gap-4">
+                                    <div className="flex-1">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <h3 className="font-bold text-lg text-gray-800">{hack.name}</h3>
+                                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase ${hack.status === 'upcoming' ? 'bg-blue-100 text-blue-800' : hack.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>{hack.status}</span>
+                                        </div>
+                                        <p className="text-gray-600 text-sm mb-2">{hack.description}</p>
+                                        <p className="text-xs font-bold text-yellow-600 flex items-center gap-1">🏆 {hack.achievement}</p>
+                                    </div>
+                                    <button onClick={() => deleteItem('hackathon', hack._id)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"><Trash2 size={18} /></button>
+                                </Card>
+                            ))}
+                        </div>
+                        <div className="lg:col-span-1">
+                             <Card className="p-6 sticky top-8">
+                                <h3 className="font-bold mb-4 flex items-center gap-2"><Code size={16}/> Log Hackathon</h3>
+                                <form onSubmit={handleHackathonSubmit} className="space-y-4">
+                                    <input placeholder="Name" className="w-full border p-2 text-sm" value={hackathonForm.name} onChange={e => setHackathonForm({...hackathonForm, name: e.target.value})} required />
+                                    <input placeholder="Description" className="w-full border p-2 text-sm" value={hackathonForm.description} onChange={e => setHackathonForm({...hackathonForm, description: e.target.value})} />
+                                    <input placeholder="Achievement" className="w-full border p-2 text-sm" value={hackathonForm.achievement} onChange={e => setHackathonForm({...hackathonForm, achievement: e.target.value})} />
+                                    <select className="w-full border p-2 text-sm" value={hackathonForm.status} onChange={e => setHackathonForm({...hackathonForm, status: e.target.value})}><option value="upcoming">Upcoming</option><option value="ongoing">Ongoing</option><option value="completed">Completed</option><option value="won">Won</option></select>
+                                    <Button type="submit" variant="primary" className="w-full text-xs">Record</Button>
                                 </form>
                             </Card>
                         </div>
