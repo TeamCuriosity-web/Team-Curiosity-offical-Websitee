@@ -24,9 +24,10 @@ router.post('/invite', protect, admin, async (req, res) => {
       expiresAt,
     });
 
-    // In a real app, you might return a full URL. Here returning the token.
+    // Use environment variable or default to production URL
+    const clientUrl = process.env.CLIENT_URL || 'https://TeamCuriosity-web.github.io/Team-Curiosity-offical-Websitee';
     res.status(201).json({ 
-        inviteLink: `http://localhost:5173/join?token=${token}`,
+        inviteLink: `${clientUrl}/join?token=${token}`,
         token,
         expiresAt 
     });
