@@ -13,6 +13,7 @@ const generateToken = (id) => {
 // @route   POST /api/auth/register
 // @access  Public (Requires Invite Token)
 router.post('/register', async (req, res) => {
+  console.log("Register Request Body:", req.body); // DEBUGGING
   const { name, email, password, inviteToken } = req.body;
 
   try {
