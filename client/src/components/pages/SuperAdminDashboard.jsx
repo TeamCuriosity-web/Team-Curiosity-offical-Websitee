@@ -272,30 +272,32 @@ const SuperAdminDashboard = () => {
                                         <div className="flex gap-2">{project.techStack.map(t => <span key={t} className="text-[10px] bg-gray-100 px-2 py-1 rounded">{t}</span>)}</div>
                                     </div>
                                     <div className="flex gap-2">
-                                            <tr className="border-b border-white/5">
-                                                <th className="py-3 px-6 text-[10px] uppercase font-bold text-gray-500 tracking-wider">Timestamp</th>
-                                                <th className="py-3 px-6 text-[10px] uppercase font-bold text-gray-500 tracking-wider">Action</th>
-                                                <th className="py-3 px-6 text-[10px] uppercase font-bold text-gray-500 tracking-wider">Actor</th>
-                                                <th className="py-3 px-6 text-[10px] uppercase font-bold text-gray-500 tracking-wider">Details</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {auditLogs.map(log => (
-                                                <tr key={log._id} className="border-b border-white/5 hover:bg-white/5">
-                                                    <td className="py-3 px-6 text-xs text-gray-500 font-mono">{new Date(log.timestamp).toLocaleString()}</td>
-                                                    <td className="py-3 px-6"><span className="text-[10px] font-bold text-white bg-white/10 px-2 py-1 rounded">{log.action}</span></td>
-                                                    <td className="py-3 px-6 text-xs text-gray-400">{log.actorName}</td>
-                                                    <td className="py-3 px-6 text-xs text-gray-500 truncate max-w-[200px] font-mono">{JSON.stringify(log.details)}</td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
+                                        <button onClick={() => handleEditClick(project)} className="text-gray-300 hover:text-blue-500"><Code size={18} /></button>
+                                        <button onClick={() => deleteItem('project', project._id)} className="text-gray-300 hover:text-red-500"><Trash2 size={18} /></button>
+                                    </div>
+                                </Card>
+                            ))}
+                        </div>
+                        <div className="lg:col-span-1">
+                            <Card className="p-6 sticky top-8">
+                                <h3 className="font-bold mb-4 flex items-center gap-2"><Database size={16}/> {editingId ? 'Update Protocol' : 'Deploy new Project'}</h3>
+                                <form onSubmit={handleProjectSubmit} className="space-y-4">
+                                    <input placeholder="Codename" className="w-full border p-2 text-sm" value={projectForm.title} onChange={e => setProjectForm({...projectForm, title: e.target.value})} required />
+                                    <input placeholder="Short Brief" className="w-full border p-2 text-sm" value={projectForm.description} onChange={e => setProjectForm({...projectForm, description: e.target.value})} required />
+                                    <textarea placeholder="Long Details" className="w-full border p-2 text-sm h-20" value={projectForm.longDescription} onChange={e => setProjectForm({...projectForm, longDescription: e.target.value})} />
+                                    <input placeholder="Tech Stack" className="w-full border p-2 text-sm" value={projectForm.techStack} onChange={e => setProjectForm({...projectForm, techStack: e.target.value})} />
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <select className="border p-2 text-sm" value={projectForm.status} onChange={e => setProjectForm({...projectForm, status: e.target.value})}><option value="ongoing">Ongoing</option><option value="upcoming">Upcoming</option><option value="completed">Completed</option></select>
+                                        <select className="border p-2 text-sm" value={projectForm.difficulty} onChange={e => setProjectForm({...projectForm, difficulty: e.target.value})}><option value="beginner">Beginner</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option><option value="legendary">Legendary</option></select>
+                                    </div>
+                                    <input placeholder="Repo URL" className="w-full border p-2 text-sm" value={projectForm.repoLink} onChange={e => setProjectForm({...projectForm, repoLink: e.target.value})} />
+                                    <input placeholder="Live URL" className="w-full border p-2 text-sm" value={projectForm.liveLink} onChange={e => setProjectForm({...projectForm, liveLink: e.target.value})} />
+                                    <Button type="submit" variant="primary" className="w-full text-xs">{editingId ? 'Update' : 'Deploy'}</Button>
+                                </form>
                             </Card>
                         </div>
-                    )}
-
-                </div>
+                    </>
+                )}
 
                 {/* Sidebar / Tools */}
                 <div className="lg:col-span-1 space-y-6">
