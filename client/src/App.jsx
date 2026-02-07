@@ -100,7 +100,7 @@ const AppContent = () => {
 
 function App() {
   return (
-    <Router>
+    <Router basename="/Team-Curiosity-offical-Websitee">
       <AppContent />
     </Router>
   );
