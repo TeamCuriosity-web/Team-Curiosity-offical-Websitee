@@ -7,16 +7,18 @@ import { Copy, Users, Shield, Terminal, Database, Code, Trash2, Plus } from 'luc
 
 const AdminDashboard = () => {
     const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState('projects'); // projects, hackathons
+    const [activeTab, setActiveTab] = useState('projects'); // projects, hackathons, team
     const [loading, setLoading] = useState(true);
     
     // Data State
+    const [users, setUsers] = useState([]);
     const [projects, setProjects] = useState([]);
     const [hackathons, setHackathons] = useState([]);
     
     // Forms State
     const [projectForm, setProjectForm] = useState({ title: '', description: '', longDescription: '', techStack: '', repoLink: '', liveLink: '', status: 'ongoing', difficulty: 'intermediate' });
     const [hackathonForm, setHackathonForm] = useState({ name: '', description: '', achievement: '', status: 'upcoming' });
+    const [inviteLink, setInviteLink] = useState('');
     const [editingId, setEditingId] = useState(null);
     const [currentUser, setCurrentUser] = useState(null);
 
@@ -28,10 +30,12 @@ const AdminDashboard = () => {
 
     const fetchData = async () => {
         try {
-            const [projectsRes, hackathonsRes] = await Promise.all([
+            const [usersRes, projectsRes, hackathonsRes] = await Promise.all([
+                api.get('/admin/users'),
                 api.get('/projects'), // Public read is fine
                 api.get('/hackathons')
             ]);
+            setUsers(usersRes.data);
             setProjects(projectsRes.data);
             setHackathons(hackathonsRes.data);
         } catch (err) {
@@ -43,6 +47,23 @@ const AdminDashboard = () => {
     };
 
     // --- Actions ---
+
+    const handleLogout = () => {
+        if (window.confirm('Terminate session?')) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            navigate('/');
+        }
+    };
+
+    const generateInvite = async () => {
+        try {
+            const { data } = await api.post('/admin/invite', { expiresInHours: 24 });
+            setInviteLink(data.inviteLink);
+        } catch (err) { console.error(err); }
+    };
+    
+    // ... deleteItem and other actions ...
 
     const deleteItem = async (type, id) => {
         if (!window.confirm('Confirm deletion protocol?')) return;
@@ -56,6 +77,8 @@ const AdminDashboard = () => {
             }
         } catch (err) { alert('Deletion failed'); }
     };
+
+    // ... (rest of actions) ...
 
     const handleProjectSubmit = async (e) => {
         e.preventDefault();
@@ -126,12 +149,15 @@ const AdminDashboard = () => {
                     <Link to="/" className="text-sm border border-border px-4 py-2 rounded hover:bg-black hover:text-white transition-colors">
                         Exit Console
                     </Link>
+                    <button onClick={handleLogout} className="text-sm border border-red-200 text-red-600 px-4 py-2 rounded hover:bg-red-50 transition-colors">
+                        Logout
+                    </button>
                 </div>
             </div>
 
             {/* Navigation Tabs */}
             <div className="flex gap-1 mb-8 border-b border-gray-200">
-                {['projects', 'hackathons'].map(tab => (
+                {['projects', 'hackathons', 'team'].map(tab => (
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
@@ -148,6 +174,50 @@ const AdminDashboard = () => {
 
             {/* Content Area */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+                 {/* --- TEAM TAB --- */}
+                 {activeTab === 'team' && (
+                    <>
+                        <div className="lg:col-span-2 space-y-6">
+                             <Card className="p-0 overflow-hidden">
+                                <div className="p-4 bg-gray-50 border-b border-gray-100 mb-0">
+                                    <h3 className="font-bold flex items-center gap-2"><Users size={16}/> Team Directory</h3>
+                                </div>
+                                <table className="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr className="bg-white border-b border-border">
+                                            <th className="py-3 px-6 text-xs uppercase font-semibold text-secondary">Personnel</th>
+                                            <th className="py-3 px-6 text-xs uppercase font-semibold text-secondary">Role</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {users.map(user => (
+                                            <tr key={user._id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50">
+                                                <td className="py-3 px-6 font-medium text-sm">{user.name} <span className="block text-[10px] text-gray-400">{user.email}</span></td>
+                                                <td className="py-3 px-6">
+                                                     <span className="px-2 py-1 border text-[10px] uppercase font-bold bg-gray-50 text-gray-400 cursor-not-allowed">{user.role}</span>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </Card>
+                        </div>
+                        <div className="lg:col-span-1">
+                             <Card className="p-6 sticky top-8">
+                                <h3 className="font-bold mb-4 flex items-center gap-2"><Shield size={16}/> Recruit Operative</h3>
+                                <p className="text-secondary text-xs mb-4">Generate access key for new members.</p>
+                                {inviteLink ? (
+                                    <div className="p-3 bg-black text-white rounded text-xs break-all font-mono" onClick={() => navigator.clipboard.writeText(inviteLink)}>
+                                        {inviteLink}
+                                    </div>
+                                ) : (
+                                    <Button onClick={generateInvite} variant="primary" className="w-full text-xs">Generate Access Key</Button>
+                                )}
+                            </Card>
+                        </div>
+                    </>
+                )}
                 
 
 
