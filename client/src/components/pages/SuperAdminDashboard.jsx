@@ -261,19 +261,33 @@ const SuperAdminDashboard = () => {
                 {activeTab === 'projects' && (
                     <>
                         <div className="lg:col-span-2 space-y-6">
+                            {hackathons.map(hack => (
+                                <Card key={hack._id} className="p-6 flex flex-col md:flex-row justify-between items-start gap-4">
+                                    <div className="flex-1">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <h3 className="font-bold text-lg text-gray-800">{hack.name}</h3>
+                                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase ${hack.status === 'upcoming' ? 'bg-blue-100 text-blue-800' : hack.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>{hack.status}</span>
+                                        </div>
+                                        <p className="text-gray-600 text-sm mb-2">{hack.description}</p>
+                                        <p className="text-xs font-bold text-yellow-600 flex items-center gap-1">🏆 {hack.achievement}</p>
+                                    </div>
+                                    <button onClick={() => deleteItem('hackathon', hack._id)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"><Trash2 size={18} /></button>
+                                </Card>
+                            ))}
+                        </div>
                             {projects.map(project => (
-                                <Card key={project._id} className="p-6 flex justify-between items-start group">
-                                     <div>
-                                        <div className="flex items-center gap-2 mb-1">
-                                            <h3 className="font-bold text-lg">{project.title}</h3>
+                            <Card key={project._id} className="p-6 flex flex-col md:flex-row justify-between items-start gap-4">
+                                     <div className="flex-1">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <h3 className="font-bold text-lg text-gray-800">{project.title}</h3>
                                             <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase ${project.status === 'upcoming' ? 'bg-blue-100 text-blue-800' : project.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>{project.status}</span>
                                         </div>
-                                        <p className="text-secondary text-sm mb-2">{project.description}</p>
-                                        <div className="flex gap-2">{project.techStack.map(t => <span key={t} className="text-[10px] bg-gray-100 px-2 py-1 rounded">{t}</span>)}</div>
+                                        <p className="text-gray-600 text-sm mb-3">{project.description}</p>
+                                        <div className="flex flex-wrap gap-2">{project.techStack.map(t => <span key={t} className="text-[10px] bg-gray-100 text-gray-600 px-2 py-1 rounded font-mono">{t}</span>)}</div>
                                     </div>
                                     <div className="flex gap-2">
-                                        <button onClick={() => handleEditClick(project)} className="text-gray-300 hover:text-blue-500"><Code size={18} /></button>
-                                        <button onClick={() => deleteItem('project', project._id)} className="text-gray-300 hover:text-red-500"><Trash2 size={18} /></button>
+                                        <button onClick={() => handleEditClick(project)} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"><Code size={18} /></button>
+                                        <button onClick={() => deleteItem('project', project._id)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"><Trash2 size={18} /></button>
                                     </div>
                                 </Card>
                             ))}
