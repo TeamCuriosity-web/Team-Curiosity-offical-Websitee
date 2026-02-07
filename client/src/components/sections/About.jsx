@@ -33,14 +33,14 @@ const About = () => {
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
       gsap.fromTo('.capability-card', 
-        { y: 40, opacity: 0 },
+        { y: 40, autoAlpha: 0 },
         {
           scrollTrigger: {
             trigger: containerRef.current,
             start: 'top 85%',
           },
           y: 0,
-          opacity: 1,
+          autoAlpha: 1,
           duration: 0.8,
           stagger: 0.2,
           ease: 'power3.out'

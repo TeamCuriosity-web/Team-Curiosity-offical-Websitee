@@ -134,6 +134,12 @@ router.post('/login', async (req, res) => {
         isApproved: user.isApproved,
         token: generateToken(user._id),
         profileImage: user.profileImage,
+        college: user.college,
+        branch: user.branch,
+        section: user.section,
+        programmingLanguages: user.programmingLanguages,
+        bio: user.bio,
+        avatar: user.avatar
       });
     } else {
       res.status(401).json({ message: 'Invalid email or password' });
