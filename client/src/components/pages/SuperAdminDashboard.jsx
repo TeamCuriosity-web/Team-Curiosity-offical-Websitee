@@ -5,6 +5,38 @@ import Button from '../ui/Button';
 import api from '../../services/api';
 import { Shield, Users, Trash2, Lock, Cpu, Activity, Database, Code, Key, UserPlus, Zap, LayoutGrid, Layers, Globe, GitBranch, Server } from 'lucide-react';
 
+    // --- UI HELPERS ---
+    const TabButton = ({ id, label, icon: Icon, activeTab, setActiveTab }) => (
+        <button
+            onClick={() => setActiveTab(id)}
+            className={`flex items-center gap-2 px-6 py-3 text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${
+                activeTab === id
+                    ? 'border-red-600 text-red-600 bg-red-50'
+                    : 'border-transparent text-gray-400 hover:text-gray-600 hover:bg-gray-50'
+            }`}
+        >
+            <Icon size={14} />
+            {label}
+        </button>
+    );
+
+    const LightCard = ({ children, className = "" }) => (
+        <div className={`bg-white border border-gray-200 rounded-xl p-6 shadow-sm ${className}`}>
+            {children}
+        </div>
+    );
+
+    const Badge = ({ children, color = "gray" }) => {
+        const colors = {
+            red: "bg-red-50 text-red-600 border-red-100",
+            green: "bg-green-50 text-green-600 border-green-100",
+            blue: "bg-blue-50 text-blue-600 border-blue-100",
+            yellow: "bg-yellow-50 text-yellow-600 border-yellow-100",
+            gray: "bg-gray-50 text-gray-500 border-gray-100",
+        };
+        return <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${colors[color] || colors.gray}`}>{children}</span>
+    };
+
 const SuperAdminDashboard = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
@@ -141,42 +173,6 @@ const SuperAdminDashboard = () => {
     const adminList = users.filter(u => u.role === 'admin' || u.role === 'superadmin');
     const memberList = users.filter(u => u.role !== 'admin' && u.role !== 'superadmin');
 
-    // --- UI HELPERS (LIGHT MODE REFACTOR) ---
-    const TabButton = ({ id, label, icon: Icon }) => (
-        <button
-            onClick={() => setActiveTab(id)}
-            className={`flex items-center gap-2 px-6 py-3 text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${
-                activeTab === id
-                    ? 'border-red-600 text-red-600 bg-red-50'
-                    : 'border-transparent text-gray-400 hover:text-gray-600 hover:bg-gray-50'
-            }`}
-        >
-            <Icon size={14} />
-            {label}
-        </button>
-    );
-
-    // Using standard Card component or a div that mimics white card style
-    // The previous AdminDashboard uses `Card` (likely white bg).
-    // I will use `bg-white border border-gray-200 rounded-xl shadow-sm` for cards.
-
-    const LightCard = ({ children, className = "" }) => (
-        <div className={`bg-white border border-gray-200 rounded-xl p-6 shadow-sm ${className}`}>
-            {children}
-        </div>
-    );
-
-    const Badge = ({ children, color = "gray" }) => {
-        const colors = {
-            red: "bg-red-50 text-red-600 border-red-100",
-            green: "bg-green-50 text-green-600 border-green-100",
-            blue: "bg-blue-50 text-blue-600 border-blue-100",
-            yellow: "bg-yellow-50 text-yellow-600 border-yellow-100",
-            gray: "bg-gray-50 text-gray-500 border-gray-100",
-        };
-        return <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${colors[color] || colors.gray}`}>{children}</span>
-    };
-
     return (
         <div className="min-h-screen bg-white text-gray-900 font-sans selection:bg-red-100 selection:text-red-900 pt-24 pb-12 px-6">
             
@@ -200,10 +196,10 @@ const SuperAdminDashboard = () => {
 
                 {/* Tabs */}
                 <div className="flex mb-8 border-b border-gray-200">
-                    <TabButton id="admins" label="Admins" icon={Shield} />
-                    <TabButton id="members" label="Members" icon={Users} />
-                    <TabButton id="projects" label="Projects" icon={Cpu} />
-                    <TabButton id="hackathons" label="Hackathons" icon={Zap} />
+                    <TabButton id="admins" label="Admins" icon={Shield} activeTab={activeTab} setActiveTab={setActiveTab} />
+                    <TabButton id="members" label="Members" icon={Users} activeTab={activeTab} setActiveTab={setActiveTab} />
+                    <TabButton id="projects" label="Projects" icon={Cpu} activeTab={activeTab} setActiveTab={setActiveTab} />
+                    <TabButton id="hackathons" label="Hackathons" icon={Zap} activeTab={activeTab} setActiveTab={setActiveTab} />
                 </div>
 
                 {/* --- ADMINS TAB --- */}
