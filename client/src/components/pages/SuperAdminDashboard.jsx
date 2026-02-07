@@ -3,17 +3,28 @@ import { useNavigate, Link } from 'react-router-dom';
 import Card from '../ui/Card';
 import Button from '../ui/Button';
 import api from '../../services/api';
-import { Shield, Users, Trash2, Lock, Cpu, ToggleLeft, ToggleRight, FileText } from 'lucide-react';
+import { Shield, Users, Trash2, Lock, Cpu, ToggleLeft, ToggleRight, FileText, UserPlus, Key, Database, Code } from 'lucide-react';
 
 const SuperAdminDashboard = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('users'); // users, system
     const [users, setUsers] = useState([]);
+    const [projects, setProjects] = useState([]);
+    const [hackathons, setHackathons] = useState([]);
     const [auditLogs, setAuditLogs] = useState([]);
     const [featureFlags, setFeatureFlags] = useState([]);
     const [inviteLink, setInviteLink] = useState('');
     const [currentUser, setCurrentUser] = useState(null);
+    const [createAdminForm, setCreateAdminForm] = useState({ name: '', email: '' });
+    const [newAdminCreds, setNewAdminCreds] = useState(null);
+    const [editingId, setEditingId] = useState(null);
+    const [projectForm, setProjectForm] = useState({
+        title: '', description: '', longDescription: '', techStack: '', repoLink: '', liveLink: '', status: 'ongoing', difficulty: 'intermediate'
+    });
+    const [hackathonForm, setHackathonForm] = useState({
+        name: '', description: '', achievement: '', status: 'upcoming'
+    });
 
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem('user'));
