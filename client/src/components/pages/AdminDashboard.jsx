@@ -133,6 +133,16 @@ const AdminDashboard = () => {
         } catch (err) { alert('Failed to log hackathon'); }
     };
 
+
+    const handleApproveUser = async (id) => {
+        try {
+            await api.put(`/admin/users/${id}/approve`);
+            setUsers(users.map(u => u._id === id ? { ...u, isApproved: true } : u));
+        } catch (err) { alert('Approval failed'); }
+    };
+
+    // ... (existing functions)
+
     if (loading) return <div className="min-h-screen flex items-center justify-center font-mono text-xs">LOADING_MAINFRAME...</div>;
 
     return (
@@ -154,7 +164,7 @@ const AdminDashboard = () => {
                     <Link to="/" className="text-sm border border-border px-4 py-2 rounded hover:bg-black hover:text-white transition-colors">
                         Exit Console
                     </Link>
-                    <button onClick={handleLogout} className="text-sm border border-red-200 text-red-600 px-4 py-2 rounded hover:bg-red-50 transition-colors">
+                     <button onClick={handleLogout} className="text-sm border border-red-200 text-red-600 px-4 py-2 rounded hover:bg-red-50 transition-colors">
                         Logout
                     </button>
                 </div>
@@ -162,17 +172,20 @@ const AdminDashboard = () => {
 
             {/* Navigation Tabs */}
             <div className="flex gap-1 mb-8 border-b border-gray-200">
-                {['projects', 'hackathons', 'team'].map(tab => (
+                {['requests', 'projects', 'hackathons', 'team'].map(tab => (
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
-                        className={`px-6 py-3 text-sm font-bold uppercase tracking-wider border-b-2 transition-colors ${
+                        className={`px-6 py-3 text-sm font-bold uppercase tracking-wider border-b-2 transition-colors flex items-center gap-2 ${
                             activeTab === tab 
                                 ? 'border-black text-black' 
                                 : 'border-transparent text-gray-400 hover:text-gray-600'
                         }`}
                     >
                         {tab}
+                        {tab === 'requests' && users.filter(u => !u.isApproved).length > 0 && (
+                            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                        )}
                     </button>
                 ))}
             </div>
@@ -286,6 +299,66 @@ const AdminDashboard = () => {
                             </Card>
                         </div>
                     </>
+                )}
+
+                {/* --- REQUESTS TAB --- */}
+                {activeTab === 'requests' && (
+                    <div className="lg:col-span-3 space-y-6">
+                         <Card className="p-0 overflow-hidden">
+                            <div className="p-4 bg-yellow-50 border-b border-yellow-100 mb-0 flex justify-between items-center">
+                                <h3 className="font-bold flex items-center gap-2 text-yellow-800"><Shield size={16}/> Pending Access Requests</h3>
+                                <span className="text-xs font-bold px-2 py-1 bg-white rounded border border-yellow-200 text-yellow-800">
+                                    {users.filter(u => !u.isApproved).length} Pending
+                                </span>
+                            </div>
+                            <table className="w-full text-left border-collapse">
+                                <thead>
+                                    <tr className="bg-white border-b border-border">
+                                        <th className="py-3 px-6 text-xs uppercase font-semibold text-secondary">Candidate</th>
+                                        <th className="py-3 px-6 text-xs uppercase font-semibold text-secondary">Details</th>
+                                        <th className="py-3 px-6 text-xs uppercase font-semibold text-secondary text-right">Protocol</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {users.filter(u => !u.isApproved).length === 0 ? (
+                                        <tr>
+                                            <td colSpan="3" className="py-8 text-center text-gray-400 text-xs font-mono">NO PENDING REQUESTS // ALL SYSTEMS SECURE</td>
+                                        </tr>
+                                    ) : (
+                                        users.filter(u => !u.isApproved).map(user => (
+                                            <tr key={user._id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50">
+                                                <td className="py-3 px-6">
+                                                    <div className="flex items-center gap-3">
+                                                        <img src={user.profileImage || `https://api.dicebear.com/7.x/notionists/svg?seed=${user.name}`} className="w-8 h-8 rounded-full bg-gray-100" alt="" />
+                                                        <div>
+                                                            <div className="font-bold text-sm">{user.name}</div>
+                                                            <div className="text-[10px] text-gray-400 font-mono">{user.email}</div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td className="py-3 px-6">
+                                                    <div className="flex flex-col gap-1">
+                                                        <div className="text-xs"><span className="font-bold text-gray-400">INST:</span> {user.college || 'N/A'}</div>
+                                                        <div className="text-xs"><span className="font-bold text-gray-400">BR/SEC:</span> {user.branch || '-'}/{user.section || '-'}</div>
+                                                    </div>
+                                                </td>
+                                                <td className="py-3 px-6 text-right">
+                                                    <div className="flex justify-end gap-2">
+                                                        <Button onClick={() => handleApproveUser(user._id)} variant="primary" className="h-8 text-[10px] px-3 bg-green-600 hover:bg-green-700 border-green-700">
+                                                            APPROVE
+                                                        </Button>
+                                                        <Button onClick={() => deleteItem('user', user._id)} variant="outline" className="h-8 text-[10px] px-3 border-red-200 text-red-600 hover:bg-red-50">
+                                                            REJECT
+                                                        </Button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
+                        </Card>
+                    </div>
                 )}
 
                 {/* --- HACKATHONS TAB --- */}

@@ -36,6 +36,24 @@ router.delete('/users/:id', protect, superAdmin, async (req, res) => {
     }
 });
 
+// @desc    Approve a User
+// @route   PUT /api/admin/users/:id/approve
+// @access  Private/Admin
+router.put('/users/:id/approve', protect, admin, async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (user) {
+            user.isApproved = true;
+            await user.save();
+            res.json({ message: 'User approved', user });
+        } else {
+            res.status(404).json({ message: 'User not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 // @desc    Update User Role
 // @route   PUT /api/admin/users/:id/role
 // @access  Private/SuperAdmin
