@@ -54,10 +54,10 @@ export const useScrollReveal = (targetRef, options = {}) => {
   const {
       mode = 'up',
       distance = 50,
-      duration = 1,
+      duration = 0.6,
       stagger = 0.1,
       delay = 0,
-      start = "top 85%",
+      start = "top 95%",
       markers = false
   } = options;
 
@@ -120,12 +120,12 @@ export const GsapText = ({ children, className = "", delay = 0 }) => {
                     y: 0, 
                     opacity: 1, 
                     rotateX: 0,
-                    duration: 1.2,
+                    duration: 0.8,
                     ease: "power3.out",
                     delay: delay,
                     scrollTrigger: {
                         trigger: el.current,
-                        start: "top 90%",
+                        start: "top 95%",
                         toggleActions: "play reverse play reverse"
                     }
                 }

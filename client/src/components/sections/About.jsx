@@ -5,7 +5,7 @@ import { useScrollReveal } from '../../utils/animations';
 const About = () => {
   const containerRef = useRef(null);
 
-  useScrollReveal(containerRef, { selector: '.capability-card', mode: 'up', distance: 60, duration: 0.8, stagger: 0.2 });
+  useScrollReveal(containerRef, { selector: '.capability-card', mode: 'up', distance: 40, stagger: 0.1 });
   useScrollReveal(containerRef, { selector: '.about-header', mode: 'left', distance: 30 });
 
   const capabilities = [

@@ -12,8 +12,8 @@ const Manifesto = () => {
   const rightColRef = useRef(null);
 
   // Apply play/reverse animations
-  useScrollReveal(leftColRef, { mode: 'left', distance: 100, duration: 1 });
-  useScrollReveal(rightColRef, { selector: '.mission-item', mode: 'up', distance: 50, duration: 0.8, stagger: 0.15 });
+  useScrollReveal(leftColRef, { mode: 'left', distance: 60 });
+  useScrollReveal(rightColRef, { selector: '.mission-item', mode: 'up', distance: 40, stagger: 0.1 });
 
   return (
     <section ref={containerRef} className="py-32 bg-white text-black relative overflow-hidden">

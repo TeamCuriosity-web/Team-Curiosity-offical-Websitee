@@ -8,7 +8,7 @@ const MissionOverview = () => {
     const headerRef = useRef(null);
 
     useScrollReveal(headerRef, { mode: 'up', distance: 30 });
-    useScrollReveal(sectionRef, { selector: '.mission-card', mode: 'up', distance: 60, stagger: 0.2 });
+    useScrollReveal(sectionRef, { selector: '.mission-card', mode: 'up', distance: 40, stagger: 0.1 });
 
     const missions = [
         {
