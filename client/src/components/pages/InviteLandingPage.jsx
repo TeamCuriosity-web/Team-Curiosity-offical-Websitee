@@ -226,10 +226,20 @@ const InviteLandingPage = () => {
         tl.to({}, { duration: 0.5 });
 
         // Phase 3: Disintegrate
+        // Shake before break
         tl.to(textGroupRef.current, {
+            x: "+=5", 
+            yoyo: true, 
+            repeat: 5, 
+            duration: 0.05
+        })
+        .to(textGroupRef.current, {
             opacity: 0,
-            duration: 0.05, // Instant swap
-            onStart: () => setPhase('3-disintegrate')
+            scale: 1.1, // Slight expansion
+            filter: 'blur(4px)', // Smooth dissolve
+            duration: 0.4, // SMOOTHER (was 0.05)
+            ease: 'power2.in',
+            onStart: () => setPhase('3-disintegrate') 
         });
 
         // Wait for particles to float a bit
