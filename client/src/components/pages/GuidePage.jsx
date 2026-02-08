@@ -3,24 +3,10 @@ import { Link } from 'react-router-dom';
 import { Shield, Target, MessageSquare, ChevronRight, Terminal } from 'lucide-react';
 import Card from '../ui/Card';
 
-// Images (using the generated filenames)
-import guideJoin from '../../../assets/images/guide_join_process_1770538053859.png'; // Will move these
-import guideProjects from '../../../assets/images/guide_project_hub_1770538071126.png';
-import guideComms from '../../../assets/images/guide_comms_network_1770538086227.png'; // Placeholder path, I need to check where to put them or if I can reference artifacts. 
-// Actually, since I cannot move files easily with existing tools, I'll assume they are in artifacts and I should probably ask user to move them or use a placeholder URL if I can't access them directly.
-// BUT, the system prompt says "If you are embedding a file in an artifact... copy the file". 
-// I will use a relative path assuming I might be able to reference them if I move them? 
-// No, I'll use the absolute path for now or better, I will assume I need to handle these images.
-// Wait, I can't natively "move" the generated images into the src/assets folder with the tools provided (unless run_command 'mv' works, but windows 'move').
-// I will try to use the absolute paths for now for local dev, or just standard placeholders if I can't.
-// Actually, the user can see artifacts. I will use the ARTIFACT PATHS ? No, browser can't see that.
-// I will use a placeholder for now and tell the user to check the artifacts.
-// RE-READ: "The resulting image will be saved as an artifact".
-// I will use a clever trick: I will just use the filenames and instruct the user that "Images are generated, please move them to client/src/assets/images".
-// OR I can use `run_command` to move them! 
-// "Operating System: windows. Shell: powershell."
-// I can do: `move "C:\Users\...\Start.png" "d:\My team\client\src\assets\images\..."`
-// I will do that in the next step. for now, import from assets.
+// Images
+import guideJoin from '../../assets/images/guide_join.png';
+import guideProjects from '../../assets/images/guide_projects.png';
+import guideComms from '../../assets/images/guide_comms.png';
 
 const GuidePage = () => {
     return (
@@ -41,8 +27,7 @@ const GuidePage = () => {
                     <div className="w-full md:w-1/2">
                         <div className="relative rounded-xl overflow-hidden shadow-2xl border-4 border-black group">
                             <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10"></div>
-                            <img src="/src/assets/images/guide_join.png" alt="Registration Interface" className="w-full h-auto transform group-hover:scale-105 transition-transform duration-700" />
-                            {/* NOTE: I will rename the files when moving them */}
+                            <img src={guideJoin} alt="Registration Interface" className="w-full h-auto transform group-hover:scale-105 transition-transform duration-700" />
                         </div>
                     </div>
                     <div className="w-full md:w-1/2 space-y-6">
@@ -70,7 +55,7 @@ const GuidePage = () => {
                     <div className="w-full md:w-1/2">
                          <div className="relative rounded-xl overflow-hidden shadow-2xl border-4 border-black group">
                             <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10"></div>
-                            <img src="/src/assets/images/guide_projects.png" alt="Project Hub" className="w-full h-auto transform group-hover:scale-105 transition-transform duration-700" />
+                            <img src={guideProjects} alt="Project Hub" className="w-full h-auto transform group-hover:scale-105 transition-transform duration-700" />
                         </div>
                     </div>
                     <div className="w-full md:w-1/2 space-y-6">
@@ -96,7 +81,7 @@ const GuidePage = () => {
                     <div className="w-full md:w-1/2">
                          <div className="relative rounded-xl overflow-hidden shadow-2xl border-4 border-black group">
                             <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10"></div>
-                            <img src="/src/assets/images/guide_comms.png" alt="Secure Comms" className="w-full h-auto transform group-hover:scale-105 transition-transform duration-700" />
+                            <img src={guideComms} alt="Secure Comms" className="w-full h-auto transform group-hover:scale-105 transition-transform duration-700" />
                         </div>
                     </div>
                     <div className="w-full md:w-1/2 space-y-6">
