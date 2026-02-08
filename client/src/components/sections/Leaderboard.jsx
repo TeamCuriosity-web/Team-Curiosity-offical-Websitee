@@ -108,36 +108,48 @@ const Leaderboard = () => {
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-end max-w-6xl mx-auto">
-                    {/* 2nd Place */}
-                    {leaders[1] && <LeaderCard member={leaders[1]} rank={2} />}
-                    
-                    {/* 1st Place */}
-                    {leaders[0] && <LeaderCard member={leaders[0]} rank={1} />}
-                    
-                    {/* 3rd Place */}
-                    {leaders[2] && <LeaderCard member={leaders[2]} rank={3} />}
-                </div>
-
-                {/* Rest of the list */}
-                {leaders.length > 3 && (
-                    <div className="mt-12 max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {leaders.slice(3).map((member, idx) => (
-                            <div key={member._id} className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
-                                <div className="flex items-center gap-4">
-                                     <span className="font-mono text-lg font-bold text-gray-400 w-8">#{idx + 4}</span>
-                                     <img src={member.stats.avatar || member.image} alt={member.name} className="w-10 h-10 rounded-full bg-gray-100" />
-                                     <div>
-                                         <h4 className="font-bold text-sm uppercase">{member.name}</h4>
-                                         <p className="text-[10px] font-mono text-gray-500">{member.githubUsername}</p>
-                                     </div>
-                                </div>
-                                <div className="font-mono font-bold text-purple-600">
-                                    {member.score} PTS
-                                </div>
-                            </div>
-                        ))}
+                {leaders.length === 0 ? (
+                    <div className="text-center py-20 opacity-50">
+                        <Github size={48} className="mx-auto mb-4" />
+                        <h3 className="text-2xl font-bold uppercase">No Intelligence Data</h3>
+                        <p className="font-mono text-sm max-w-md mx-auto mt-2">
+                            Operatives have not yet linked their GitHub profiles. Update your profile to appear on the leaderboard.
+                        </p>
                     </div>
+                ) : (
+                    <>
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-end max-w-6xl mx-auto">
+                            {/* 2nd Place */}
+                            {leaders[1] && <LeaderCard member={leaders[1]} rank={2} />}
+                            
+                            {/* 1st Place */}
+                            {leaders[0] && <LeaderCard member={leaders[0]} rank={1} />}
+                            
+                            {/* 3rd Place */}
+                            {leaders[2] && <LeaderCard member={leaders[2]} rank={3} />}
+                        </div>
+
+                        {/* Rest of the list */}
+                        {leaders.length > 3 && (
+                            <div className="mt-12 max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {leaders.slice(3).map((member, idx) => (
+                                    <div key={member._id} className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
+                                        <div className="flex items-center gap-4">
+                                             <span className="font-mono text-lg font-bold text-gray-400 w-8">#{idx + 4}</span>
+                                             <img src={member.stats?.avatar || member.image} alt={member.name} className="w-10 h-10 rounded-full bg-gray-100" />
+                                             <div>
+                                                 <h4 className="font-bold text-sm uppercase">{member.name}</h4>
+                                                 <p className="text-[10px] font-mono text-gray-500">{member.githubUsername}</p>
+                                             </div>
+                                        </div>
+                                        <div className="font-mono font-bold text-purple-600">
+                                            {member.score} PTS
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </>
                 )}
             </div>
         </section>
