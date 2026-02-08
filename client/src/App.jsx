@@ -82,7 +82,9 @@ const HackathonsPage = () => (
 
 const AppContent = () => {
   const location = useLocation();
-  const [loading, setLoading] = useState(false); 
+  // FORCE DISABLE for /invite by initializing state correctly
+  const shouldLoad = location.pathname !== '/invite'; 
+  const [loading, setLoading] = useState(shouldLoad); 
   const isFirstMount = React.useRef(true);
 
   useEffect(() => {
@@ -90,7 +92,12 @@ const AppContent = () => {
         isFirstMount.current = false;
         return;
     }
-    setLoading(true);
+    // Only trigger loader if NOT on invite page
+    if (location.pathname !== '/invite') {
+        setLoading(true);
+    } else {
+        setLoading(false);
+    }
   }, [location.pathname]);
 
   // Sync User Status Logic

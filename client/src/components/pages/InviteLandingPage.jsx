@@ -275,28 +275,38 @@ const InviteLandingPage = () => {
 
     }, { scope: containerRef });
 
+    const flapRef = useRef(null);
 
     const handleOpenEnvelope = (e) => {
         if (envelopeOpen) return;
         setEnvelopeOpen(true);
+        setPhase('open');
 
         const tl = gsap.timeline();
 
-         // 1. Pull Card OUT (Upwards)
-         tl.to(cardRef.current, {
-            y: -180, 
-            opacity: 1,
-            duration: 0.7,
-            ease: 'power2.out'
+        // 1. OPEN FLAP (3D Rotation)
+        tl.to(flapRef.current, {
+            rotationX: 180,
+            transformOrigin: "top center",
+            duration: 0.6,
+            ease: "power2.inOut"
         });
 
-        // 2. Drop Envelope
+        // 2. Pull Card OUT (Upwards)
+        tl.to(cardRef.current, {
+            y: -150, 
+            opacity: 1,
+            duration: 0.6,
+            ease: 'power2.out'
+        }, "-=0.2"); // Overlap slightly with flap opening
+
+        // 3. Drop Envelope
         tl.to(envelopeRef.current, { 
             y: 400, 
             opacity: 0, 
             duration: 0.5, 
             ease: 'power2.in' 
-        }, "-=0.5");
+        }, "-=0.4");
 
         // 3. Center Card
         tl.to(cardRef.current, {
@@ -369,9 +379,13 @@ const InviteLandingPage = () => {
                     className="absolute w-[360px] md:w-[520px] h-[240px] md:h-[320px] bg-white shadow-2xl rounded-lg cursor-pointer hover:shadow-xl transition-shadow duration-300 z-50 flex flex-col items-center justify-center overflow-hidden border-2 border-black"
                     onClick={handleOpenEnvelope}
                 >
-                    {/* Top Flap Indicator */}
-                    <div className="absolute top-0 w-full h-8 bg-gray-50 border-b-2 border-black flex items-center justify-center">
-                         <div className="w-24 h-1 bg-gray-200 rounded-full"></div>
+                    {/* Top Flap Indicator - Animated */}
+                    <div 
+                        ref={flapRef}
+                        className="absolute top-0 w-full h-16 bg-gray-50 border-b border-gray-200 flex items-end justify-center z-20 origin-top"
+                        style={{ transformStyle: 'preserve-3d' }}
+                    >
+                         <div className="w-24 h-1 bg-gray-200 rounded-full mb-2"></div>
                     </div>
 
                     <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mb-4 text-white shadow-lg mt-8">
