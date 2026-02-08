@@ -225,4 +225,47 @@ router.put('/updatedetails', async (req, res) => {
     }
 });
 
+// @desc    Get current user details (Sync Status)
+// @route   GET /api/auth/me
+// @access  Private
+router.get('/me', async (req, res) => {
+    let token;
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+        token = req.headers.authorization.split(' ')[1];
+    }
+
+    if (!token) {
+        return res.status(401).json({ message: 'Not authorized, no token' });
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findById(decoded.id);
+
+        if (user) {
+             res.json({
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                isApproved: user.isApproved, // This is the key field we need to sync
+                token: generateToken(user._id), // Optional: Refresh token
+                profileImage: user.profileImage,
+                college: user.college,
+                branch: user.branch,
+                section: user.section,
+                programmingLanguages: user.programmingLanguages,
+                github: user.github,
+                linkedin: user.linkedin,
+                bio: user.bio,
+                avatar: user.avatar
+            });
+        } else {
+            res.status(404).json({ message: 'User not found' });
+        }
+    } catch (error) {
+        res.status(401).json({ message: 'Not authorized, token failed' });
+    }
+});
+
 module.exports = router;

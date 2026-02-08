@@ -90,6 +90,41 @@ const AppContent = () => {
     }
     setLoading(true);
   }, [location.pathname]);
+
+  // Sync User Status Logic
+  useEffect(() => {
+     const syncUserStatus = async () => {
+         const token = localStorage.getItem('token');
+         if (token) {
+             try {
+                 // We need to use fetch directly or axios instance if available
+                 // Assuming api instance is attached or we use raw fetch for simplicity here
+                 // But wait, we have 'api' imported in other files, let's Import it here too? 
+                 // Actually, to avoid import errors if api.js isn't in scope, I'll use fetch.
+                 // Better: Let's assume standard fetch for reliability in App root
+                 const response = await fetch('https://team-curiosity-offical-websitee.onrender.com/api/auth/me', {
+                     headers: {
+                         'Authorization': `Bearer ${token}`
+                     }
+                 });
+                 
+                 if (response.ok) {
+                     const data = await response.json();
+                     localStorage.setItem('user', JSON.stringify(data));
+                     // We might need to trigger a re-render or state update if RequireApproval doesn't pick it up
+                     // Since RequireApproval reads from localStorage on render, a forceUpdate or state change would be good.
+                     // But simpler: The user refreshing the page will now definitely work. 
+                     // To make it reactive without refresh, we'd need a Context. 
+                     // For now, updating localStorage ensures the NEXT check passes.
+                 }
+             } catch (err) {
+                 console.error("Failed to sync user status", err);
+             }
+         }
+     };
+     
+     syncUserStatus();
+  }, [location.pathname]); // Sync on every page change to catch approval "live"
   
   const handleLoaderComplete = () => {
     setLoading(false);
