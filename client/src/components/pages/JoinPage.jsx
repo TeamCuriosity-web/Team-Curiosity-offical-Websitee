@@ -234,7 +234,6 @@ const JoinPage = () => {
                         />
                       </div>
                   </div>
-                  </div>
                   <div>
                     <label className="block text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">Tech Stack (Arsenal)</label>
                     <input
