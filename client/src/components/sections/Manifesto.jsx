@@ -1,33 +1,19 @@
-import React, { useLayoutEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { Target, Zap, Terminal } from 'lucide-react';
-import Card from '../ui/Card';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useScrollReveal, GsapText } from '../../utils/animations';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const Manifesto = () => {
   const containerRef = useRef(null);
+  const leftColRef = useRef(null);
+  const rightColRef = useRef(null);
 
-  useLayoutEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.fromTo('.mission-item', 
-        { y: 50, opacity: 0 },
-        {
-          scrollTrigger: {
-              trigger: containerRef.current,
-              start: 'top 85%',
-          },
-          y: 0,
-          opacity: 1,
-          duration: 1,
-          stagger: 0.2,
-          ease: "power3.out"
-        }
-      );
-    }, containerRef);
-    return () => ctx.revert();
-  }, []);
+  // Apply play/reverse animations
+  useScrollReveal(leftColRef, { mode: 'left', distance: 100, duration: 1 });
+  useScrollReveal(rightColRef, { selector: '.mission-item', mode: 'up', distance: 50, duration: 0.8, stagger: 0.15 });
 
   return (
     <section ref={containerRef} className="py-32 bg-white text-black relative overflow-hidden">
@@ -38,7 +24,7 @@ const Manifesto = () => {
       <div className="container mx-auto px-6 max-w-6xl relative z-10">
           <div className="flex flex-col lg:flex-row gap-16 items-start">
                {/* Left: The Manifesto Title */}
-               <div className="lg:w-5/12 mission-item">
+               <div ref={leftColRef} className="lg:w-5/12">
                     <div className="inline-flex items-center gap-2 border border-black/10 rounded-full px-3 py-1 mb-8 bg-black/5 backdrop-blur-sm">
                          <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
                          <span className="font-mono text-[10px] uppercase tracking-widest text-black/70">System Message</span>
@@ -49,10 +35,10 @@ const Manifesto = () => {
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-black to-gray-400">OUR WEAPON.</span>
                     </h2>
                     
-                    <p className="text-gray-600 text-lg leading-relaxed mb-10 border-l-2 border-black/10 pl-6">
+                    <GsapText delay={0.2} className="text-gray-600 text-lg leading-relaxed mb-10 border-l-2 border-black/10 pl-6">
                         We don't just write software. <strong className="text-black">We architect dominance.</strong><br/>
                         In a world of templates, we build the engines that power the future.
-                    </p>
+                    </GsapText>
 
                     <div className="flex items-center gap-4 font-mono text-xs text-gray-400">
                         <Terminal size={14} />
@@ -63,7 +49,7 @@ const Manifesto = () => {
                </div>
 
                {/* Right: The Tenets */}
-               <div className="lg:w-7/12 grid gap-6">
+               <div ref={rightColRef} className="lg:w-7/12 grid gap-6">
                     {[
                         {
                             icon: <Zap size={24} />,

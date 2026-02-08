@@ -1,13 +1,12 @@
-import React, { useLayoutEffect, useRef } from 'react';
-
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import React, { useRef } from 'react';
 import { Code2, Database, LayoutTemplate } from 'lucide-react';
-
-gsap.registerPlugin(ScrollTrigger);
+import { useScrollReveal } from '../../utils/animations';
 
 const About = () => {
   const containerRef = useRef(null);
+
+  useScrollReveal(containerRef, { selector: '.capability-card', mode: 'up', distance: 60, duration: 0.8, stagger: 0.2 });
+  useScrollReveal(containerRef, { selector: '.about-header', mode: 'left', distance: 30 });
 
   const capabilities = [
     {
@@ -30,30 +29,9 @@ const About = () => {
     }
   ];
 
-  useLayoutEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.fromTo('.capability-card', 
-        { y: 40, autoAlpha: 0 },
-        {
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: 'top 85%',
-          },
-          y: 0,
-          autoAlpha: 1,
-          duration: 0.8,
-          stagger: 0.2,
-          ease: 'power3.out'
-        }
-      );
-    }, containerRef);
-
-    return () => ctx.revert();
-  }, []);
-
   return (
     <section ref={containerRef} className="py-24">
-      <div className="flex flex-col md:flex-row justify-between items-end mb-12 px-4">
+      <div className="about-header flex flex-col md:flex-row justify-between items-end mb-12 px-4">
           <div className="space-y-2">
             <h2 className="text-3xl font-bold text-black tracking-tight">Technical Arsenal</h2>
             <p className="text-secondary max-w-md">The tools we use to ship products.</p>

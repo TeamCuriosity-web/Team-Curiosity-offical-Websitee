@@ -1,11 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Hash, Terminal, Users, ChevronRight } from 'lucide-react';
 import api from '../../services/api';
+import { useScrollReveal } from '../../utils/animations';
 
 const ChatGlimpse = () => {
     const [recentMessages, setRecentMessages] = useState([]);
     const [onlineCount, setOnlineCount] = useState(1); // Mock for now
+    const containerRef = useRef(null);
+    const contentRef = useRef(null);
+
+    useScrollReveal(containerRef, { mode: 'up', distance: 20 });
+    
+    // Scale up the chat window like it's opening
+    useScrollReveal(contentRef, { mode: 'scale', duration: 0.8, delay: 0.2 });
 
     useEffect(() => {
         const fetchPreview = async () => {
@@ -25,7 +33,7 @@ const ChatGlimpse = () => {
     if (recentMessages.length === 0) return null;
 
     return (
-        <section className="py-20 border-t border-gray-100">
+        <section ref={containerRef} className="py-20 border-t border-gray-100">
             <div className="flex flex-col md:flex-row justify-between items-end mb-12">
                 <div>
                     <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-4 flex items-center gap-3">
@@ -42,7 +50,7 @@ const ChatGlimpse = () => {
                 </Link>
             </div>
 
-            <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 md:p-8 relative overflow-hidden">
+            <div ref={contentRef} className="bg-gray-50 border border-gray-200 rounded-xl p-6 md:p-8 relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-4 opacity-10">
                     <Terminal size={120} />
                 </div>
