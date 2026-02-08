@@ -72,6 +72,15 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('typing', (data) => {
+    // Broadcast to room excluding sender
+    socket.to(data.room).emit('display_typing', data);
+  });
+
+  socket.on('stop_typing', (data) => {
+    socket.to(data.room).emit('hide_typing', data);
+  });
+
   socket.on('disconnect', () => {
     console.log('User Disconnected', socket.id);
   });

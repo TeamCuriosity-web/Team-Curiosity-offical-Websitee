@@ -18,6 +18,9 @@ const ChatPage = () => {
     const [messageList, setMessageList] = useState([]);
     const bottomRef = useRef(null);
 
+    const [typingUsers, setTypingUsers] = useState(new Set());
+    const typingTimeoutRef = useRef(null);
+
     useEffect(() => {
         const storedUser = JSON.parse(localStorage.getItem('user'));
         if (!storedUser) {
@@ -55,12 +58,63 @@ const ChatPage = () => {
              }
         };
 
+        // Listen for typing
+        const handleDisplayTyping = (data) => {
+            if (data.room === room && data.senderId !== (storedUser.id || storedUser._id)) {
+                setTypingUsers((prev) => {
+                    const newSet = new Set(prev);
+                    newSet.add(data.senderName);
+                    return newSet;
+                });
+                scrollToBottom();
+            }
+        };
+
+        const handleHideTyping = (data) => {
+            if (data.room === room) {
+                setTypingUsers((prev) => {
+                    const newSet = new Set(prev);
+                    newSet.delete(data.senderName);
+                    return newSet;
+                });
+            }
+        };
+
         socket.on('receive_message', handleReceiveMessage);
+        socket.on('display_typing', handleDisplayTyping);
+        socket.on('hide_typing', handleHideTyping);
 
         return () => {
             socket.off('receive_message', handleReceiveMessage);
+            socket.off('display_typing', handleDisplayTyping);
+            socket.off('hide_typing', handleHideTyping);
         };
     }, [room, navigate]);
+
+    const handleInput = (e) => {
+        setMessage(e.target.value);
+
+        if (!user) return;
+
+        // Emit typing event
+        socket.emit('typing', { 
+            room, 
+            senderName: user.name, 
+            senderId: user.id || user._id 
+        });
+
+        // Clear existing timeout
+        if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+
+        // Set new timeout to stop typing
+        typingTimeoutRef.current = setTimeout(() => {
+            socket.emit('stop_typing', { 
+                room, 
+                senderName: user.name, 
+                senderId: user.id || user._id 
+            });
+        }, 2000);
+    };
 
     const scrollToBottom = () => {
         bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -185,6 +239,16 @@ const ChatPage = () => {
                                 </div>
                             );
                         })}
+                        {typingUsers.size > 0 && (
+                            <div className="flex items-center gap-2 pl-4 pb-2 text-xs font-mono text-gray-500 animate-pulse">
+                                <div className="flex gap-1">
+                                    <span className="w-1 h-1 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0s' }}></span>
+                                    <span className="w-1 h-1 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></span>
+                                    <span className="w-1 h-1 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></span>
+                                </div>
+                                {Array.from(typingUsers).join(', ')} is typing...
+                            </div>
+                        )}
                         <div ref={bottomRef} />
                     </div>
 
@@ -194,7 +258,7 @@ const ChatPage = () => {
                             <input
                                 type="text"
                                 value={message}
-                                onChange={(e) => setMessage(e.target.value)}
+                                onChange={handleInput}
                                 placeholder="Transmit message to channel..."
                                 className="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all"
                             />
