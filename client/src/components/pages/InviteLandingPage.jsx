@@ -45,6 +45,13 @@ const InviteLandingPage = () => {
         const ctx = audioCtxRef.current;
         if (!ctx) return;
 
+        // VIBRATION HAPTICS (Mobile)
+        if (navigator.vibrate) {
+            if (type === 'wax-break') navigator.vibrate(50); // Sharp tap
+            if (type === 'thread-unwind') navigator.vibrate([10, 30, 10]); // Rumble
+            if (type === 'slide') navigator.vibrate(5); // Texture
+        }
+
         // 1. TEXT / PARTICLES (Granular Sand/Dust) - SUBTLE
         if (type === 'text-grain') {
             const osc = ctx.createOscillator();
@@ -58,7 +65,7 @@ const InviteLandingPage = () => {
             filter.frequency.value = 3000; 
             
             // Louder click
-            gain.gain.setValueAtTime(0.08, ctx.currentTime);
+            gain.gain.setValueAtTime(0.1, ctx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
 
             osc.connect(filter);
@@ -77,8 +84,8 @@ const InviteLandingPage = () => {
             osc.frequency.setValueAtTime(150, ctx.currentTime);
             osc.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.1);
             
-            // BOOSTED VOLUME
-            gain.gain.setValueAtTime(0.8, ctx.currentTime);
+            // MAX VOLUME
+            gain.gain.setValueAtTime(1.0, ctx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
 
             osc.connect(gain);
@@ -104,7 +111,7 @@ const InviteLandingPage = () => {
              filter.frequency.linearRampToValueAtTime(3000, ctx.currentTime + 0.3); 
 
              const gain = ctx.createGain();
-             gain.gain.setValueAtTime(0.3, ctx.currentTime); // Louder
+             gain.gain.setValueAtTime(0.5, ctx.currentTime); // Louder
              gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.4);
 
              noise.connect(filter);
@@ -129,7 +136,7 @@ const InviteLandingPage = () => {
             filter.frequency.value = 800;
 
             const gain = ctx.createGain();
-            gain.gain.setValueAtTime(0.1, ctx.currentTime);
+            gain.gain.setValueAtTime(0.2, ctx.currentTime);
             gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.15);
 
             noise.connect(filter);
@@ -290,9 +297,21 @@ const InviteLandingPage = () => {
     }, []); // Empty dependency array = PERMANENT LOOP
 
 
+    const [audioEnabled, setAudioEnabled] = useState(false);
+
+    // FORCE USER GESTURE (Audio Airlock)
+    const handleStartExperience = () => {
+        initAudio();
+        playSound('text-grain'); // Test Sound
+        setAudioEnabled(true);
+    };
+
     // --- GSAP Choreography ---
     useGSAP(() => {
+        if (!audioEnabled) return; // Wait for user start
+
         const tl = gsap.timeline();
+        // ... (Rest of choreography)
         
         // Ensure chars are visible first
         gsap.set(charRefs.current, { autoAlpha: 1 });
@@ -544,7 +563,21 @@ const InviteLandingPage = () => {
             <canvas ref={canvasRef} className="absolute inset-0 z-0 pointer-events-none" />
             <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#000000_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none"></div>
 
+            {/* --- AUDIO AIRLOCK OVERLAY --- */}
+            {!audioEnabled && (
+                <div className="absolute inset-0 z-[100] bg-black flex items-center justify-center">
+                    <button 
+                        onClick={handleStartExperience}
+                        className="px-8 py-4 bg-white text-black font-black tracking-[0.3em] hover:scale-105 transition-transform"
+                    >
+                        INITIALIZE SYSTEM
+                    </button>
+                    <p className="absolute bottom-10 text-gray-500 text-xs font-mono">AUDIO & HAPTICS REQUIRED</p>
+                </div>
+            )}
+
             {/* --- INTRO TEXT LAYER --- */}
+            {audioEnabled && (
             <div ref={textGroupRef} className="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none p-4">
                 <div 
                     className="text-[10vw] md:text-[8rem] font-black tracking-tighter mb-4 text-center leading-[0.85] uppercase"
