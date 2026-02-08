@@ -52,9 +52,11 @@ const InviteLandingPage = () => {
         window.addEventListener('resize', updateCanvasSize);
 
         // Initialize particles ONCE
-        const particleCount = 3000; 
+        const particleCount = 5000; // Even more density for details
         const envelopeWidth = 520;
         const envelopeHeight = 320;
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
 
         class Particle {
             constructor(i) {
@@ -65,22 +67,49 @@ const InviteLandingPage = () => {
                 this.size = Math.random() * 1.5 + 0.5;
                 this.color = '#000000';
                 
-                // Calculate Outline Target
-                const perimeter = 2 * (envelopeWidth + envelopeHeight);
-                const positionOnPerimeter = Math.random() * perimeter;
+                // --- DETAILED OUTLINE TARGETING ---
+                // We want to form: Border, Flap Line, Lock Circle, Text Lines
+                const shapeType = Math.random();
 
-                if (positionOnPerimeter < envelopeWidth) {
-                    this.targetX = (canvas.width / 2) - (envelopeWidth/2) + positionOnPerimeter;
-                    this.targetY = (canvas.height / 2) - (envelopeHeight/2);
-                } else if (positionOnPerimeter < envelopeWidth + envelopeHeight) {
-                    this.targetX = (canvas.width / 2) + (envelopeWidth/2);
-                    this.targetY = (canvas.height / 2) - (envelopeHeight/2) + (positionOnPerimeter - envelopeWidth);
-                } else if (positionOnPerimeter < (envelopeWidth * 2) + envelopeHeight) {
-                    this.targetX = (canvas.width / 2) + (envelopeWidth/2) - (positionOnPerimeter - (envelopeWidth + envelopeHeight));
-                    this.targetY = (canvas.height / 2) + (envelopeHeight/2);
-                } else {
-                    this.targetX = (canvas.width / 2) - (envelopeWidth/2);
-                    this.targetY = (canvas.height / 2) + (envelopeHeight/2) - (positionOnPerimeter - (envelopeWidth*2 + envelopeHeight));
+                if (shapeType < 0.5) {
+                    // 50% - The Main Border (Rectangle)
+                    const perimeter = 2 * (envelopeWidth + envelopeHeight);
+                    const pos = Math.random() * perimeter;
+                    if (pos < envelopeWidth) { // Top
+                        this.targetX = centerX - (envelopeWidth/2) + pos;
+                        this.targetY = centerY - (envelopeHeight/2);
+                    } else if (pos < envelopeWidth + envelopeHeight) { // Right
+                        this.targetX = centerX + (envelopeWidth/2);
+                        this.targetY = centerY - (envelopeHeight/2) + (pos - envelopeWidth);
+                    } else if (pos < (envelopeWidth * 2) + envelopeHeight) { // Bottom
+                        this.targetX = centerX + (envelopeWidth/2) - (pos - (envelopeWidth + envelopeHeight));
+                        this.targetY = centerY + (envelopeHeight/2);
+                    } else { // Left
+                        this.targetX = centerX - (envelopeWidth/2);
+                        this.targetY = centerY + (envelopeHeight/2) - (pos - (envelopeWidth*2 + envelopeHeight));
+                    }
+                } 
+                else if (shapeType < 0.65) {
+                    // 15% - Lock Circle (Center)
+                    const angle = Math.random() * Math.PI * 2;
+                    const radius = 35; // Size of the lock circle bg
+                    this.targetX = centerX + Math.cos(angle) * radius;
+                    this.targetY = centerY - 40 + Math.sin(angle) * radius; // Offset up slightly
+                }
+                else if (shapeType < 0.8) {
+                    // 15% - "CONFIDENTIAL" Text Lines (Below Lock)
+                    // 3 Lines of text representation
+                    const lineIndex = Math.floor(Math.random() * 3);
+                    const lineWidth = 200;
+                    this.targetX = centerX + (Math.random() - 0.5) * lineWidth;
+                    // Y positions for the text lines: 0, 20, 40 relative to center
+                    this.targetY = centerY + 20 + (lineIndex * 15); 
+                }
+                else {
+                    // 20% - Top Flap Line
+                    const flapY = centerY - (envelopeHeight/2) + 40; // 40px down
+                    this.targetX = centerX + (Math.random() - 0.5) * envelopeWidth;
+                    this.targetY = flapY;
                 }
                 
                 this.baseX = this.targetX;
@@ -91,8 +120,8 @@ const InviteLandingPage = () => {
             spawnAtText() {
                 const textWidth = Math.min(window.innerWidth * 0.8, 1000);
                 const textHeight = 200; 
-                this.x = (canvas.width / 2) + (Math.random() - 0.5) * textWidth;
-                this.y = (canvas.height / 2) + (Math.random() - 0.5) * textHeight;
+                this.x = centerX + (Math.random() - 0.5) * textWidth;
+                this.y = centerY + (Math.random() - 0.5) * textHeight;
                 
                 this.vx = (Math.random() - 0.5) * 2;
                 this.vy = (Math.random() - 0.5) * 2;
