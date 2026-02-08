@@ -2,8 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
-import { Mail, CheckCircle, ArrowRight } from 'lucide-react';
-import Button from '../ui/Button';
+import { Mail, CheckCircle, ArrowRight, Shield, Globe } from 'lucide-react';
 
 const InviteLandingPage = () => {
     const [searchParams] = useSearchParams();
@@ -11,37 +10,131 @@ const InviteLandingPage = () => {
     const token = searchParams.get('token');
     
     const containerRef = useRef(null);
+    const canvasRef = useRef(null);
+    const envelopeGroupRef = useRef(null);
     const envelopeRef = useRef(null);
     const cardRef = useRef(null);
     const flapRef = useRef(null);
-    const particlesRef = useRef(null);
+    const contentRef = useRef(null);
     
     const [envelopeOpen, setEnvelopeOpen] = useState(false);
+    const [phase, setPhase] = useState('gathering'); // gathering, boom, envelope, open
 
-    // Initial Particle Explosion & Envelope Entrance
+    // Particle System
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particles = [];
+        const particleCount = 150;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                // Start from edges
+                if (Math.random() > 0.5) {
+                    this.x = Math.random() > 0.5 ? 0 : canvas.width;
+                } else {
+                    this.y = Math.random() > 0.5 ? 0 : canvas.height;
+                }
+                
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = (Math.random() - 0.5) * 2;
+                this.size = Math.random() * 2;
+                this.color = Math.random() > 0.5 ? '#00f3ff' : '#bc13fe'; // Neon Cyan / Neon Purple
+            }
+
+            update(targetX, targetY, speed) {
+                // Move towards center (target)
+                const dx = targetX - this.x;
+                const dy = targetY - this.y;
+                const distance = Math.sqrt(dx*dx + dy*dy);
+                
+                this.x += (dx / distance) * speed;
+                this.y += (dy / distance) * speed;
+
+                // Add some jitter
+                this.x += (Math.random() - 0.5) * 2;
+                this.y += (Math.random() - 0.5) * 2;
+            }
+
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        // Init
+        for(let i=0; i<particleCount; i++) particles.push(new Particle());
+
+        // Animation Loop
+        let animationId;
+        const animate = () => {
+            ctx.fillStyle = 'rgba(0,0,0,0.1)'; // Trails
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            particles.forEach(p => {
+                if (phase === 'gathering') {
+                    p.update(canvas.width/2, canvas.height/2, 15); // Fast implosion
+                } else if (phase === 'boom') {
+                    // Explosion handled by GSAP flash, particles scatter
+                    p.x += (Math.random()-0.5) * 50;
+                    p.y += (Math.random()-0.5) * 50;
+                } else {
+                    // Floating
+                    p.x += (Math.random()-0.5) * 0.5;
+                    p.y += (Math.random()-0.5) * 0.5;
+                }
+                p.draw();
+            });
+            animationId = requestAnimationFrame(animate);
+        };
+        animate();
+
+        return () => cancelAnimationFrame(animationId);
+    }, [phase]);
+
+
+    // GSAP Sequence
     useGSAP(() => {
         const tl = gsap.timeline();
 
-        // 1. Particle Boom (Simulated with simple divs for performance)
-        // We'll create particles dynamically in the DOM for this effect or just use a staggered scale-in of background elements
-        // For "Boom", let's use a flash and expanding circles
-        
-        tl.set(envelopeRef.current, { scale: 0, autoAlpha: 0 });
-        
-        // Flash
-        tl.to(containerRef.current, { backgroundColor: '#ffffff', duration: 0.1, ease: 'power4.in' })
-          .to(containerRef.current, { backgroundColor: '#000000', duration: 0.5 });
+        // Phase 1: Gathering (Handled by Canvas state)
+        // Wait for particles to reach center
+        tl.to({}, { duration: 2.0, onComplete: () => setPhase('boom') });
 
-        // Particles (Simulated by simple background divs in CSS for now, or we animate them here)
-        // Let's keep it simple but punchy: Text "INCOMING TRANSMISSION" glitching in
+        // Phase 2: BOOM
+        tl.to(containerRef.current, { 
+            backgroundColor: '#ffffff', 
+            duration: 0.1, 
+            ease: 'power4.in',
+            onComplete: () => setPhase('envelope')
+        })
+        .to(containerRef.current, { 
+            backgroundColor: '#000000', 
+            duration: 0.8,
+            ease: 'power2.out'
+        });
+
+        // Phase 3: Envelope Materialization
+        tl.fromTo(envelopeGroupRef.current, 
+            { scale: 0, rotateY: 720, autoAlpha: 0 },
+            { scale: 1, rotateY: 0, autoAlpha: 1, duration: 1.5, ease: 'back.out(1.2)' },
+            "-=0.5"
+        );
         
-        // 2. Envelope Entrance
-        tl.to(envelopeRef.current, { 
-            scale: 1, 
-            autoAlpha: 1, 
-            duration: 1.5, 
-            ease: 'elastic.out(1, 0.5)',
-            delay: 0.2
+        // Float effect
+        gsap.to(envelopeGroupRef.current, {
+            y: -20,
+            duration: 2,
+            repeat: -1,
+            yoyo: true,
+            ease: 'sine.inOut'
         });
 
     }, { scope: containerRef });
@@ -49,10 +142,14 @@ const InviteLandingPage = () => {
     const handleOpenEnvelope = () => {
         if (envelopeOpen) return;
         setEnvelopeOpen(true);
+        setPhase('open');
 
         const tl = gsap.timeline();
 
-        // 1. Open Flap
+        // 1. Zoom in
+        tl.to(envelopeGroupRef.current, { scale: 1.2, duration: 0.5, ease: 'power2.in' });
+
+        // 2. Open Flap (3D)
         tl.to(flapRef.current, { 
             rotateX: 180, 
             duration: 0.6, 
@@ -60,98 +157,132 @@ const InviteLandingPage = () => {
             transformOrigin: 'top' 
         });
 
-        // 2. Pull Card Out
+        // 3. Card Flies Out
         tl.to(cardRef.current, {
-            y: -150,
+            y: -250,
             zIndex: 50,
-            duration: 0.8,
+            duration: 0.6,
             ease: 'power2.out'
         });
 
-        // 3. Card Scale Up & Center
+        // 4. Card Focus (Full Screen Overlay effect)
         tl.to(cardRef.current, {
             y: 0,
-            scale: 1.5,
-            zIndex: 100,
+            x: 0,
+            scale: 1,
+            rotateY: 360,
             position: 'fixed',
             top: '50%',
             left: '50%',
-            x: '-50%',
+            xPercent: -50,
             yPercent: -50,
-            duration: 1,
-            ease: 'back.out(1.2)'
+            width: '90%',
+            maxWidth: '500px',
+            height: 'auto',
+            duration: 1.2,
+            ease: 'back.out(0.8)',
+            boxShadow: '0 0 50px rgba(0, 243, 255, 0.5)'
         });
+
+        // 5. Hide Envelope
+        tl.to(envelopeRef.current, { autoAlpha: 0, duration: 0.3 }, "-=1.0");
         
-        // 4. Fade out envelope
-        tl.to(envelopeRef.current, { autoAlpha: 0, duration: 0.5 }, "-=0.8");
+        // 6. Reveal Content
+        tl.fromTo(contentRef.current, 
+            { autoAlpha: 0, y: 20 },
+            { autoAlpha: 1, y: 0, duration: 0.5, stagger: 0.1 }
+        );
     };
 
     const handleAccept = () => {
-        // Explode card and navigate
+        // Warp Drive Effect
         gsap.to(cardRef.current, {
-            scale: 5,
+            scale: 10,
             opacity: 0,
+            duration: 0.8,
+            ease: 'power4.in',
+            onComplete: () => navigate(`/join?token=${token || ''}`)
+        });
+        
+        // Flash screen white 
+        gsap.to(containerRef.current, {
+            backgroundColor: '#fff',
             duration: 0.5,
-            onComplete: () => {
-                 navigate(`/join?token=${token || ''}`);
-            }
+            delay: 0.4
         });
     };
 
     return (
         <div ref={containerRef} className="min-h-screen bg-black flex items-center justify-center overflow-hidden perspective-1000">
-            {/* Background Effects */}
-            <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-purple-900/20 rounded-full blur-[100px] animate-pulse"></div>
-            </div>
+            <canvas ref={canvasRef} className="absolute inset-0 z-0 pointer-events-none" />
+            
+            {/* Grid Background */}
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(0,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,255,0.05)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none"></div>
 
-            {/* Envelope Container */}
-            <div 
-                ref={envelopeRef} 
-                className="relative w-80 h-52 bg-gray-900 rounded-b-lg shadow-2xl cursor-pointer group z-10"
-                onClick={handleOpenEnvelope}
-            >
-                {/* Envelope Body */}
-                <div className="absolute inset-0 bg-gray-800 rounded-b-lg border-2 border-gray-700 z-20 overflow-hidden flex items-end justify-center pb-4">
-                     <span className="text-gray-500 font-mono text-xs tracking-widest group-hover:text-white transition-colors">
-                        {envelopeOpen ? "" : "CLICK TO DECRYPT"}
-                     </span>
-                </div>
-                
-                {/* Top Flap */}
+            {/* Envelope Group */}
+            <div ref={envelopeGroupRef} className="relative z-10 opacity-0">
                 <div 
-                    ref={flapRef}
-                    className="absolute top-0 left-0 w-full h-1/2 bg-gray-700 origin-top z-30 transition-colors border-t-2 border-l-2 border-r-2 border-gray-600"
-                    style={{ clipPath: 'polygon(0 0, 50% 100%, 100% 0)' }}
-                ></div>
+                    ref={envelopeRef}
+                    className="relative w-80 h-52 bg-gradient-to-br from-gray-900 to-black border border-cyan-500/30 rounded-lg shadow-[0_0_30px_rgba(0,243,255,0.2)] cursor-pointer hover:shadow-[0_0_50px_rgba(0,243,255,0.4)] transition-shadow group"
+                    onClick={handleOpenEnvelope}
+                >
+                    {/* Flap */}
+                    <div 
+                        ref={flapRef}
+                        className="absolute top-0 left-0 w-full h-1/2 bg-gray-800 origin-top z-30 border-b border-cyan-500/20"
+                        style={{ clipPath: 'polygon(0 0, 50% 100%, 100% 0)', backfaceVisibility: 'hidden' }}
+                    ></div>
 
-                {/* The Letter/Card */}
+                    {/* Seal */}
+                    <div className="absolute top-[40%] left-1/2 -translate-x-1/2 z-40 w-12 h-12 bg-black rounded-full border-2 border-cyan-400 flex items-center justify-center shadow-[0_0_15px_cyan]">
+                        <Shield size={20} className="text-cyan-400 animate-pulse" />
+                    </div>
+                
+                    <div className="absolute inset-0 flex items-center justify-center pt-10">
+                        <p className="font-mono text-[10px] text-cyan-500/50 tracking-[0.3em]">TOP SECRET</p>
+                    </div>
+                </div>
+
+                {/* The Card */}
                 <div 
                     ref={cardRef}
-                    className="absolute left-4 right-4 bottom-4 bg-white text-black p-6 rounded shadow-lg transform origin-center flex flex-col items-center text-center will-change-transform"
-                    style={{ height: '180px' }} 
+                    className="absolute top-0 left-0 w-full h-full bg-black/90 backdrop-blur-xl border border-cyan-500/50 rounded-lg p-8 flex flex-col items-center justify-center z-20 text-center shadow-2xl opacity-0"
                 >
-                    <div className="mb-2 w-10 h-10 bg-black text-white rounded-full flex items-center justify-center">
-                        <Mail size={20} />
+                    <div ref={contentRef} className="space-y-6">
+                        <div className="flex justify-center">
+                           <div className="w-16 h-16 rounded-full bg-cyan-900/20 flex items-center justify-center border border-cyan-500 box-[0_0_20px_cyan]">
+                                <Globe className="text-cyan-400 animate-spin-slow" size={32} />
+                           </div>
+                        </div>
+                        
+                        <div>
+                            <h1 className="text-3xl font-black text-white tracking-widest uppercase mb-1 drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">
+                                Welcome Agent
+                            </h1>
+                            <p className="text-cyan-400 font-mono text-sm tracking-widest">CLEARANCE LEVEL: 5</p>
+                        </div>
+
+                        <div className="h-px w-full bg-gradient-to-r from-transparent via-cyan-500 to-transparent"></div>
+
+                        <p className="text-gray-400 text-sm leading-relaxed max-w-sm mx-auto font-mono">
+                            The Council has been watching. Your skills have triggered our detection algorithms. 
+                            We invite you to join <span className="text-white font-bold">Team Curiosity</span>.
+                        </p>
+
+                        <Button onClick={handleAccept} variant="primary" className="w-full py-4 text-sm font-bold tracking-[0.2em] border-cyan-500 hover:bg-cyan-900/20 shadow-[0_0_20px_cyan]">
+                            ACCEPT MISSION
+                        </Button>
                     </div>
-                    <h2 className="text-xl font-black uppercase mb-1">Classified Invite</h2>
-                    <p className="text-xs text-gray-500 font-mono mb-4 leading-relaxed">
-                        You have been selected to join the Team Curiosity Network. Your skills are required for upcoming operations.
-                    </p>
-                    <button 
-                        onClick={(e) => { e.stopPropagation(); handleAccept(); }}
-                        className="mt-auto w-full py-2 bg-black text-white font-bold text-xs uppercase tracking-widest hover:bg-gray-800 flex items-center justify-center gap-2"
-                    >
-                        Accept Mission <ArrowRight size={12} />
-                    </button>
                 </div>
             </div>
             
-            {/* Introduction Text - Fades out */}
+            {/* HUD Elements */}
             {!envelopeOpen && (
-                 <div className="absolute bottom-10 left-0 w-full text-center pointer-events-none">
-                     <p className="text-gray-500 font-mono text-xs animate-pulse">SECURE CONNECTION ESTABLISHED</p>
-                 </div>
+                <div className="absolute bottom-10 left-0 w-full text-center pointer-events-none">
+                    <p className="text-cyan-500/50 font-mono text-xs animate-pulse tracking-widest">
+                        // SECURE UPLINK ESTABLISHED
+                    </p>
+                </div>
             )}
         </div>
     );
