@@ -13,24 +13,31 @@ const InviteLandingPage = () => {
     const containerRef = useRef(null);
     const canvasRef = useRef(null);
     const textGroupRef = useRef(null);
+    const mainTextRef = useRef(null);
+    const subTextRef = useRef(null);
     const envelopeGroupRef = useRef(null);
     const envelopeRef = useRef(null);
     const cardRef = useRef(null);
     const contentRef = useRef(null);
 
-    // Phases: 'text' -> 'disintegrate' -> 'coalesce' -> 'envelope' -> 'open'
-    const [phase, setPhase] = useState('text'); 
+    // Phases: 'text-intro' -> 'text-fill' -> 'disintegrate' -> 'coalesce' -> 'envelope' -> 'open'
+    const [phase, setPhase] = useState('text-intro'); 
     const [envelopeOpen, setEnvelopeOpen] = useState(false);
 
     // --- Particle System ---
     useEffect(() => {
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        
+        const updateCanvasSize = () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        };
+        updateCanvasSize();
+        window.addEventListener('resize', updateCanvasSize);
 
         let particles = [];
-        const particleCount = 800; // Dense for text simulation
+        const particleCount = 1000; // Very dense
 
         class Particle {
             constructor() {
@@ -39,23 +46,27 @@ const InviteLandingPage = () => {
                 this.vx = 0;
                 this.vy = 0;
                 this.size = 0;
-                this.color = '#111827';
+                this.color = '#000000';
                 this.targetX = canvas.width / 2;
                 this.targetY = canvas.height / 2;
                 this.active = false;
             }
 
             spawnAtText() {
-                // Approximate text area (Center screen rectangle)
-                // Width ~600px, Height ~200px
-                this.x = (canvas.width / 2) + (Math.random() - 0.5) * 600;
-                this.y = (canvas.height / 2) + (Math.random() - 0.5) * 150;
+                // Approximate text volume (Central massive block)
+                const width = Math.min(window.innerWidth * 0.9, 1200);
+                const height = 400;
                 
-                // Random velocity for breakdown
-                this.vx = (Math.random() - 0.5) * 4;
-                this.vy = (Math.random() - 0.5) * 4;
+                this.x = (canvas.width / 2) + (Math.random() - 0.5) * width;
+                this.y = (canvas.height / 2) + (Math.random() - 0.5) * height;
                 
-                this.size = Math.random() * 2;
+                // Explosive velocity
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 15 + 5;
+                this.vx = Math.cos(angle) * speed;
+                this.vy = Math.sin(angle) * speed;
+                
+                this.size = Math.random() * 3 + 1;
                 this.active = true;
             }
 
@@ -63,21 +74,20 @@ const InviteLandingPage = () => {
                 if (!this.active) return;
 
                 if (phase === 'disintegrate') {
-                    // Explode outward slightly
                     this.x += this.vx;
                     this.y += this.vy;
-                    // Friction
-                    this.vx *= 0.95;
-                    this.vy *= 0.95;
+                    // Heavy friction
+                    this.vx *= 0.92;
+                    this.vy *= 0.92;
                 } else if (phase === 'coalesce') {
-                    // Move to center (Envelope position)
+                    // Fly to center
                     const dx = this.targetX - this.x;
                     const dy = this.targetY - this.y;
-                    this.x += dx * 0.08;
-                    this.y += dy * 0.08;
+                    this.x += dx * 0.05; // Smooth ease
+                    this.y += dy * 0.05;
                     
                     // Shrink on arrival
-                    if (Math.abs(dx) < 5 && Math.abs(dy) < 5) {
+                    if (Math.abs(dx) < 10 && Math.abs(dy) < 10) {
                         this.size *= 0.8;
                     }
                 }
@@ -98,7 +108,6 @@ const InviteLandingPage = () => {
         // Animation Loop
         let animationId;
         const animate = () => {
-             // Trail effect for motion blur feel? No, keep clean.
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
             particles.forEach(p => {
@@ -109,12 +118,15 @@ const InviteLandingPage = () => {
         };
         animate();
 
-        // Trigger Spawning logic based on Phase
+        // Trigger spawning
         if (phase === 'disintegrate') {
             particles.forEach(p => p.spawnAtText());
         }
 
-        return () => cancelAnimationFrame(animationId);
+        return () => {
+            cancelAnimationFrame(animationId);
+            window.removeEventListener('resize', updateCanvasSize);
+        };
     }, [phase]);
 
 
@@ -122,48 +134,59 @@ const InviteLandingPage = () => {
     useGSAP(() => {
         const tl = gsap.timeline();
 
-         // Phase 1: Text Intro
-        tl.fromTo(textGroupRef.current, 
-            { opacity: 0, scale: 0.9 },
-            { opacity: 1, scale: 1, duration: 1.5, ease: 'power3.out' }
+         // Phase 1: Text Stroke Appearance
+        tl.fromTo(mainTextRef.current, 
+            { opacity: 0, scale: 0.8 },
+            { opacity: 1, scale: 1, duration: 1.5, ease: 'power4.out' }
         )
-        .to(textGroupRef.current, { 
-            duration: 1.5, // Hold time
-            onComplete: () => setPhase('disintegrate') 
+        .fromTo(subTextRef.current,
+            { opacity: 0, letterSpacing: '0em' },
+            { opacity: 1, letterSpacing: '0.5em', duration: 1.5, ease: 'power2.out' },
+            "-=1.0"
+        );
+
+        // Phase 2: Fill Animation (Outline -> Solid)
+        tl.to([mainTextRef.current, subTextRef.current], {
+            color: '#000000', // Fill with black
+            WebkitTextStrokeColor: '#000000',
+            duration: 1.5,
+            ease: 'power2.inOut',
+            onStart: () => setPhase('text-fill')
         })
-        
-        // Phase 2: Text Disintegrate (Visual)
-        .to(textGroupRef.current, {
+        .to({}, { duration: 0.5 }); // Short pause to admire
+
+        // Phase 3: Disintegrate
+        tl.to(textGroupRef.current, {
             opacity: 0,
             scale: 1.1,
-            filter: 'blur(10px)',
-            duration: 0.5,
-            ease: 'power2.in',
-            onComplete: () => setPhase('coalesce')
+            filter: 'blur(20px)',
+            duration: 0.2, // Instant vanish into particles
+            ease: 'power1.in',
+            onStart: () => setPhase('disintegrate') 
         });
 
-        // Phase 3: Coalesce (Wait for Canvas particles to converge)
-        tl.to({}, { duration: 1.2 }); // Wait for particles to fly to center
+        // Phase 4: Coalesce
+        tl.to({}, { duration: 2.0, onStart: () => setPhase('coalesce') }); 
 
-        // Phase 4: Envelope Form
+        // Phase 5: Envelope Form
         tl.fromTo(envelopeGroupRef.current, 
             { scale: 0, autoAlpha: 1 }, 
             { 
                 scale: 1, 
-                duration: 0.6, 
-                ease: 'back.out(1.5)', 
+                duration: 0.8, 
+                ease: 'back.out(1.2)', 
                 onStart: () => setPhase('envelope') // Stop particles
             }
         );
         
         // Float
         gsap.to(envelopeGroupRef.current, {
-            y: -10,
+            y: -15,
             duration: 3,
             repeat: -1,
             yoyo: true,
             ease: 'sine.inOut',
-            delay: 4.5 
+            delay: 5.5 // Delay start of float until after sequence
         });
 
     }, { scope: containerRef });
@@ -176,24 +199,22 @@ const InviteLandingPage = () => {
 
         const tl = gsap.timeline();
 
-        // Sleeve slides down
+        // Reveal Card
         tl.to(envelopeRef.current, { 
-            y: 200, 
+            y: 300, 
             opacity: 0, 
             duration: 0.6, 
             ease: 'power2.in' 
         });
 
-        // Card Scales Up
         tl.fromTo(cardRef.current,
-            { scale: 0.9, opacity: 0 },
+            { scale: 0.8, opacity: 0 },
             { scale: 1, opacity: 1, duration: 0.8, ease: 'power2.out' },
             "-=0.4"
         );
 
-        // Content Staggers
         tl.fromTo(contentRef.current,
-            { y: 20, opacity: 0 },
+            { y: 30, opacity: 0 },
             { y: 0, opacity: 1, stagger: 0.1, duration: 0.5 }
         );
     };
@@ -201,71 +222,81 @@ const InviteLandingPage = () => {
     const handleAccept = () => {
         gsap.to(containerRef.current, {
             opacity: 0,
-            duration: 0.5,
+            duration: 0.8,
+            ease: 'power2.inOut',
             onComplete: () => navigate(`/join?token=${token || ''}`)
         });
     };
 
     return (
-        <div ref={containerRef} className="min-h-screen bg-slate-50 flex items-center justify-center overflow-hidden relative font-sans selection:bg-black selection:text-white">
+        <div ref={containerRef} className="min-h-screen bg-white flex items-center justify-center overflow-hidden relative font-sans selection:bg-black selection:text-white">
             
             <canvas ref={canvasRef} className="absolute inset-0 z-0 pointer-events-none" />
 
-            {/* Grid Pattern */}
-             <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#000000_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none"></div>
+            <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#000000_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none"></div>
 
             {/* --- INTRO TEXT LAYER --- */}
-            <div ref={textGroupRef} className="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none">
-                <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-black mb-4 text-center leading-none">
+            <div ref={textGroupRef} className="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none p-4">
+                <h1 
+                    ref={mainTextRef}
+                    className="text-[12vw] md:text-[10rem] font-black tracking-tighter text-transparent mb-4 text-center leading-[0.85] uppercase"
+                    style={{ WebkitTextStroke: '2px black' }}
+                >
                     TEAM<br />CURIOSITY
                 </h1>
-                <p className="text-sm md:text-xl font-light tracking-[0.5em] text-gray-500 uppercase">
+                <p 
+                    ref={subTextRef}
+                    className="text-sm md:text-2xl font-light tracking-[0.2em] text-transparent uppercase"
+                    style={{ WebkitTextStroke: '1px black' }}
+                >
                     An Exclusive Platform
                 </p>
             </div>
 
             {/* --- ENVELOPE LAYER --- */}
             <div ref={envelopeGroupRef} className="relative z-50 opacity-0 flex items-center justify-center">
-                {/* Sleeve */}
                 <div 
                     ref={envelopeRef}
                     className="absolute w-[350px] md:w-[500px] h-[220px] md:h-[300px] bg-white shadow-2xl rounded-sm cursor-pointer hover:shadow-xl transition-shadow duration-300 z-40 border border-gray-100 flex flex-col items-center justify-center"
                     onClick={handleOpenEnvelope}
                 >
-                    <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center mb-4 text-white shadow-lg">
-                        <Lock size={20} />
+                    <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mb-6 text-white shadow-lg">
+                        <Lock size={24} />
                     </div>
-                    <h2 className="text-xl tracking-[0.2em] font-medium text-gray-800">INVITATION</h2>
-                    
-                    <div className="absolute bottom-4 text-[10px] text-gray-400 tracking-[0.3em] animate-pulse">
-                        TAP TO DECRYPT
-                    </div>
+                    <h2 className="text-2xl tracking-[0.3em] font-light text-gray-900 border-b border-gray-200 pb-2 mb-2">INVITATION</h2>
+                    <p className="text-[10px] text-gray-400 font-mono tracking-widest uppercase">Tap to Decrypt</p>
                 </div>
 
                 {/* Card */}
                 <div 
                     ref={cardRef}
-                    className="w-[320px] md:w-[450px] bg-white rounded-xl p-8 md:p-12 text-center shadow-2xl border border-gray-100 opacity-0 z-50"
+                    className="w-[340px] md:w-[500px] bg-white rounded-2xl p-8 md:p-12 text-center shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] border border-gray-100 opacity-0 z-50"
                 >
                     <div ref={contentRef}>
-                        <div className="mb-6 flex justify-center">
-                            <Terminal size={32} className="text-black" />
+                        <div className="mb-8 flex justify-center">
+                            <Terminal size={40} className="text-black" />
                         </div>
                         
-                        <h1 className="text-3xl md:text-4xl font-bold mb-2 tracking-tight">WELCOME AGENT</h1>
-                        <div className="h-1 w-12 bg-black mx-auto mb-6"></div>
-
-                        <p className="text-gray-600 mb-8 leading-relaxed font-light">
-                            Your digital footprint has been analyzed. You have been selected to join the initiative.
-                        </p>
-
-                        <div className="bg-gray-50 p-4 rounded mb-8 border border-gray-100 text-left text-xs font-mono text-gray-500">
-                            <p>> User: CANDIDATE_#{Math.floor(Math.random() * 9999)}</p>
-                            <p>> Status: <span className="text-green-600">APPROVED</span></p>
-                            <p>> Access: GRANTED</p>
+                        <h1 className="text-4xl md:text-5xl font-black mb-4 tracking-tight">WELCOME.</h1>
+                        
+                        <div className="space-y-4 text-left max-w-sm mx-auto mb-10">
+                            <p className="text-lg text-gray-900 leading-snug font-medium">
+                                You have been selected.
+                            </p>
+                            <p className="text-sm text-gray-500 leading-relaxed">
+                                This is your private key to Team Curiosity. Access is limited to verified candidates only.
+                            </p>
                         </div>
 
-                        <Button onClick={handleAccept} variant="black" className="w-full py-4 text-sm font-bold tracking-[0.2em] bg-black text-white hover:scale-[1.02] transition-transform">
+                        <div className="bg-gray-50 p-4 rounded-lg mb-8 border border-gray-200 flex items-center justify-between text-xs font-mono">
+                            <span className="text-gray-500">ID: A-{Math.floor(Math.random()*1000)}</span>
+                            <span className="flex items-center gap-2 text-black font-bold">
+                                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                                ACTIVE
+                            </span>
+                        </div>
+
+                        <Button onClick={handleAccept} variant="black" className="w-full py-5 text-sm font-bold tracking-[0.2em] bg-black text-white hover:bg-gray-800 transition-all hover:scale-[1.02]">
                             ENTER PLATFORM
                         </Button>
                     </div>
