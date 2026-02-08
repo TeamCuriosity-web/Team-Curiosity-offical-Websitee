@@ -96,13 +96,15 @@ const ChatPage = () => {
         <div className="min-h-screen pt-20 pb-10 bg-gray-50 flex flex-col">
             <div className="flex-1 container mx-auto px-4 max-w-6xl flex gap-4 h-[calc(100vh-140px)]">
                 {/* Sidebar */}
-                <div className="hidden md:flex w-64 flex-col gap-4">
-                    <Card className="p-4 flex-1 flex flex-col bg-white border-black/10 shadow-lg">
-                        <div className="flex items-center gap-2 mb-6 text-black font-bold uppercase tracking-widest border-b pb-2">
+                <div className="hidden md:flex w-64 flex-col gap-4 h-full">
+                    <Card className="flex-1 flex flex-col bg-white border-black/10 shadow-lg relative overflow-hidden !p-0">
+                        {/* Fixed Header */}
+                        <div className="p-4 flex-none border-b flex items-center gap-2 text-black font-bold uppercase tracking-widest bg-white z-10">
                             <TerminalIcon size={16} /> Project Channels
                         </div>
 
-                        <div className="flex-1 space-y-1 overflow-y-auto min-h-0 pr-2 custom-scrollbar">
+                        {/* Scrollable List */}
+                        <div className="flex-1 overflow-y-auto min-h-0 p-2 space-y-1 custom-scrollbar">
                             <div 
                                 onClick={() => switchRoom('general')}
                                 className={`px-3 py-2 rounded font-mono text-sm flex items-center gap-2 cursor-pointer transition-colors ${room === 'general' ? 'bg-black text-white' : 'text-gray-500 hover:bg-gray-100'}`}
@@ -121,7 +123,8 @@ const ChatPage = () => {
                             ))}
                         </div>
 
-                        <div className="mt-auto border-t pt-4">
+                        {/* Fixed Footer */}
+                        <div className="p-4 flex-none border-t bg-white z-10">
                             <div className="flex items-center gap-2 text-gray-500 text-xs font-mono uppercase">
                                 <Users size={12} /> Team Online: 1
                             </div>
@@ -130,9 +133,9 @@ const ChatPage = () => {
                 </div>
 
                 {/* Chat Area */}
-                <Card className="flex-1 flex flex-col bg-white border-black/10 shadow-lg relative overflow-hidden !p-0">
-                    {/* Header */}
-                    <div className="p-4 border-b flex justify-between items-center bg-white z-10">
+                <Card className="flex-1 flex flex-col bg-white border-black/10 shadow-lg relative overflow-hidden !p-0 h-full">
+                    {/* Fixed Header */}
+                    <div className="p-4 flex-none border-b flex justify-between items-center bg-white z-10">
                         <div className="flex items-center gap-2">
                             <Hash size={20} className="text-gray-400" />
                             <h2 className="font-bold text-lg">general</h2>
