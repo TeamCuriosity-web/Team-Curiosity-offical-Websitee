@@ -36,8 +36,7 @@ const InviteLandingPage = () => {
         updateCanvasSize();
         window.addEventListener('resize', updateCanvasSize);
 
-        let particles = [];
-        const particleCount = 1000; // Very dense
+        const particleCount = 1500; // Denser for text
 
         class Particle {
             constructor() {
@@ -53,20 +52,20 @@ const InviteLandingPage = () => {
             }
 
             spawnAtText() {
-                // Approximate text volume (Central massive block)
-                const width = Math.min(window.innerWidth * 0.9, 1200);
-                const height = 400;
+                // Tighter text volume for "TEAM CURIOSITY"
+                // It's huge centered text.
+                // Width roughly 80% of screen, Height roughly 200px centered
+                const textWidth = Math.min(window.innerWidth * 0.8, 1000);
+                const textHeight = window.innerWidth < 768 ? 100 : 250; 
                 
-                this.x = (canvas.width / 2) + (Math.random() - 0.5) * width;
-                this.y = (canvas.height / 2) + (Math.random() - 0.5) * height;
+                this.x = (canvas.width / 2) + (Math.random() - 0.5) * textWidth;
+                this.y = (canvas.height / 2) + (Math.random() - 0.5) * textHeight;
                 
-                // Explosive velocity
-                const angle = Math.random() * Math.PI * 2;
-                const speed = Math.random() * 15 + 5;
-                this.vx = Math.cos(angle) * speed;
-                this.vy = Math.sin(angle) * speed;
+                // Low velocity start - they are the text
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = (Math.random() - 0.5) * 2;
                 
-                this.size = Math.random() * 3 + 1;
+                this.size = Math.random() * 2 + 1;
                 this.active = true;
             }
 
@@ -74,21 +73,27 @@ const InviteLandingPage = () => {
                 if (!this.active) return;
 
                 if (phase === 'disintegrate') {
+                    // Explode outward
                     this.x += this.vx;
                     this.y += this.vy;
-                    // Heavy friction
-                    this.vx *= 0.92;
-                    this.vy *= 0.92;
+                    this.vx *= 1.05; // Accelerate out
+                    this.vy *= 1.05;
                 } else if (phase === 'coalesce') {
-                    // Fly to center
+                    // Magnetic pull to center
                     const dx = this.targetX - this.x;
                     const dy = this.targetY - this.y;
-                    this.x += dx * 0.05; // Smooth ease
-                    this.y += dy * 0.05;
                     
-                    // Shrink on arrival
-                    if (Math.abs(dx) < 10 && Math.abs(dy) < 10) {
-                        this.size *= 0.8;
+                    // Simple easing
+                    this.x += dx * 0.04; 
+                    this.y += dy * 0.04;
+                    
+                    // Kill velocity/jitter when transforming
+                    this.vx *= 0.8;
+                    this.vy *= 0.8;
+
+                    // Shrink on arrival to simulate "becoming" the envelope
+                    if (Math.abs(dx) < 20 && Math.abs(dy) < 20) {
+                        this.size *= 0.9;
                     }
                 }
             }
@@ -97,7 +102,7 @@ const InviteLandingPage = () => {
                 if (!this.active || this.size < 0.1) return;
                 ctx.fillStyle = this.color;
                 ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.rect(this.x, this.y, this.size, this.size); // Square particles for "digital" feel
                 ctx.fill();
             }
         }
