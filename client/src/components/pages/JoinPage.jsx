@@ -86,11 +86,10 @@ const JoinPage = () => {
       localStorage.setItem('user', JSON.stringify(data));
       
       if (data.isApproved) {
-          navigate('/admin'); // Or dashboard
+          navigate('/profile'); 
       } else {
-          // Redirect to a pending state page or dashboard dealing with pending logic
-          // For now, go to admin but we'll show a lock screen there
-          navigate('/admin');
+          // Even if pending, go to profile to see pending status
+          navigate('/profile');
       }
       
     } catch (err) {
