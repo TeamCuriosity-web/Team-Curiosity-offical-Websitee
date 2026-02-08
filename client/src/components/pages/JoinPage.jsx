@@ -9,9 +9,9 @@ const AVATAR_SEEDS = [
     { id: 'male1', seed: 'Felix', gender: 'male' },
     { id: 'male2', seed: 'Joshua', gender: 'male' },
     { id: 'male3', seed: 'Aneesh', gender: 'male' },
-    { id: 'female1', seed: 'Sophia', gender: 'female' },
-    { id: 'female2', seed: 'Alyssa', gender: 'female' },
-    { id: 'female3', seed: 'Nora', gender: 'female' },
+    { id: 'female1', seed: 'Lola', gender: 'female' },
+    { id: 'female2', seed: 'Betty', gender: 'female' },
+    { id: 'female3', seed: 'Molly', gender: 'female' },
 ];
 
 const JoinPage = () => {
