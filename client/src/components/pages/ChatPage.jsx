@@ -14,8 +14,7 @@ const ChatPage = () => {
     const [user, setUser] = useState(null);
     const [room, setRoom] = useState('general');
     const [message, setMessage] = useState('');
-    const [messageList, setMessageList] = useState([]);
-    const bottomRef = useRef(null);
+    const [projects, setProjects] = useState([]);
 
     useEffect(() => {
         const storedUser = JSON.parse(localStorage.getItem('user'));
@@ -25,25 +24,33 @@ const ChatPage = () => {
         }
         setUser(storedUser);
 
-        // Fetch history
-        const fetchHistory = async () => {
+        // Fetch history & projects
+        const fetchData = async () => {
             try {
-                const { data } = await api.get(`/chat/history?room=${room}`);
-                setMessageList(data);
+                // Fetch Chat History
+                const historyRes = await api.get(`/chat/history?room=${room}`);
+                setMessageList(historyRes.data);
                 scrollToBottom();
+
+                // Fetch Projects for Sidebar
+                const projectsRes = await api.get('/projects');
+                setProjects(projectsRes.data);
             } catch (err) {
-                console.error("Failed to fetch chat history");
+                console.error("Failed to fetch data", err);
             }
         };
-        fetchHistory();
+        fetchData();
 
         // Join Room
         socket.emit('join_room', room);
 
         // Listen for messages
         const handleReceiveMessage = (data) => {
-             setMessageList((list) => [...list, data]);
-             scrollToBottom();
+             // Only append if it belongs to current room (though socket join handles filter usually, extra safety)
+             if(data.room === room) {
+                setMessageList((list) => [...list, data]);
+                scrollToBottom();
+             }
         };
 
         socket.on('receive_message', handleReceiveMessage);
@@ -53,26 +60,12 @@ const ChatPage = () => {
         };
     }, [room, navigate]);
 
-    const scrollToBottom = () => {
-        bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-    };
+    // ... scroll and send message functions ...
 
-    const sendMessage = async (e) => {
-        e.preventDefault();
-        if (message.trim() === '') return;
-
-        const messageData = {
-            room: room,
-            senderId: user.id || user._id, // Ensure ID is present
-            sender: user, // For immediate UI update (optimistic or self)
-            content: message,
-            timestamp: new Date().toISOString(),
-        };
-
-        await socket.emit('send_message', messageData);
-        setMessageList((list) => [...list, messageData]);
-        setMessage('');
-        scrollToBottom();
+    // Helper to switch rooms
+    const switchRoom = (newRoom) => {
+        setRoom(newRoom);
+        setMessageList([]); // Clear current view
     };
 
     if (!user) return null;
@@ -84,17 +77,26 @@ const ChatPage = () => {
                 <div className="hidden md:flex w-64 flex-col gap-4">
                     <Card className="p-4 flex-1 flex flex-col bg-white border-black/10 shadow-lg">
                         <div className="flex items-center gap-2 mb-6 text-black font-bold uppercase tracking-widest border-b pb-2">
-                            <TerminalIcon size={16} /> Secure Comms
+                            <TerminalIcon size={16} /> Project Channels
                         </div>
 
-                        <div className="space-y-1">
-                            <div className="px-3 py-2 bg-black text-white rounded font-mono text-sm flex items-center gap-2 cursor-pointer">
+                        <div className="space-y-1 overflow-y-auto max-h-[calc(100vh-300px)]">
+                            <div 
+                                onClick={() => switchRoom('general')}
+                                className={`px-3 py-2 rounded font-mono text-sm flex items-center gap-2 cursor-pointer transition-colors ${room === 'general' ? 'bg-black text-white' : 'text-gray-500 hover:bg-gray-100'}`}
+                            >
                                 <Hash size={14} /> general
                             </div>
-                             {/* Future channels can go here */}
-                             <div className="px-3 py-2 text-gray-400 hover:bg-gray-100 rounded font-mono text-sm flex items-center gap-2 cursor-pointer transition-colors">
-                                <Hash size={14} /> missions (LOCKED)
-                            </div>
+                            
+                            {projects.map((proj) => (
+                                <div 
+                                    key={proj._id}
+                                    onClick={() => switchRoom(proj.title)}
+                                    className={`px-3 py-2 rounded font-mono text-sm flex items-center gap-2 cursor-pointer transition-colors ${room === proj.title ? 'bg-black text-white' : 'text-gray-500 hover:bg-gray-100'}`}
+                                >
+                                    <Hash size={14} /> {proj.title.toLowerCase().replace(/\s+/g, '-')}
+                                </div>
+                            ))}
                         </div>
 
                         <div className="mt-auto border-t pt-4">
