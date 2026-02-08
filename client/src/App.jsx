@@ -39,6 +39,10 @@ const RequireApproval = ({ children }) => {
     return children;
 };
 
+import ChatGlimpse from './components/sections/ChatGlimpse';
+
+// ... imports
+
 const Home = () => (
   <>
     <main className="bg-white">
@@ -49,6 +53,8 @@ const Home = () => (
           <MissionOverview />
 
           <div className="border-t border-border my-20"></div>
+          
+          <ChatGlimpse />
 
           <About />
        </div>
@@ -96,7 +102,26 @@ const AppContent = () => {
           <Route path="/projects" element={<RequireApproval><Projects /></RequireApproval>} />
           <Route path="/projects/:id" element={<RequireApproval><ProjectDetails /></RequireApproval>} />
           <Route path="/hackathons" element={<RequireApproval><HackathonsPage /></RequireApproval>} />
+import ChatPage from './components/pages/ChatPage';
+
+// ... imports
+
+const AppContent = () => {
+  // ...
+  return (
+    <>
+      {/* ... */}
+      <div className="w-full min-h-screen bg-white text-black selection:bg-black selection:text-white">
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          
+          <Route path="/team" element={<RequireApproval><TeamPage /></RequireApproval>} />
+          <Route path="/projects" element={<RequireApproval><Projects /></RequireApproval>} />
+          <Route path="/projects/:id" element={<RequireApproval><ProjectDetails /></RequireApproval>} />
+          <Route path="/hackathons" element={<RequireApproval><HackathonsPage /></RequireApproval>} />
           <Route path="/missions" element={<RequireApproval><MissionsPage /></RequireApproval>} />
+          <Route path="/chat" element={<RequireApproval><ChatPage /></RequireApproval>} />
           
           <Route path="/manifesto" element={<ManifestoPage />} />
           <Route path="/start" element={<StartBuildingPage />} />
@@ -108,6 +133,10 @@ const AppContent = () => {
           <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route path="/super-admin" element={<SuperAdminDashboard />} />
         </Routes>
+      </div>
+    </>
+  );
+};
       </div>
     </>
   );
