@@ -36,6 +36,7 @@ const InviteLandingPage = () => {
         updateCanvasSize();
         window.addEventListener('resize', updateCanvasSize);
 
+        let particles = [];
         const particleCount = 1500; // Denser for text
 
         class Particle {
