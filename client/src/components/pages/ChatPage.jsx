@@ -119,11 +119,19 @@ const ChatPage = () => {
                     </div>
 
                     {/* Messages */}
-                    <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-dots-pattern">
-                        {messageList.map((msg, index) => {
-                            const isMe = msg.sender._id === user._id || msg.sender.id === user.id || msg.senderId === user.id; // Handle various ID shapes
-                            const senderName = msg.sender.name || 'Unknown Agent';
-                            const senderRole = msg.sender.role || 'operative';
+                    {messageList.map((msg, index) => {
+                            // Robust ID comparison
+                            const currentUserId = user.id || user._id;
+                            const msgSenderId = msg.sender?._id || msg.sender?.id || msg.sender;
+                            
+                            // Check if the message sender matches current user
+                            // specific check for optimistic updates where sender might be the user object
+                            const isMe = 
+                                (typeof msgSenderId === 'string' && msgSenderId === currentUserId) ||
+                                (msgSenderId?.toString() === currentUserId?.toString());
+
+                            const senderName = msg.sender?.name || 'Unknown Agent';
+                            const senderRole = msg.sender?.role || 'operative';
                             
                             return (
                                 <div key={index} className={`flex gap-3 ${isMe ? 'flex-row-reverse' : ''}`}>
