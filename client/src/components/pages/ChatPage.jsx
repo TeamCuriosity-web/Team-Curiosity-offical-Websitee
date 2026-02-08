@@ -62,7 +62,27 @@ const ChatPage = () => {
         };
     }, [room, navigate]);
 
-    // ... scroll and send message functions ...
+    const scrollToBottom = () => {
+        bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    const sendMessage = async (e) => {
+        e.preventDefault();
+        if (message.trim() === '') return;
+
+        const messageData = {
+            room: room,
+            senderId: user.id || user._id, // Ensure ID is present
+            sender: user, // For immediate UI update (optimistic or self)
+            content: message,
+            timestamp: new Date().toISOString(),
+        };
+
+        await socket.emit('send_message', messageData);
+        setMessageList((list) => [...list, messageData]);
+        setMessage('');
+        scrollToBottom();
+    };
 
     // Helper to switch rooms
     const switchRoom = (newRoom) => {
