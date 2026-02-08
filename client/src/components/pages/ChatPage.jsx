@@ -6,9 +6,8 @@ import { Send, Hash, Users, Terminal as TerminalIcon } from 'lucide-react';
 import Card from '../ui/Card';
 
 // Connect to socket backend
-// Use the environment variable if available, otherwise fallback to simple logic
-const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-const socket = io(SOCKET_URL.replace('/api', '')); // Remove /api if present, as socket usually connects to root
+const SOCKET_URL = 'https://team-curiosity-offical-websitee.onrender.com';
+const socket = io(SOCKET_URL);
 
 const ChatPage = () => {
     const navigate = useNavigate();

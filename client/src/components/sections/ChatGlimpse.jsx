@@ -11,7 +11,7 @@ const ChatGlimpse = () => {
         const fetchPreview = async () => {
             try {
                 // Determine API URL based on environment
-                const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+                const baseUrl = 'https://team-curiosity-offical-websitee.onrender.com/api';
                 // Adjust fetch logic if needed, reusing api instance
                 const { data } = await api.get('/chat/history?room=general'); 
                 setRecentMessages(data.slice(0, 3)); // Show only last 3
