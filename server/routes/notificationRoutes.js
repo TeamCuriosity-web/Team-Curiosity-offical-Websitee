@@ -41,7 +41,7 @@ router.post('/', protect, async (req, res) => {
 // @route   GET /api/notifications
 // @desc    Get notifications for the current user (or admins)
 // @access  Private
-router.get('/', auth, async (req, res) => {
+router.get('/', protect, async (req, res) => {
   try {
     let query = {};
 
@@ -72,7 +72,7 @@ router.get('/', auth, async (req, res) => {
 // @route   PUT /api/notifications/:id/read
 // @desc    Mark notification as read
 // @access  Private
-router.put('/:id/read', auth, async (req, res) => {
+router.put('/:id/read', protect, async (req, res) => {
     try {
         const notification = await Notification.findById(req.params.id);
 
