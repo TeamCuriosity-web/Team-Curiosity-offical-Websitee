@@ -4,8 +4,6 @@ import { Menu, X, ChevronRight, Terminal } from 'lucide-react';
 import Button from '../ui/Button';
 import CharacterTween from '../ui/CharacterTween';
 
-import logo from '../../assets/logo.png';
-
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -34,8 +32,8 @@ const Navbar = () => {
     <>
         <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-white/80 backdrop-blur-md border-b border-transparent ${scrolled ? 'border-border' : ''}`}>
         <div className="container mx-auto px-6 h-20 flex items-center justify-between">
-            <Link to="/" className="text-xl font-bold tracking-tight text-black flex items-center gap-3 font-mono z-50 relative hover:opacity-80 transition-opacity">
-                <img src={logo} alt="Team Curiosity" className="h-10 w-10 object-contain mix-blend-multiply" />
+            <Link to="/" className="text-xl font-bold tracking-tight text-black flex items-center gap-1 font-mono z-50 relative hover:opacity-80 transition-opacity">
+                <span className="text-secondary">//</span>
                 <span>CURIOSITY</span>
             </Link>
 
