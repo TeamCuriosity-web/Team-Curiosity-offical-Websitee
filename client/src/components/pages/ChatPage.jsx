@@ -102,7 +102,7 @@ const ChatPage = () => {
                             <TerminalIcon size={16} /> Project Channels
                         </div>
 
-                        <div className="space-y-1 overflow-y-auto max-h-[calc(100vh-300px)]">
+                        <div className="flex-1 space-y-1 overflow-y-auto min-h-0 pr-2 custom-scrollbar">
                             <div 
                                 onClick={() => switchRoom('general')}
                                 className={`px-3 py-2 rounded font-mono text-sm flex items-center gap-2 cursor-pointer transition-colors ${room === 'general' ? 'bg-black text-white' : 'text-gray-500 hover:bg-gray-100'}`}
@@ -143,7 +143,7 @@ const ChatPage = () => {
                     </div>
 
                     {/* Messages */}
-                    <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-dots-pattern">
+                    <div className="flex-1 overflow-y-auto min-h-0 p-4 space-y-4 bg-dots-pattern custom-scrollbar">
                         {messageList.map((msg, index) => {
                             // Robust ID comparison
                             const currentUserId = user.id || user._id;
