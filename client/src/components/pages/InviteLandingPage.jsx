@@ -25,127 +25,6 @@ const InviteLandingPage = () => {
 
 
     
-    // --- ADVANCED AUDIO SYNTHESIS ENGINE (Procedural SFX) ---
-    const audioCtxRef = useRef(null);
-
-    const initAudio = () => {
-        if (!audioCtxRef.current) {
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
-            if (AudioContext) {
-                audioCtxRef.current = new AudioContext();
-            }
-        }
-        if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
-            audioCtxRef.current.resume();
-        }
-    };
-
-    const playSound = (type) => {
-        if (!audioCtxRef.current) initAudio();
-        const ctx = audioCtxRef.current;
-        if (!ctx) return;
-
-        // VIBRATION HAPTICS (Mobile)
-        if (navigator.vibrate) {
-            if (type === 'wax-break') navigator.vibrate(50); // Sharp tap
-            if (type === 'thread-unwind') navigator.vibrate([10, 30, 10]); // Rumble
-            if (type === 'slide') navigator.vibrate(5); // Texture
-        }
-
-        // 1. TEXT / PARTICLES (Granular Sand/Dust) - SUBTLE
-        if (type === 'text-grain') {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            const filter = ctx.createBiquadFilter();
-
-            osc.type = 'sawtooth';
-            osc.frequency.value = 50 + Math.random() * 100; 
-            
-            filter.type = 'highpass';
-            filter.frequency.value = 3000; 
-            
-            // Louder click
-            gain.gain.setValueAtTime(0.1, ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
-
-            osc.connect(filter);
-            filter.connect(gain);
-            gain.connect(ctx.destination);
-            osc.start();
-            osc.stop(ctx.currentTime + 0.05);
-        }
-
-        // 2. WAX BREAK (Sharp Snap) - LOUD
-        else if (type === 'wax-break') {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(150, ctx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.1);
-            
-            // MAX VOLUME
-            gain.gain.setValueAtTime(1.0, ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
-
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.start();
-            osc.stop(ctx.currentTime + 0.2);
-        }
-
-        // 3. THREAD UNWIND (Friction Zip) - DISTINCT
-        else if (type === 'thread-unwind') {
-             const bufferSize = ctx.sampleRate * 0.6; 
-             const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-             const data = buffer.getChannelData(0);
-             for (let i = 0; i < bufferSize; i++) {
-                 data[i] = Math.random() * 2 - 1;
-             }
-             const noise = ctx.createBufferSource();
-             noise.buffer = buffer;
-
-             const filter = ctx.createBiquadFilter();
-             filter.type = 'bandpass';
-             filter.frequency.setValueAtTime(1000, ctx.currentTime);
-             filter.frequency.linearRampToValueAtTime(3000, ctx.currentTime + 0.3); 
-
-             const gain = ctx.createGain();
-             gain.gain.setValueAtTime(0.5, ctx.currentTime); // Louder
-             gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.4);
-
-             noise.connect(filter);
-             filter.connect(gain);
-             gain.connect(ctx.destination);
-             noise.start();
-        }
-
-        // 4. PAPER SLIDE (White Noise Swipe)
-        else if (type === 'slide') {
-            const bufferSize = ctx.sampleRate * 0.2;
-            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-            const data = buffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) {
-                data[i] = Math.random() * 2 - 1;
-            }
-            const noise = ctx.createBufferSource();
-            noise.buffer = buffer;
-            
-            const filter = ctx.createBiquadFilter();
-            filter.type = 'lowpass';
-            filter.frequency.value = 800;
-
-            const gain = ctx.createGain();
-            gain.gain.setValueAtTime(0.2, ctx.currentTime);
-            gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.15);
-
-            noise.connect(filter);
-            filter.connect(gain);
-            gain.connect(ctx.destination);
-            noise.start();
-        }
-    };
-    
     // Helper to push chars to refs
     const addToRefs = (el) => {
         if (el && !charRefs.current.includes(el)) {
@@ -298,13 +177,6 @@ const InviteLandingPage = () => {
 
 
     const [audioEnabled, setAudioEnabled] = useState(false);
-
-    // FORCE USER GESTURE (Audio Airlock)
-    const handleStartExperience = () => {
-        initAudio();
-        playSound('text-grain'); // Test Sound
-        setAudioEnabled(true);
-    };
 
     // --- GSAP Choreography ---
     useGSAP(() => {
@@ -518,19 +390,6 @@ const InviteLandingPage = () => {
             { y: 0, opacity: 1, stagger: 0.1, duration: 0.5 }
         );
     };
-
-    // GLOBAL AUDIO UNLOCK
-    useEffect(() => {
-        const unlockAudio = () => {
-             if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
-                 audioCtxRef.current.resume().then(() => {
-                     console.log("Audio Context Resumed!");
-                 });
-             }
-        };
-        document.addEventListener('click', unlockAudio);
-        return () => document.removeEventListener('click', unlockAudio);
-    }, []);
 
     const handleAccept = () => {
         gsap.to(containerRef.current, {
