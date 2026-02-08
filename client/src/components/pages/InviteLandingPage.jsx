@@ -79,13 +79,13 @@ const InviteLandingPage = () => {
                 if (phase === 'disintegrate') {
                     this.x += this.vx;
                     this.y += this.vy;
-                    // Slow, drifting disintegration
-                    this.vx *= 1.01; 
-                    this.vy *= 1.01;
+                    // Keep momentum for the "going away" feel
+                    this.vx *= 0.99; 
+                    this.vy *= 0.99;
                 } else if (phase === 'coalesce') {
-                    // Snap to target
-                    this.x += (this.targetX - this.x) * 0.05; // Slower snap too
-                    this.y += (this.targetY - this.y) * 0.05;
+                    // Strong Magnetic Return (The "Come Back")
+                    this.x += (this.targetX - this.x) * 0.15; 
+                    this.y += (this.targetY - this.y) * 0.15;
                     
                     this.vx = 0;
                     this.vy = 0;
@@ -152,18 +152,18 @@ const InviteLandingPage = () => {
         })
         .to({}, { duration: 0.5 });
 
-        // Phase 3: Disintegrate (VERY SLOW)
+        // Phase 3: Disintegrate (Slow Expansion)
         tl.to(textGroupRef.current, {
             opacity: 0,
-            scale: 1.05,
-            filter: 'blur(5px)',
-            duration: 4.0, // Extended duration
-            ease: 'power1.in',
+            scale: 1.1,
+            filter: 'blur(15px)',
+            duration: 3.5, 
+            ease: 'power2.in',
             onStart: () => setPhase('disintegrate') 
         });
 
-        // Phase 4: Coalesce
-        tl.to({}, { duration: 2.0, onStart: () => setPhase('coalesce') }); 
+        // Phase 4: Coalesce (Rapid Structure Form)
+        tl.to({}, { duration: 1.5, onStart: () => setPhase('coalesce') }); 
 
         // Phase 5: Materialize (No Flash, just smooth transformation)
         tl.to(canvasRef.current, { 
