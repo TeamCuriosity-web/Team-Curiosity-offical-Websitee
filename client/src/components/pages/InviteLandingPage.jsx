@@ -3,6 +3,8 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { Mail, CheckCircle, ArrowRight, Shield, Globe } from 'lucide-react';
+import Button from '../ui/Button';
+import Button from '../ui/Button';
 
 const InviteLandingPage = () => {
     const [searchParams] = useSearchParams();
@@ -213,8 +215,11 @@ const InviteLandingPage = () => {
     };
 
     return (
-        <div ref={containerRef} className="min-h-screen bg-black flex items-center justify-center overflow-hidden perspective-1000">
-            <canvas ref={canvasRef} className="absolute inset-0 z-0 pointer-events-none" />
+        <div ref={containerRef} className="min-h-screen bg-black flex items-center justify-center overflow-hidden perspective-1000 relative">
+            {/* Fallback Background (if canvas fails or before load) */}
+            <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black z-0"></div>
+            
+            <canvas ref={canvasRef} className="absolute inset-0 z-0 pointer-events-none mix-blend-screen" />
             
             {/* Grid Background */}
             <div className="absolute inset-0 bg-[linear-gradient(rgba(0,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,255,0.05)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none"></div>
