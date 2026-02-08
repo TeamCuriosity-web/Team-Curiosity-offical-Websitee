@@ -28,26 +28,10 @@ const seedAdmins = async () => {
       console.log('Super Admin created.');
     }
 
-    // 2. Create/Update STANDARD ADMIN
-    const adminEmail = 'admin@legendary.com';
-    const adminPassword = 'admin123';
-    
-    let adminUser = await User.findOne({ email: adminEmail });
-    if (adminUser) {
-        adminUser.password = adminPassword;
-        adminUser.role = 'admin'; // FORCE STANDARD ADMIN
-        adminUser.name = 'Commander';
-        await adminUser.save();
-        console.log('Standard Admin ensured.');
-    } else {
-        await User.create({
-            name: 'Commander',
-            email: adminEmail,
-            password: adminPassword,
-            role: 'admin'
-        });
-        console.log('Standard Admin created.');
-    }
+    // 2. REMOVE STANDARD ADMIN (Commander)
+    // User requested permanent removal.
+    await User.deleteOne({ email: 'admin@legendary.com' });
+    console.log('Commander Admin removed perminanently.');
   } catch (err) {
     console.error('Admin Seeding Error:', err);
   }
