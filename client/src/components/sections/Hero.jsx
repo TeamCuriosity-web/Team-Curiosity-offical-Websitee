@@ -54,6 +54,12 @@ const Hero = () => {
            y: 20,
            duration: 1
        }, "+=0.5")
+       .from(".hero-gradient-text", {
+            opacity: 0,
+            y: 20,
+            duration: 1,
+            ease: "power3.out"
+       }, "-=0.8")
        .from(".hero-btn", {
            opacity: 0,
            scale: 0.9,
@@ -109,7 +115,7 @@ const Hero = () => {
                         </div>
                         <div className="block overflow-hidden mt-2">
                              {/* Gradient text often breaks with char splitting due to bg-clip. Using standard block reveal for this part. */}
-                             <span className="hero-btn block text-transparent bg-clip-text bg-gradient-to-r from-black via-black to-gray-500" style={{ opacity: 0 }}>The Future</span>
+                             <span className="hero-gradient-text block text-transparent bg-clip-text bg-gradient-to-r from-black via-black to-gray-500">The Future</span>
                         </div>
                     </h1>
                 </div>
