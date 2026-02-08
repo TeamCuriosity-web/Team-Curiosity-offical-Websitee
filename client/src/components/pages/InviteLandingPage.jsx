@@ -152,10 +152,15 @@ const InviteLandingPage = () => {
         })
         .to({}, { duration: 0.5 });
 
-        // Phase 3: Disintegrate (INSTANT BREAK)
-        // The user wants it to "break", not "invisible" (fade).
-        // So we snap the text out and let the particles take over instantly.
+        // Phase 3: Disintegrate
+        // Shake before break
         tl.to(textGroupRef.current, {
+            x: "+=5", 
+            yoyo: true, 
+            repeat: 5, 
+            duration: 0.05
+        })
+        .to(textGroupRef.current, {
             opacity: 0,
             scale: 1.05,
             duration: 0.05, // SNAP
@@ -164,24 +169,21 @@ const InviteLandingPage = () => {
         });
 
         // Phase 4: Coalesce
-        tl.to({}, { duration: 2.0, onStart: () => setPhase('coalesce') }); 
+        tl.to({}, { duration: 1.5, onStart: () => setPhase('coalesce') }); 
 
-        // Phase 5: Materialize (No Flash, just smooth transformation)
-        tl.to(canvasRef.current, { 
-            opacity: 0, 
-            duration: 0.5, 
-            ease: 'power2.in' 
-        }, "+=0.1"); // Wait slightly for particles to settle
+        // Phase 5: Materialize
+        tl.call(() => {
+            if (canvasRef.current) canvasRef.current.style.opacity = 0;
+            setPhase('envelope');
+        });
 
         tl.fromTo(envelopeGroupRef.current, 
             { scale: 1, opacity: 0 }, 
             { 
                 opacity: 1,
-                duration: 0.8, 
-                ease: 'power2.inOut',
-                onStart: () => setPhase('envelope') 
-            },
-            "-=0.5" // Overlap with particle fade out
+                duration: 0.01,
+                immediateRender: false
+            }
         );
         
         // Float
@@ -191,7 +193,7 @@ const InviteLandingPage = () => {
             repeat: -1,
             yoyo: true,
             ease: 'sine.inOut',
-            delay: 5.5 // Delay start of float until after sequence
+            delay: 4.0 
         });
 
     }, { scope: containerRef });
@@ -204,19 +206,29 @@ const InviteLandingPage = () => {
 
         const tl = gsap.timeline();
 
-        // Reveal Card
+        // 1. Pull Card OUT (Upwards)
+        tl.to(cardRef.current, {
+            y: -150, // Accurately slide out of the top
+            opacity: 1,
+            duration: 0.6,
+            ease: 'power2.out'
+        });
+
+        // 2. Drop Envelope Down
         tl.to(envelopeRef.current, { 
             y: 300, 
             opacity: 0, 
-            duration: 0.6, 
+            duration: 0.5, 
             ease: 'power2.in' 
-        });
+        }, "-=0.4");
 
-        tl.fromTo(cardRef.current,
-            { scale: 0.8, opacity: 0 },
-            { scale: 1, opacity: 1, duration: 0.8, ease: 'power2.out' },
-            "-=0.4"
-        );
+        // 3. Center and Expand Card
+        tl.to(cardRef.current, {
+            y: 0,
+            scale: 1,
+            duration: 0.8,
+            ease: 'back.out(1.2)'
+        });
 
         tl.fromTo(contentRef.current,
             { y: 30, opacity: 0 },
@@ -236,7 +248,7 @@ const InviteLandingPage = () => {
     return (
         <div ref={containerRef} className="min-h-screen bg-white flex items-center justify-center overflow-hidden relative font-sans selection:bg-black selection:text-white">
             
-            <canvas ref={canvasRef} className="absolute inset-0 z-0 pointer-events-none" />
+            <canvas ref={canvasRef} className="absolute inset-0 z-0 pointer-events-none transition-opacity duration-75" />
 
             <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#000000_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none"></div>
 
@@ -260,22 +272,36 @@ const InviteLandingPage = () => {
 
             {/* --- ENVELOPE LAYER --- */}
             <div ref={envelopeGroupRef} className="relative z-50 opacity-0 flex items-center justify-center">
+                
+                {/* BLACK DOSSIER (The "Cover") */}
                 <div 
                     ref={envelopeRef}
-                    className="absolute w-[350px] md:w-[500px] h-[220px] md:h-[300px] bg-white shadow-2xl rounded-sm cursor-pointer hover:shadow-xl transition-shadow duration-300 z-40 border border-gray-100 flex flex-col items-center justify-center"
+                    className="absolute w-[360px] md:w-[520px] h-[240px] md:h-[320px] bg-[#0a0a0a] shadow-2xl rounded-lg cursor-pointer hover:shadow-xl transition-shadow duration-300 z-50 flex flex-col items-center justify-center overflow-hidden border-t border-gray-800"
                     onClick={handleOpenEnvelope}
                 >
-                    <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mb-6 text-white shadow-lg">
-                        <Lock size={24} />
+                    {/* Top Flap Indicator */}
+                    <div className="absolute top-0 w-full h-2 bg-gray-800"></div>
+
+                    <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-6 text-white border border-white/10 backdrop-blur-sm">
+                        <Lock size={28} />
                     </div>
-                    <h2 className="text-2xl tracking-[0.3em] font-light text-gray-900 border-b border-gray-200 pb-2 mb-2">INVITATION</h2>
-                    <p className="text-[10px] text-gray-400 font-mono tracking-widest uppercase">Tap to Decrypt</p>
+                    <h2 className="text-3xl tracking-[0.3em] font-bold text-white mb-2">CONFIDENTIAL</h2>
+                    <div className="h-px w-24 bg-gray-700 mb-4"></div>
+                    <p className="text-[10px] text-gray-500 font-mono tracking-widest uppercase animate-pulse">
+                        [ TAP TO EXTRACT FILE ]
+                    </p>
+
+                    {/* Corner Marks */}
+                    <div className="absolute top-4 left-4 w-4 h-4 border-l border-t border-gray-600"></div>
+                    <div className="absolute top-4 right-4 w-4 h-4 border-r border-t border-gray-600"></div>
+                    <div className="absolute bottom-4 left-4 w-4 h-4 border-l border-b border-gray-600"></div>
+                    <div className="absolute bottom-4 right-4 w-4 h-4 border-r border-b border-gray-600"></div>
                 </div>
 
-                {/* Card */}
+                {/* Card (Starts Hidden BEHIND the cover, or physically slightly inside) */}
                 <div 
                     ref={cardRef}
-                    className="w-[340px] md:w-[500px] bg-white rounded-2xl p-8 md:p-12 text-center shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] border border-gray-100 opacity-0 z-50"
+                    className="w-[340px] md:w-[480px] bg-white rounded-xl p-8 md:p-12 text-center shadow-2xl border border-gray-100 opacity-0 z-40 transform translate-y-4"
                 >
                     <div ref={contentRef}>
                         <div className="mb-8 flex justify-center">
