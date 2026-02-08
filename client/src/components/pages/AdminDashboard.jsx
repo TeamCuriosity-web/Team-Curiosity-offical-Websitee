@@ -68,7 +68,21 @@ const AdminDashboard = () => {
     const generateInvite = async () => {
         try {
             const { data } = await api.post('/admin/invite', { expiresInHours: 24 });
-            setInviteLink(data.inviteLink);
+            // FORCE FRONTEND URL (GitHub Pages or Localhost)
+            // Backend returns its own host, which is wrong for separated deployment.
+            // We use the token to build the correct link here.
+            // Check if we are on localhost or production to decide on base path if needed.
+            // But usually window.location.href handles origin.
+            
+            // If on localhost, origin is http://localhost:5173
+            // If on GH Pages, origin is https://teamcuriosity-web.github.io
+            // We need to append the repo path if on GH Pages.
+            
+            const isLocal = window.location.hostname === 'localhost';
+            const basePath = isLocal ? '' : '/Team-Curiosity-offical-Websitee';
+            
+            const fullLink = `${window.location.origin}${basePath}/invite?token=${data.token}`;
+            setInviteLink(fullLink);
         } catch (err) { console.error(err); }
     };
     
