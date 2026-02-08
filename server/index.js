@@ -18,6 +18,7 @@ app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/projects', require('./routes/projectRoutes'));
 app.use('/api/hackathons', require('./routes/hackathonRoutes'));
 app.use('/api/team', require('./routes/teamRoutes'));
+app.use('/api/notifications', require('./routes/notificationRoutes'));
 
 // Database Connection
 mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/legendary-team')

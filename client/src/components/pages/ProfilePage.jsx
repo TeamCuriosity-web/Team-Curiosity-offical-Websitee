@@ -1,12 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Card from '../ui/Card';
 import Button from '../ui/Button';
-import { User, Shield, Briefcase, Code, LogOut, Clock, CheckCircle, Lock } from 'lucide-react';
+import { User, Shield, Briefcase, Code, LogOut, Clock, CheckCircle, Lock, MessageSquare, Send } from 'lucide-react';
+import api from '../../services/api';
 
 const ProfilePage = () => {
     const navigate = useNavigate();
     const user = JSON.parse(localStorage.getItem('user'));
+    const [message, setMessage] = useState('');
+    const [sending, setSending] = useState(false);
+    const [sentSuccess, setSentSuccess] = useState(false);
 
     if (!user) {
         navigate('/login');
@@ -17,6 +21,27 @@ const ProfilePage = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         navigate('/');
+    };
+
+    const handleSendMessage = async (e) => {
+        e.preventDefault();
+        if (!message.trim()) return;
+        
+        setSending(true);
+        try {
+            await api.post('/notifications', { 
+                message: message,
+                recipient: 'admin' // Explicitly targeting admin channel
+            });
+            setSentSuccess(true);
+            setMessage('');
+            setTimeout(() => setSentSuccess(false), 3000);
+        } catch (err) {
+            console.error("Failed to send message");
+            alert("Transmission failed. Secure line broken.");
+        } finally {
+            setSending(false);
+        }
     };
 
     return (
@@ -70,7 +95,7 @@ const ProfilePage = () => {
                     </div>
                 )}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                     {/* Personal Detail */}
                     <Card className="p-8">
                         <h3 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2">
@@ -99,21 +124,23 @@ const ProfilePage = () => {
                     </Card>
 
                     {/* Tech & Status */}
-                    <Card className="p-8">
-                         <h3 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2">
-                            <Code size={16} /> Technical Arsenal
-                        </h3>
-                        {user.programmingLanguages && user.programmingLanguages.length > 0 ? (
-                            <div className="flex flex-wrap gap-2">
-                                {user.programmingLanguages.map((tech, i) => (
-                                    <span key={i} className="px-3 py-1 bg-gray-100 text-gray-700 rounded text-xs font-mono border border-gray-200">
-                                        {tech}
-                                    </span>
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="text-gray-400 italic text-sm">No technical data recorded.</div>
-                        )}
+                    <Card className="p-8 flex flex-col justify-between">
+                        <div>
+                             <h3 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2">
+                                <Code size={16} /> Technical Arsenal
+                            </h3>
+                            {user.programmingLanguages && user.programmingLanguages.length > 0 ? (
+                                <div className="flex flex-wrap gap-2">
+                                    {user.programmingLanguages.map((tech, i) => (
+                                        <span key={i} className="px-3 py-1 bg-gray-100 text-gray-700 rounded text-xs font-mono border border-gray-200">
+                                            {tech}
+                                        </span>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="text-gray-400 italic text-sm">No technical data recorded.</div>
+                            )}
+                        </div>
 
                         <div className="mt-8 pt-8 border-t border-gray-100">
                              <h3 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-4 flex items-center gap-2">
@@ -126,6 +153,38 @@ const ProfilePage = () => {
                         </div>
                     </Card>
                 </div>
+
+                {/* Comms Channel */}
+                <Card className="p-8 border-t-4 border-black">
+                    <h3 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2">
+                        <MessageSquare size={16} /> Secure Comms Channel
+                    </h3>
+                    <form onSubmit={handleSendMessage}>
+                        <div className="relative">
+                            <textarea 
+                                value={message}
+                                onChange={(e) => setMessage(e.target.value)}
+                                placeholder="Transmit message to Command (Admins)..."
+                                className="w-full bg-gray-50 border border-gray-200 rounded-lg p-4 h-32 text-sm font-mono focus:border-black focus:ring-1 focus:ring-black outline-none resize-none transition-all placeholder:text-gray-400"
+                            ></textarea>
+                            <div className="absolute bottom-4 right-4">
+                                <button 
+                                    type="submit" 
+                                    disabled={sending || !message.trim()}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
+                                        sending 
+                                            ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
+                                            : sentSuccess 
+                                                ? 'bg-green-500 text-white'
+                                                : 'bg-black text-white hover:bg-gray-800'
+                                    }`}
+                                >
+                                    {sending ? 'Transmitting...' : sentSuccess ? 'Sent' : 'Send'} <Send size={12} />
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </Card>
             </div>
         </div>
     );

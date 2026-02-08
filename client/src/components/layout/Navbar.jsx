@@ -3,35 +3,19 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, ChevronRight, Terminal } from 'lucide-react';
 import Button from '../ui/Button';
 import CharacterTween from '../ui/CharacterTween';
+import NotificationBell from '../common/NotificationBell';
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const location = useLocation();
+  // ... (rest of state)
 
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Close mobile menu when route changes
-  useEffect(() => {
-    setMobileMenuOpen(false);
-  }, [location.pathname]);
-
-  const navLinks = [
-    { name: 'Home', path: '/' },
-    { name: 'Team', path: '/team' },
-    { name: 'Projects', path: '/projects' },
-    { name: 'Hackathons', path: '/hackathons' },
-    { name: 'Missions', path: '/missions' },
-  ];
+  // ... (useEffects)
 
   return (
     <>
         <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-white/80 backdrop-blur-md border-b border-transparent ${scrolled ? 'border-border' : ''}`}>
         <div className="container mx-auto px-6 h-20 flex items-center justify-between">
+            {/* ... Logo ... */}
             <Link to="/" className="text-xl font-bold tracking-tight text-black flex items-center gap-1 font-mono z-50 relative hover:opacity-80 transition-opacity">
                 <span className="text-secondary">//</span>
                 <span>CURIOSITY</span>
@@ -52,11 +36,14 @@ const Navbar = () => {
 
             <div className="hidden md:flex items-center gap-4">
                 {localStorage.getItem('user') ? (
-                    <Link to="/profile">
-                        <Button variant="outline" className="h-9 px-4 text-xs font-mono tracking-wide flex items-center gap-2 border-black hover:bg-black hover:text-white transition-colors">
-                            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Profile
-                        </Button>
-                    </Link>
+                    <div className="flex items-center gap-4">
+                        <NotificationBell />
+                        <Link to="/profile">
+                            <Button variant="outline" className="h-9 px-4 text-xs font-mono tracking-wide flex items-center gap-2 border-black hover:bg-black hover:text-white transition-colors">
+                                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Profile
+                            </Button>
+                        </Link>
+                    </div>
                 ) : (
                     <Link to="/join">
                         <Button variant="primary" className="h-9 px-4 text-xs font-mono tracking-wide flex items-center gap-2">
