@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
-import { Mail, CheckCircle, ArrowRight, Shield, Globe, Terminal, Lock } from 'lucide-react';
+import { Mail, CheckCircle, ArrowRight, Shield, Globe, Terminal, Lock, ArrowUp } from 'lucide-react';
 import Button from '../ui/Button';
 
 const InviteLandingPage = () => {
@@ -26,25 +26,40 @@ const InviteLandingPage = () => {
 
     
     // --- ADVANCED AUDIO SYNTHESIS ENGINE (Procedural SFX) ---
-    const playSound = (type) => {
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        if (!AudioContext) return;
-        const ctx = new AudioContext();
+    const audioCtxRef = useRef(null);
 
-        // 1. TEXT / PARTICLES (Granular Sand/Dust)
+    const initAudio = () => {
+        if (!audioCtxRef.current) {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (AudioContext) {
+                audioCtxRef.current = new AudioContext();
+            }
+        }
+        if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
+            audioCtxRef.current.resume();
+        }
+    };
+
+    const playSound = (type) => {
+        if (!audioCtxRef.current) initAudio();
+        const ctx = audioCtxRef.current;
+        if (!ctx) return;
+
+        // 1. TEXT / PARTICLES (Granular Sand/Dust) - SUBTLE
         if (type === 'text-grain') {
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
             const filter = ctx.createBiquadFilter();
 
             osc.type = 'sawtooth';
-            osc.frequency.value = 50 + Math.random() * 100; // Low rumble
+            osc.frequency.value = 50 + Math.random() * 100; 
             
             filter.type = 'highpass';
-            filter.frequency.value = 3000; // Hiss
+            filter.frequency.value = 3000; 
             
-            gain.gain.setValueAtTime(0.05, ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05); // Short click
+            // Louder click
+            gain.gain.setValueAtTime(0.08, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
 
             osc.connect(filter);
             filter.connect(gain);
@@ -53,7 +68,7 @@ const InviteLandingPage = () => {
             osc.stop(ctx.currentTime + 0.05);
         }
 
-        // 2. WAX BREAK (Sharp Snap)
+        // 2. WAX BREAK (Sharp Snap) - LOUD
         else if (type === 'wax-break') {
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
@@ -62,19 +77,19 @@ const InviteLandingPage = () => {
             osc.frequency.setValueAtTime(150, ctx.currentTime);
             osc.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.1);
             
+            // BOOSTED VOLUME
             gain.gain.setValueAtTime(0.8, ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
 
             osc.connect(gain);
             gain.connect(ctx.destination);
             osc.start();
-            osc.stop(ctx.currentTime + 0.15);
+            osc.stop(ctx.currentTime + 0.2);
         }
 
-        // 3. THREAD UNWIND (Friction Zip)
+        // 3. THREAD UNWIND (Friction Zip) - DISTINCT
         else if (type === 'thread-unwind') {
-             // Create Noise Buffer
-             const bufferSize = ctx.sampleRate * 0.6; // 0.6s
+             const bufferSize = ctx.sampleRate * 0.6; 
              const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
              const data = buffer.getChannelData(0);
              for (let i = 0; i < bufferSize; i++) {
@@ -86,10 +101,10 @@ const InviteLandingPage = () => {
              const filter = ctx.createBiquadFilter();
              filter.type = 'bandpass';
              filter.frequency.setValueAtTime(1000, ctx.currentTime);
-             filter.frequency.linearRampToValueAtTime(2000, ctx.currentTime + 0.3); // Pitch up zip
+             filter.frequency.linearRampToValueAtTime(3000, ctx.currentTime + 0.3); 
 
              const gain = ctx.createGain();
-             gain.gain.setValueAtTime(0.2, ctx.currentTime);
+             gain.gain.setValueAtTime(0.3, ctx.currentTime); // Louder
              gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.4);
 
              noise.connect(filter);
@@ -111,10 +126,10 @@ const InviteLandingPage = () => {
             
             const filter = ctx.createBiquadFilter();
             filter.type = 'lowpass';
-            filter.frequency.value = 600;
+            filter.frequency.value = 800;
 
             const gain = ctx.createGain();
-            gain.gain.setValueAtTime(0.05, ctx.currentTime);
+            gain.gain.setValueAtTime(0.1, ctx.currentTime);
             gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.15);
 
             noise.connect(filter);
@@ -485,6 +500,19 @@ const InviteLandingPage = () => {
         );
     };
 
+    // GLOBAL AUDIO UNLOCK
+    useEffect(() => {
+        const unlockAudio = () => {
+             if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
+                 audioCtxRef.current.resume().then(() => {
+                     console.log("Audio Context Resumed!");
+                 });
+             }
+        };
+        document.addEventListener('click', unlockAudio);
+        return () => document.removeEventListener('click', unlockAudio);
+    }, []);
+
     const handleAccept = () => {
         gsap.to(containerRef.current, {
             opacity: 0,
@@ -596,6 +624,14 @@ const InviteLandingPage = () => {
                     onTouchStart={handleDragStart}
                     className={`w-[340px] md:w-[480px] bg-white rounded-xl p-8 md:p-12 text-center shadow-2xl border-2 border-gray-100 opacity-0 z-40 transform translate-y-4 ${interactionPhase === 'unsealed' ? 'cursor-grab active:cursor-grabbing' : ''}`}
                 >
+                     {/* DRAG INDICATOR (Only visible when unsealed) */}
+                     {interactionPhase === 'unsealed' && (
+                        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 animate-bounce text-gray-400 pointer-events-none">
+                            <ArrowUp size={24} />
+                            <p className="text-[10px] font-mono mt-1 uppercase tracking-widest">PULL UP</p>
+                        </div>
+                     )}
+
                     <div ref={contentRef}>
                         <div className="mb-8 flex justify-center">
                             <Terminal size={40} className="text-black" />
