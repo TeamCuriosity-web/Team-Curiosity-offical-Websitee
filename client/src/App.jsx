@@ -12,6 +12,7 @@ import About from './components/sections/About';
 import Projects from './components/sections/Projects';
 import Hackathons from './components/sections/Hackathons';
 import ChatGlimpse from './components/sections/ChatGlimpse';
+import Leaderboard from './components/sections/Leaderboard';
 
 // Pages
 import TeamPage from './components/pages/TeamPage'; 
@@ -51,6 +52,8 @@ const Home = () => (
           <div className="border-t border-border my-20"></div>
           
           <ChatGlimpse />
+
+          <Leaderboard />
 
           <About />
        </div>
