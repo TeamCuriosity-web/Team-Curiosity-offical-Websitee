@@ -60,13 +60,26 @@ const Navbar = () => {
 
             <div className="hidden md:flex items-center gap-4">
                 {localStorage.getItem('user') ? (
-                    <div className="flex items-center gap-4">
                         <NotificationBell />
-                        <Link to="/profile">
-                            <Button variant="outline" className="h-9 px-4 text-xs font-mono tracking-wide flex items-center gap-2 border-black hover:bg-black hover:text-white transition-colors">
-                                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Profile
-                            </Button>
-                        </Link>
+                        
+                        {(() => {
+                            const user = JSON.parse(localStorage.getItem('user'));
+                            return (
+                                <Link to="/profile" className="flex items-center gap-3 pl-1 pr-4 py-1 rounded-full border border-gray-200 hover:border-black transition-all bg-white hover:bg-gray-50 group">
+                                    <div className="w-8 h-8 rounded-full border border-gray-200 overflow-hidden relative">
+                                        <img 
+                                            src={user?.profileImage || `https://api.dicebear.com/7.x/notionists/svg?seed=${user?.name}`} 
+                                            alt="Profile" 
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
+                                    <span className="text-xs font-bold uppercase tracking-wider text-gray-700 group-hover:text-black">
+                                        {user?.name?.split(' ')[0]} 
+                                    </span>
+                                    <span className={`w-2 h-2 rounded-full ${user?.isApproved ? 'bg-green-500' : 'bg-yellow-500'} animate-pulse`}></span>
+                                </Link>
+                            );
+                        })()}
                     </div>
                 ) : (
                     <Link to="/join">
