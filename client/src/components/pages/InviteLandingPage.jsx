@@ -289,7 +289,10 @@ const InviteLandingPage = () => {
             opacity: 0, 
             scale: 0.5, 
             duration: 0.8,
-            ease: "power2.in" 
+            ease: "power2.in",
+            onComplete: () => {
+                gsap.set(".string-closure", { display: "none" });
+            }
         });
 
         // 2. Open Flap (Delayed slightly so thread clears)
@@ -448,34 +451,33 @@ const InviteLandingPage = () => {
                     </div>
 
                     {/* INTERACTIVE THREAD CLOSURE */}
-                    {interactionPhase === 'locked' && (
-                        <div 
-                            className="absolute z-50 cursor-pointer string-closure hover:scale-110 transition-transform"
-                            onClick={handleUnseal}
-                            style={{ top: '60px' }} // Positioned near flap
-                        >
-                             {/* The Thread Visual */}
-                             <div className="relative w-16 h-16 flex items-center justify-center">
-                                {/* Bottom Button */}
-                                <div className="absolute w-6 h-6 rounded-full bg-gray-300 border border-gray-400 shadow-inner z-10"></div>
-                                {/* String Winding (SVG) */}
-                                <svg width="60" height="100" viewBox="0 0 60 100" className="absolute top-[-20px] drop-shadow-md pointer-events-none">
-                                    <path 
-                                        d="M30 20 C 10 30, 10 50, 30 50 C 50 50, 50 20, 30 20" 
-                                        fill="none" 
-                                        stroke="#B91C1C" 
-                                        strokeWidth="2"
-                                    />
-                                    <path 
-                                        d="M30 50 L 30 80" 
-                                        fill="none" 
-                                        stroke="#B91C1C" 
-                                        strokeWidth="2"
-                                    />
-                                </svg>
-                             </div>
-                        </div>
-                    )}
+                    {/* Kept in DOM for animation, hidden via GSAP later */}
+                    <div 
+                        className="absolute z-50 cursor-pointer string-closure hover:scale-110 transition-transform"
+                        onClick={handleUnseal}
+                        style={{ top: '60px' }} 
+                    >
+                         {/* The Thread Visual */}
+                         <div className="relative w-16 h-16 flex items-center justify-center">
+                            {/* Bottom Button */}
+                            <div className="absolute w-6 h-6 rounded-full bg-gray-300 border border-gray-400 shadow-inner z-10"></div>
+                            {/* String Winding (SVG) */}
+                            <svg width="60" height="100" viewBox="0 0 60 100" className="absolute top-[-20px] drop-shadow-md pointer-events-none">
+                                <path 
+                                    d="M30 20 C 10 30, 10 50, 30 50 C 50 50, 50 20, 30 20" 
+                                    fill="none" 
+                                    stroke="#B91C1C" 
+                                    strokeWidth="2"
+                                />
+                                <path 
+                                    d="M30 50 L 30 80" 
+                                    fill="none" 
+                                    stroke="#B91C1C" 
+                                    strokeWidth="2"
+                                />
+                            </svg>
+                         </div>
+                    </div>
 
                     <div className="mt-16 text-center pointer-events-none">
                         <h2 className="text-3xl tracking-[0.3em] font-black text-black mb-2 opacity-80">CONFIDENTIAL</h2>
