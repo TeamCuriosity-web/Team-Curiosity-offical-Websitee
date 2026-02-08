@@ -79,12 +79,13 @@ const InviteLandingPage = () => {
                 if (phase === 'disintegrate') {
                     this.x += this.vx;
                     this.y += this.vy;
-                    this.vx *= 1.05;
-                    this.vy *= 1.05;
+                    // Slow, drifting disintegration
+                    this.vx *= 1.01; 
+                    this.vy *= 1.01;
                 } else if (phase === 'coalesce') {
-                    // Smooth lerp to specific target
-                    this.x += (this.targetX - this.x) * 0.1; // Faster snap
-                    this.y += (this.targetY - this.y) * 0.1;
+                    // Snap to target
+                    this.x += (this.targetX - this.x) * 0.05; // Slower snap too
+                    this.y += (this.targetY - this.y) * 0.05;
                     
                     this.vx = 0;
                     this.vy = 0;
@@ -126,6 +127,7 @@ const InviteLandingPage = () => {
     }, [phase]);
 
 
+    // --- GSAP Choreography ---
     useGSAP(() => {
         const tl = gsap.timeline();
 
@@ -148,20 +150,20 @@ const InviteLandingPage = () => {
             ease: 'power2.inOut',
             onStart: () => setPhase('text-fill')
         })
-        .to({}, { duration: 0.2 });
+        .to({}, { duration: 0.5 });
 
-        // Phase 3: Disintegrate
+        // Phase 3: Disintegrate (VERY SLOW)
         tl.to(textGroupRef.current, {
             opacity: 0,
-            scale: 1.1,
-            filter: 'blur(20px)',
-            duration: 0.1, 
+            scale: 1.05,
+            filter: 'blur(5px)',
+            duration: 4.0, // Extended duration
             ease: 'power1.in',
             onStart: () => setPhase('disintegrate') 
         });
 
-        // Phase 4: Coalesce (Build the Block)
-        tl.to({}, { duration: 1.2, onStart: () => setPhase('coalesce') }); 
+        // Phase 4: Coalesce
+        tl.to({}, { duration: 2.0, onStart: () => setPhase('coalesce') }); 
 
         // Phase 5: Materialize (No Flash, just smooth transformation)
         tl.to(canvasRef.current, { 
