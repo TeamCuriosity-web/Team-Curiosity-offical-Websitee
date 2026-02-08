@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const Message = require('../models/Message');
-const auth = require('../middleware/authMiddleware');
+const { protect } = require('../middleware/authMiddleware');
 
 // @route   GET /api/chat/history
 // @desc    Get recent chat messages
 // @access  Private
-router.get('/history', auth, async (req, res) => {
+router.get('/history', protect, async (req, res) => {
   try {
     const { room } = req.query;
     const query = room ? { room } : { room: 'general' };

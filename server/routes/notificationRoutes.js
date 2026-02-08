@@ -2,12 +2,12 @@ const express = require('express');
 const router = express.Router();
 const Notification = require('../models/Notification');
 const User = require('../models/User');
-const auth = require('../middleware/authMiddleware');
+const { protect } = require('../middleware/authMiddleware');
 
 // @route   POST /api/notifications
 // @desc    Send a notification/message
 // @access  Private
-router.post('/', auth, async (req, res) => {
+router.post('/', protect, async (req, res) => {
   try {
     const { message, type, recipient } = req.body;
     

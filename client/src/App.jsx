@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
-import Button from './components/ui/Button';
 
 // Sections
 import Hero from './components/sections/Hero';
@@ -10,9 +9,9 @@ import Manifesto from './components/sections/Manifesto';
 import MissionOverview from './components/sections/MissionOverview';
 import ProjectDetails from './components/pages/ProjectDetails';
 import About from './components/sections/About';
-import Team from './components/sections/Team';
 import Projects from './components/sections/Projects';
 import Hackathons from './components/sections/Hackathons';
+import ChatGlimpse from './components/sections/ChatGlimpse';
 
 // Pages
 import TeamPage from './components/pages/TeamPage'; 
@@ -25,6 +24,7 @@ import SuperAdminDashboard from './components/pages/SuperAdminDashboard';
 import ManifestoPage from './components/pages/ManifestoPage';
 import StartBuildingPage from './components/pages/StartBuildingPage';
 import ProfilePage from './components/pages/ProfilePage';
+import ChatPage from './components/pages/ChatPage';
 
 // UI
 import LegendaryLoader from './components/ui/LegendaryLoader';
@@ -38,10 +38,6 @@ const RequireApproval = ({ children }) => {
     }
     return children;
 };
-
-import ChatGlimpse from './components/sections/ChatGlimpse';
-
-// ... imports
 
 const Home = () => (
   <>
@@ -102,24 +98,6 @@ const AppContent = () => {
           <Route path="/projects" element={<RequireApproval><Projects /></RequireApproval>} />
           <Route path="/projects/:id" element={<RequireApproval><ProjectDetails /></RequireApproval>} />
           <Route path="/hackathons" element={<RequireApproval><HackathonsPage /></RequireApproval>} />
-import ChatPage from './components/pages/ChatPage';
-
-// ... imports
-
-const AppContent = () => {
-  // ...
-  return (
-    <>
-      {/* ... */}
-      <div className="w-full min-h-screen bg-white text-black selection:bg-black selection:text-white">
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          
-          <Route path="/team" element={<RequireApproval><TeamPage /></RequireApproval>} />
-          <Route path="/projects" element={<RequireApproval><Projects /></RequireApproval>} />
-          <Route path="/projects/:id" element={<RequireApproval><ProjectDetails /></RequireApproval>} />
-          <Route path="/hackathons" element={<RequireApproval><HackathonsPage /></RequireApproval>} />
           <Route path="/missions" element={<RequireApproval><MissionsPage /></RequireApproval>} />
           <Route path="/chat" element={<RequireApproval><ChatPage /></RequireApproval>} />
           
@@ -133,10 +111,6 @@ const AppContent = () => {
           <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route path="/super-admin" element={<SuperAdminDashboard />} />
         </Routes>
-      </div>
-    </>
-  );
-};
       </div>
     </>
   );
