@@ -93,8 +93,8 @@ const ChatPage = () => {
     if (!user) return null;
 
     return (
-        <div className="min-h-screen pt-20 pb-10 bg-gray-50 flex flex-col">
-            <div className="flex-1 container mx-auto px-4 max-w-6xl flex gap-4 h-[calc(100vh-140px)]">
+        <div className="h-screen overflow-hidden pt-20 pb-4 bg-gray-50 flex flex-col">
+            <div className="flex-1 container mx-auto px-4 max-w-6xl flex gap-4 h-full min-h-0">
                 {/* Sidebar */}
                 <div className="hidden md:flex w-64 flex-col gap-4 h-full">
                     <Card className="flex-1 flex flex-col bg-white border-black/10 shadow-lg relative overflow-hidden !p-0">
@@ -189,7 +189,7 @@ const ChatPage = () => {
                     </div>
 
                     {/* Input */}
-                    <div className="p-4 border-t bg-white">
+                    <div className="p-4 border-t bg-white flex-none z-10">
                         <form onSubmit={sendMessage} className="flex gap-2">
                             <input
                                 type="text"
