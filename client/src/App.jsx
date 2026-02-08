@@ -31,10 +31,17 @@ import ChatPage from './components/pages/ChatPage';
 import LegendaryLoader from './components/ui/LegendaryLoader';
 
 // Protected Route Component
+import LockedView from './components/ui/LockedView';
+
+// Protected Route Component
 const RequireApproval = ({ children }) => {
     const user = JSON.parse(localStorage.getItem('user'));
     
-    if (user && !user.isApproved) {
+    if (!user) {
+        return <LockedView title="Classified Section" />;
+    }
+
+    if (!user.isApproved) {
         return <Navigate to="/profile" replace />;
     }
     return children;
