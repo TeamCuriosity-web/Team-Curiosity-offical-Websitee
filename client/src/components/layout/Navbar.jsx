@@ -7,9 +7,27 @@ import NotificationBell from '../common/NotificationBell';
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
-  // ... (rest of state)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const location = useLocation();
 
-  // ... (useEffects)
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
+
+  const navLinks = [
+    { name: 'Home', path: '/' },
+    { name: 'Team', path: '/team' },
+    { name: 'Projects', path: '/projects' },
+    { name: 'Hackathons', path: '/hackathons' },
+    { name: 'Missions', path: '/missions' },
+  ];
 
   return (
     <>
