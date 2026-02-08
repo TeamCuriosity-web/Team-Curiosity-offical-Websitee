@@ -189,7 +189,7 @@ const SuperAdminDashboard = () => {
             }
 
             if (token) {
-                 const clientUrl = `${window.location.origin}${window.location.pathname.startsWith('/Team-Curiosity-offical-Websitee') ? '/Team-Curiosity-offical-Websitee' : ''}/join?token=${token}`;
+                 const clientUrl = `${window.location.origin}${window.location.pathname.startsWith('/Team-Curiosity-offical-Websitee') ? '/Team-Curiosity-offical-Websitee' : ''}/invite?token=${token}`;
                  setInviteLink(clientUrl);
             } else {
                 // Fallback if parsing fails (e.g. if backend just returns the link and our logic fails)
