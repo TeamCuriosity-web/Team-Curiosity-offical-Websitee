@@ -160,26 +160,25 @@ const InviteLandingPage = () => {
             onStart: () => setPhase('disintegrate') 
         });
 
-        // Phase 4: Coalesce (Build the Black Block)
+        // Phase 4: Coalesce (Build the Block)
         tl.to({}, { duration: 1.2, onStart: () => setPhase('coalesce') }); 
 
-        // Phase 5: Flash & Materialize
-        tl.to(canvasRef.current, {
-            filter: 'invert(1)', // Flash effect using CSS filter
-            duration: 0.1,
-            yoyo: true,
-            repeat: 1,
-            onStart: () => setPhase('envelope') // Stop particles
-        })
-        .to(canvasRef.current, { opacity: 0, duration: 0.2 }) // Fade out particles AFTER flash
-        .fromTo(envelopeGroupRef.current, 
+        // Phase 5: Materialize (No Flash, just smooth transformation)
+        tl.to(canvasRef.current, { 
+            opacity: 0, 
+            duration: 0.5, 
+            ease: 'power2.in' 
+        }, "+=0.1"); // Wait slightly for particles to settle
+
+        tl.fromTo(envelopeGroupRef.current, 
             { scale: 1, opacity: 0 }, 
             { 
                 opacity: 1,
-                duration: 0.1, // Instant swap during flash
-                immediateRender: false
+                duration: 0.8, 
+                ease: 'power2.inOut',
+                onStart: () => setPhase('envelope') 
             },
-            "-=0.3" // Sync with flash
+            "-=0.5" // Overlap with particle fade out
         );
         
         // Float
