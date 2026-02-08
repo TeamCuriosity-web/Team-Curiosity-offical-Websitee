@@ -21,6 +21,7 @@ const Navbar = () => {
     setMobileMenuOpen(false);
   }, [location.pathname]);
 
+  const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'Team', path: '/team' },
     { name: 'Projects', path: '/projects' },
