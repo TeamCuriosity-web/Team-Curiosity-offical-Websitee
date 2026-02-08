@@ -66,7 +66,6 @@ const ChatGlimpse = () => {
                 </div>
 
                 <div className="space-y-4">
-                <div className="space-y-4">
                     {recentMessages.length > 0 ? (
                         recentMessages.map((msg) => (
                         <div key={msg._id} className="flex gap-3 items-start opacity-70 hover:opacity-100 transition-opacity">
