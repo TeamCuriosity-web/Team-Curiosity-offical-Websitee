@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
-import { Mail, CheckCircle, ArrowRight, Shield, Globe } from 'lucide-react';
+import { Mail, CheckCircle, ArrowRight, Shield, Globe, Terminal } from 'lucide-react';
 import Button from '../ui/Button';
 
 const InviteLandingPage = () => {
@@ -19,9 +19,9 @@ const InviteLandingPage = () => {
     const contentRef = useRef(null);
     
     const [envelopeOpen, setEnvelopeOpen] = useState(false);
-    const [phase, setPhase] = useState('gathering'); // gathering, boom, envelope, open
+    const [phase, setPhase] = useState('gathering'); // phases: scattering -> gathering -> morphed
 
-    // Particle System
+    // Particle System (Dark Particles on White)
     useEffect(() => {
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
@@ -29,40 +29,36 @@ const InviteLandingPage = () => {
         canvas.height = window.innerHeight;
 
         let particles = [];
-        const particleCount = 150;
+        const particleCount = 200;
 
         class Particle {
             constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                // Start from edges
-                if (Math.random() > 0.5) {
-                    this.x = Math.random() > 0.5 ? 0 : canvas.width;
-                } else {
-                    this.y = Math.random() > 0.5 ? 0 : canvas.height;
-                }
+                // Start scattered
+                this.x = (Math.random() - 0.5) * canvas.width * 3 + canvas.width/2;
+                this.y = (Math.random() - 0.5) * canvas.height * 3 + canvas.height/2;
                 
-                this.vx = (Math.random() - 0.5) * 2;
-                this.vy = (Math.random() - 0.5) * 2;
-                this.size = Math.random() * 2;
-                this.color = Math.random() > 0.5 ? '#00f3ff' : '#bc13fe'; // Neon Cyan / Neon Purple
+                this.vx = 0;
+                this.vy = 0;
+                this.size = Math.random() * 2 + 1;
+                this.color = '#111827'; // Dark Gray/Black
+                this.targetX = canvas.width / 2;
+                this.targetY = canvas.height / 2;
+                this.speed = Math.random() * 0.05 + 0.02; // Easing factor
             }
 
-            update(targetX, targetY, speed) {
-                // Move towards center (target)
-                const dx = targetX - this.x;
-                const dy = targetY - this.y;
-                const distance = Math.sqrt(dx*dx + dy*dy);
-                
-                this.x += (dx / distance) * speed;
-                this.y += (dy / distance) * speed;
-
-                // Add some jitter
-                this.x += (Math.random() - 0.5) * 2;
-                this.y += (Math.random() - 0.5) * 2;
+            update() {
+                if (phase === 'gathering') {
+                    // Ease towards center
+                    this.x += (this.targetX - this.x) * this.speed;
+                    this.y += (this.targetY - this.y) * this.speed;
+                } else if (phase === 'morphed') {
+                    // Disappear/Fade out rapidly
+                    this.size *= 0.8; 
+                }
             }
 
             draw() {
+                if (this.size < 0.1) return;
                 ctx.fillStyle = this.color;
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
@@ -76,21 +72,10 @@ const InviteLandingPage = () => {
         // Animation Loop
         let animationId;
         const animate = () => {
-            ctx.fillStyle = 'rgba(0,0,0,0.1)'; // Trails
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clean clear for white theme
             
             particles.forEach(p => {
-                if (phase === 'gathering') {
-                    p.update(canvas.width/2, canvas.height/2, 15); // Fast implosion
-                } else if (phase === 'boom') {
-                    // Explosion handled by GSAP flash, particles scatter
-                    p.x += (Math.random()-0.5) * 50;
-                    p.y += (Math.random()-0.5) * 50;
-                } else {
-                    // Floating
-                    p.x += (Math.random()-0.5) * 0.5;
-                    p.y += (Math.random()-0.5) * 0.5;
-                }
+                p.update();
                 p.draw();
             });
             animationId = requestAnimationFrame(animate);
@@ -105,68 +90,61 @@ const InviteLandingPage = () => {
     useGSAP(() => {
         const tl = gsap.timeline();
 
-        // Phase 1: Gathering (Handled by Canvas state)
-        // Wait for particles to reach center
-        tl.to({}, { duration: 2.0, onComplete: () => setPhase('boom') });
+         // Phase 1: Gathering Particles
+        tl.to({}, { duration: 2.5, onComplete: () => setPhase('morphed') });
 
-        // Phase 2: BOOM
-        tl.to(containerRef.current, { 
-            backgroundColor: '#ffffff', 
-            duration: 0.1, 
-            ease: 'power4.in',
-            onComplete: () => setPhase('envelope')
-        })
-        .to(containerRef.current, { 
-            backgroundColor: '#000000', 
-            duration: 0.8,
-            ease: 'power2.out'
-        });
-
-        // Phase 3: Envelope Materialization
+        // Phase 2: Morph into Envelope
+        // Force opacity 1 and scale up
         tl.fromTo(envelopeGroupRef.current, 
-            { scale: 0, rotateY: 720, autoAlpha: 0 },
-            { scale: 1, rotateY: 0, autoAlpha: 1, duration: 1.5, ease: 'back.out(1.2)' },
-            "-=0.5"
+            { scale: 0, autoAlpha: 1 }, 
+            { 
+                scale: 1, 
+                duration: 0.8, 
+                ease: 'back.out(1.7)', 
+                immediateRender: true
+            },
+            "-=0.1" 
         );
         
-        // Float effect
+        // Continuous Float effect
         gsap.to(envelopeGroupRef.current, {
-            y: -20,
-            duration: 2,
+            y: -15,
+            duration: 2.5,
             repeat: -1,
             yoyo: true,
-            ease: 'sine.inOut'
+            ease: 'sine.inOut',
+            delay: 0.8
         });
 
     }, { scope: containerRef });
 
-    const handleOpenEnvelope = () => {
+    const handleOpenEnvelope = (e) => {
+        e.stopPropagation(); // Stop bubbling
         if (envelopeOpen) return;
         setEnvelopeOpen(true);
-        setPhase('open');
 
         const tl = gsap.timeline();
 
-        // 1. Zoom in
-        tl.to(envelopeGroupRef.current, { scale: 1.2, duration: 0.5, ease: 'power2.in' });
+        // 1. Zoom in slightly
+        tl.to(envelopeGroupRef.current, { scale: 1.1, duration: 0.4, ease: 'power2.in' });
 
-        // 2. Open Flap (3D)
+        // 2. Open Flap
         tl.to(flapRef.current, { 
             rotateX: 180, 
-            duration: 0.6, 
+            duration: 0.5, 
             ease: 'power2.inOut',
             transformOrigin: 'top' 
         });
 
-        // 3. Card Flies Out
+        // 3. Card Slides Out
         tl.to(cardRef.current, {
-            y: -250,
-            zIndex: 50,
-            duration: 0.6,
+            y: -220,
+            zIndex: 60, // Ensure card is way on top
+            duration: 0.5,
             ease: 'power2.out'
         });
 
-        // 4. Card Focus (Full Screen Overlay effect)
+        // 4. Card Focus
         tl.to(cardRef.current, {
             y: 0,
             x: 0,
@@ -178,103 +156,118 @@ const InviteLandingPage = () => {
             xPercent: -50,
             yPercent: -50,
             width: '90%',
-            maxWidth: '500px',
+            maxWidth: '550px',
             height: 'auto',
-            duration: 1.2,
-            ease: 'back.out(0.8)',
-            boxShadow: '0 0 50px rgba(0, 243, 255, 0.5)'
+            duration: 1.0,
+            ease: 'expo.out',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' 
         });
 
         // 5. Hide Envelope
-        tl.to(envelopeRef.current, { autoAlpha: 0, duration: 0.3 }, "-=1.0");
+        tl.to(envelopeRef.current, { autoAlpha: 0, duration: 0.3 }, "-=0.8");
         
         // 6. Reveal Content
         tl.fromTo(contentRef.current, 
-            { autoAlpha: 0, y: 20 },
-            { autoAlpha: 1, y: 0, duration: 0.5, stagger: 0.1 }
+            { autoAlpha: 0, y: 10 },
+            { autoAlpha: 1, y: 0, duration: 0.4, stagger: 0.1 }
         );
     };
 
     const handleAccept = () => {
-        // Warp Drive Effect
+        // Implode into Button
         gsap.to(cardRef.current, {
-            scale: 10,
+            scale: 0.9,
             opacity: 0,
-            duration: 0.8,
-            ease: 'power4.in',
+            y: 100,
+            duration: 0.4,
+            ease: 'back.in(1.7)',
             onComplete: () => navigate(`/join?token=${token || ''}`)
-        });
-        
-        // Flash screen white 
-        gsap.to(containerRef.current, {
-            backgroundColor: '#fff',
-            duration: 0.5,
-            delay: 0.4
         });
     };
 
     return (
-        <div ref={containerRef} className="min-h-screen bg-black flex items-center justify-center overflow-hidden perspective-1000 relative">
-            {/* Fallback Background (if canvas fails or before load) */}
-            <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black z-0"></div>
+        <div ref={containerRef} className="min-h-screen bg-white flex items-center justify-center overflow-hidden perspective-1000 relative">
             
-            <canvas ref={canvasRef} className="absolute inset-0 z-0 pointer-events-none mix-blend-screen" />
+            <canvas ref={canvasRef} className="absolute inset-0 z-0 pointer-events-none" />
             
             {/* Grid Background */}
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(0,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,255,0.05)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none"></div>
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.03)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none"></div>
 
             {/* Envelope Group */}
-            <div ref={envelopeGroupRef} className="relative z-10 opacity-0">
+            {/* Added z-50 and pointer-events-auto to ensure it catches clicks */}
+            <div ref={envelopeGroupRef} className="relative z-50 opacity-0 will-change-transform pointer-events-auto">
                 <div 
                     ref={envelopeRef}
-                    className="relative w-80 h-52 bg-gradient-to-br from-gray-900 to-black border border-cyan-500/30 rounded-lg shadow-[0_0_30px_rgba(0,243,255,0.2)] cursor-pointer hover:shadow-[0_0_50px_rgba(0,243,255,0.4)] transition-shadow group"
+                    className="relative w-80 h-52 bg-white border border-gray-200 rounded-md shadow-2xl cursor-pointer hover:scale-105 transition-transform group"
                     onClick={handleOpenEnvelope}
                 >
                     {/* Flap */}
                     <div 
                         ref={flapRef}
-                        className="absolute top-0 left-0 w-full h-1/2 bg-gray-800 origin-top z-30 border-b border-cyan-500/20"
+                        className="absolute top-0 left-0 w-full h-1/2 bg-gray-50 origin-top z-30 border-b border-gray-200 shadow-sm pointer-events-none"
                         style={{ clipPath: 'polygon(0 0, 50% 100%, 100% 0)', backfaceVisibility: 'hidden' }}
                     ></div>
 
                     {/* Seal */}
-                    <div className="absolute top-[40%] left-1/2 -translate-x-1/2 z-40 w-12 h-12 bg-black rounded-full border-2 border-cyan-400 flex items-center justify-center shadow-[0_0_15px_cyan]">
-                        <Shield size={20} className="text-cyan-400 animate-pulse" />
+                    <div className="absolute top-[40%] left-1/2 -translate-x-1/2 z-40 w-10 h-10 bg-black rounded-full flex items-center justify-center shadow-lg ring-4 ring-white pointer-events-none">
+                        <Terminal size={18} className="text-white" />
                     </div>
                 
-                    <div className="absolute inset-0 flex items-center justify-center pt-10">
-                        <p className="font-mono text-[10px] text-cyan-500/50 tracking-[0.3em]">TOP SECRET</p>
+                    {/* Texture/Writing on Envelope */}
+                    <div className="absolute inset-0 flex flex-col items-center justify-center pt-8 opacity-80 pointer-events-none">
+                         <div className="border-2 border-dashed border-gray-300 p-2 rounded transform -rotate-2">
+                             <p className="font-mono text-[10px] text-gray-400 font-bold tracking-[0.2em] uppercase">
+                                Classified Document
+                             </p>
+                         </div>
+                         <p className="mt-2 text-xs font-serif italic text-gray-400">To: Agent Candidate</p>
+                    </div>
+
+                    {/* Click Guide */}
+                    <div className="absolute -bottom-8 left-0 w-full text-center animate-bounce">
+                        <p className="text-[10px] text-gray-400 font-mono tracking-widest">
+                            [ CLICK TO OPEN ]
+                        </p>
                     </div>
                 </div>
 
                 {/* The Card */}
                 <div 
                     ref={cardRef}
-                    className="absolute top-0 left-0 w-full h-full bg-black/90 backdrop-blur-xl border border-cyan-500/50 rounded-lg p-8 flex flex-col items-center justify-center z-20 text-center shadow-2xl opacity-0"
+                    className="absolute top-0 left-0 w-full h-full bg-white rounded-xl p-8 flex flex-col items-center justify-center z-20 text-center shadow-2xl opacity-0 border border-gray-100 pointer-events-auto"
                 >
-                    <div ref={contentRef} className="space-y-6">
+                    <div ref={contentRef} className="space-y-6 w-full">
                         <div className="flex justify-center">
-                           <div className="w-16 h-16 rounded-full bg-cyan-900/20 flex items-center justify-center border border-cyan-500 box-[0_0_20px_cyan]">
-                                <Globe className="text-cyan-400 animate-spin-slow" size={32} />
+                           <div className="w-16 h-16 rounded-full bg-black text-white flex items-center justify-center shadow-md">
+                                <Globe size={32} />
                            </div>
                         </div>
                         
                         <div>
-                            <h1 className="text-3xl font-black text-white tracking-widest uppercase mb-1 drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">
-                                Welcome Agent
+                            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-[0.3em] mb-2">Subject: Recruitment</h3>
+                            <h1 className="text-4xl font-black text-black tracking-tight uppercase mb-1">
+                                TEAM CURIOSITY
                             </h1>
-                            <p className="text-cyan-400 font-mono text-sm tracking-widest">CLEARANCE LEVEL: 5</p>
                         </div>
 
-                        <div className="h-px w-full bg-gradient-to-r from-transparent via-cyan-500 to-transparent"></div>
+                        <div className="w-full bg-gray-50 p-4 rounded-lg border border-gray-100 text-left">
+                             <div className="flex items-center gap-2 mb-2 border-b border-gray-200 pb-2">
+                                <Shield size={14} className="text-black" />
+                                <span className="text-xs font-bold uppercase">Background Check</span>
+                             </div>
+                             <p className="text-sm text-gray-600 font-mono leading-relaxed">
+                                 Code Signature: <strong className="text-green-600">VERIFIED</strong><br/>
+                                 Clearance: <strong className="text-black">LEVEL 5</strong><br/>
+                                 Directive: <strong className="text-black">IMMEDIATE JOINDER</strong>
+                             </p>
+                        </div>
 
-                        <p className="text-gray-400 text-sm leading-relaxed max-w-sm mx-auto font-mono">
-                            The Council has been watching. Your skills have triggered our detection algorithms. 
-                            We invite you to join <span className="text-white font-bold">Team Curiosity</span>.
+                        <p className="text-gray-500 text-sm max-w-sm mx-auto">
+                            The simulation requires your input.
                         </p>
 
-                        <Button onClick={handleAccept} variant="primary" className="w-full py-4 text-sm font-bold tracking-[0.2em] border-cyan-500 hover:bg-cyan-900/20 shadow-[0_0_20px_cyan]">
-                            ACCEPT MISSION
+                        <Button onClick={handleAccept} variant="black" className="w-full py-4 text-sm font-bold tracking-widest bg-black text-white hover:bg-gray-800 shadow-lg transition-transform hover:-translate-y-1">
+                            INITIATE PROTOCOL
                         </Button>
                     </div>
                 </div>
@@ -283,8 +276,8 @@ const InviteLandingPage = () => {
             {/* HUD Elements */}
             {!envelopeOpen && (
                 <div className="absolute bottom-10 left-0 w-full text-center pointer-events-none">
-                    <p className="text-cyan-500/50 font-mono text-xs animate-pulse tracking-widest">
-                        // SECURE UPLINK ESTABLISHED
+                    <p className="text-gray-400 font-mono text-xs animate-pulse tracking-widest uppercase">
+                        Establishing Secure Link...
                     </p>
                 </div>
             )}
