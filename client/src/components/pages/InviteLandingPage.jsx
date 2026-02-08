@@ -281,16 +281,24 @@ const InviteLandingPage = () => {
         
         const tl = gsap.timeline();
 
-        // 1. Unwind String (Visual Fake)
-        tl.to(".string-closure", { rotation: 360, opacity: 0, scale: 0.5, duration: 0.5 });
+        // 1. Unwind & Drop String (Physics-like)
+        tl.to(".string-closure", { 
+            rotation: 720, // Spin fast (unwind)
+            y: 300, // Drop down
+            x: 50, // Drift right
+            opacity: 0, 
+            scale: 0.5, 
+            duration: 0.8,
+            ease: "power2.in" 
+        });
 
-        // 2. Open Flap
+        // 2. Open Flap (Delayed slightly so thread clears)
         tl.to(flapRef.current, {
             rotationX: 180,
             transformOrigin: "top center",
             duration: 0.6,
             ease: "power2.inOut"
-        });
+        }, "-=0.4");
 
         // 3. Peek Card (Hint to Pull)
         tl.to(cardRef.current, {
