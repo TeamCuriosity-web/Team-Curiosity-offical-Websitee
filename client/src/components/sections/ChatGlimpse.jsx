@@ -70,11 +70,11 @@ const ChatGlimpse = () => {
                         recentMessages.map((msg) => (
                         <div key={msg._id} className="flex gap-3 items-start opacity-70 hover:opacity-100 transition-opacity">
                             <div className="w-6 h-6 rounded bg-gray-200 flex items-center justify-center text-[10px] font-bold mt-1">
-                                {(msg.sender.name || 'U').charAt(0)}
+                                {(msg.sender?.name || 'U').charAt(0)}
                             </div>
                             <div>
                                 <div className="flex items-center gap-2">
-                                    <span className="text-xs font-bold font-mono">{msg.sender.name || 'Unknown'}</span>
+                                    <span className="text-xs font-bold font-mono">{msg.sender?.name || 'Unknown'}</span>
                                     <span className="text-[10px] text-gray-400">
                                         {new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                                     </span>
