@@ -119,7 +119,8 @@ const ChatPage = () => {
                     </div>
 
                     {/* Messages */}
-                    {messageList.map((msg, index) => {
+                    <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-dots-pattern">
+                        {messageList.map((msg, index) => {
                             // Robust ID comparison
                             const currentUserId = user.id || user._id;
                             const msgSenderId = msg.sender?._id || msg.sender?.id || msg.sender;
