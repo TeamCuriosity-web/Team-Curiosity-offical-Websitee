@@ -89,13 +89,14 @@ mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/legendary-t
 
 // Basic Route
 app.get('/', (req, res) => {
-  res.send('Server is Running - Unauthorized Access Prohibited');
+  res.send('Server is Running - Unauthorized Access Prohibited (System v2.0 - Chat Active)');
 });
 
 // Start Server
 if (require.main === module) {
   server.listen(PORT, () => { // Use server.listen instead of app.listen
     console.log(`Server running on port ${PORT}`);
+    console.log(`Socket.io Initialized`);
   });
 }
 
