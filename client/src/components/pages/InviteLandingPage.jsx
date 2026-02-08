@@ -52,7 +52,7 @@ const InviteLandingPage = () => {
         window.addEventListener('resize', updateCanvasSize);
 
         // Initialize particles ONCE
-        const particleCount = 5000; // Even more density for details
+        const particleCount = 5000; 
         const envelopeWidth = 520;
         const envelopeHeight = 320;
         const centerX = canvas.width / 2;
@@ -67,49 +67,33 @@ const InviteLandingPage = () => {
                 this.size = Math.random() * 1.5 + 0.5;
                 this.color = '#000000';
                 
-                // --- DETAILED OUTLINE TARGETING ---
-                // We want to form: Border, Flap Line, Lock Circle, Text Lines
+                // --- TARGETING LOGIC: FILL & CONTENT (Borderless) ---
                 const shapeType = Math.random();
 
-                if (shapeType < 0.5) {
-                    // 50% - The Main Border (Rectangle)
-                    const perimeter = 2 * (envelopeWidth + envelopeHeight);
-                    const pos = Math.random() * perimeter;
-                    if (pos < envelopeWidth) { // Top
-                        this.targetX = centerX - (envelopeWidth/2) + pos;
-                        this.targetY = centerY - (envelopeHeight/2);
-                    } else if (pos < envelopeWidth + envelopeHeight) { // Right
-                        this.targetX = centerX + (envelopeWidth/2);
-                        this.targetY = centerY - (envelopeHeight/2) + (pos - envelopeWidth);
-                    } else if (pos < (envelopeWidth * 2) + envelopeHeight) { // Bottom
-                        this.targetX = centerX + (envelopeWidth/2) - (pos - (envelopeWidth + envelopeHeight));
-                        this.targetY = centerY + (envelopeHeight/2);
-                    } else { // Left
-                        this.targetX = centerX - (envelopeWidth/2);
-                        this.targetY = centerY + (envelopeHeight/2) - (pos - (envelopeWidth*2 + envelopeHeight));
-                    }
+                if (shapeType < 0.6) {
+                    // 60% - FILL THE RECTANGLE (Mass, not Border)
+                    // Particles scattered inside the envelope area
+                    this.targetX = centerX + (Math.random() - 0.5) * envelopeWidth;
+                    this.targetY = centerY + (Math.random() - 0.5) * envelopeHeight;
                 } 
-                else if (shapeType < 0.65) {
+                else if (shapeType < 0.75) {
                     // 15% - Lock Circle (Center)
                     const angle = Math.random() * Math.PI * 2;
-                    const radius = 35; // Size of the lock circle bg
-                    this.targetX = centerX + Math.cos(angle) * radius;
-                    this.targetY = centerY - 40 + Math.sin(angle) * radius; // Offset up slightly
+                    const radius = 35 * Math.sqrt(Math.random()); // Solid circle fill
+                    this.targetX = centerX + Math.cos(angle) * (35 * Math.random()); // Filled circle
+                    this.targetY = centerY - 40 + Math.sin(angle) * (35 * Math.random());
                 }
-                else if (shapeType < 0.8) {
-                    // 15% - "CONFIDENTIAL" Text Lines (Below Lock)
-                    // 3 Lines of text representation
+                else if (shapeType < 0.9) {
+                    // 15% - Text Blocks
                     const lineIndex = Math.floor(Math.random() * 3);
                     const lineWidth = 200;
                     this.targetX = centerX + (Math.random() - 0.5) * lineWidth;
-                    // Y positions for the text lines: 0, 20, 40 relative to center
                     this.targetY = centerY + 20 + (lineIndex * 15); 
                 }
                 else {
-                    // 20% - Top Flap Line
-                    const flapY = centerY - (envelopeHeight/2) + 40; // 40px down
+                    // 10% - Flap Crease (Shadow line)
                     this.targetX = centerX + (Math.random() - 0.5) * envelopeWidth;
-                    this.targetY = flapY;
+                    this.targetY = centerY - (envelopeHeight/2) + 40;
                 }
                 
                 this.baseX = this.targetX;
@@ -284,14 +268,23 @@ const InviteLandingPage = () => {
 
     const flapRef = useRef(null);
 
-    const handleOpenEnvelope = (e) => {
-        if (envelopeOpen) return;
-        setEnvelopeOpen(true);
-        setPhase('open');
+    // Interaction States
+    const [interactionPhase, setInteractionPhase] = useState('locked'); // locked -> unsealed -> reading
+    const dragStartY = useRef(0);
+    const dragCardY = useRef(0);
+    const isDragging = useRef(false);
 
+    // UNSEAL: First Interaction (Click Thread)
+    const handleUnseal = () => {
+        if (interactionPhase !== 'locked') return;
+        setInteractionPhase('unsealed'); // Enable Dragging
+        
         const tl = gsap.timeline();
 
-        // 1. OPEN FLAP (3D Rotation)
+        // 1. Unwind String (Visual Fake)
+        tl.to(".string-closure", { rotation: 360, opacity: 0, scale: 0.5, duration: 0.5 });
+
+        // 2. Open Flap
         tl.to(flapRef.current, {
             rotationX: 180,
             transformOrigin: "top center",
@@ -299,30 +292,81 @@ const InviteLandingPage = () => {
             ease: "power2.inOut"
         });
 
-        // 2. Pull Card OUT (Upwards)
+        // 3. Peek Card (Hint to Pull)
         tl.to(cardRef.current, {
-            y: -150, 
+            y: -60, // Peek out slightly
             opacity: 1,
-            duration: 0.6,
-            ease: 'power2.out'
-        }, "-=0.2"); // Overlap slightly with flap opening
+            duration: 0.5,
+            ease: "back.out(1.7)"
+        }, "-=0.3");
+    };
 
-        // 3. Drop Envelope
+    // DRAG: Second Interaction (Pull Card)
+    const handleDragStart = (e) => {
+        if (interactionPhase !== 'unsealed') return;
+        isDragging.current = true;
+        dragStartY.current = e.clientY || e.touches?.[0].clientY;
+        
+        // Add listeners for move/up
+        window.addEventListener('mousemove', handleDragMove);
+        window.addEventListener('mouseup', handleDragEnd);
+        window.addEventListener('touchmove', handleDragMove);
+        window.addEventListener('touchend', handleDragEnd);
+    };
+
+    const handleDragMove = (e) => {
+        if (!isDragging.current) return;
+        const clientY = e.clientY || e.touches?.[0].clientY;
+        const deltaY = clientY - dragStartY.current;
+        
+        // Only allow pulling UP (negative delta)
+        // Clamp to prevent pulling down
+        const newY = Math.min(0, -60 + deltaY); // Start from -60 (peek position)
+        dragCardY.current = newY;
+
+        // Direct update for performance
+        gsap.set(cardRef.current, { y: newY });
+    };
+
+    const handleDragEnd = () => {
+        isDragging.current = false;
+        window.removeEventListener('mousemove', handleDragMove);
+        window.removeEventListener('mouseup', handleDragEnd);
+        window.removeEventListener('touchmove', handleDragMove);
+        window.removeEventListener('touchend', handleDragEnd);
+
+        // Threshold check (Did they pull enough?)
+        if (dragCardY.current < -150) {
+            // SUCCESS: Extract fully
+            handleExtractCard();
+        } else {
+            // FAIL: Snap back to peek
+            gsap.to(cardRef.current, { y: -60, duration: 0.3, ease: "power2.out" });
+        }
+    };
+
+    const handleExtractCard = () => {
+        setInteractionPhase('reading');
+
+        const tl = gsap.timeline();
+
+        // 1. Drop Envelope
         tl.to(envelopeRef.current, { 
             y: 400, 
             opacity: 0, 
             duration: 0.5, 
             ease: 'power2.in' 
-        }, "-=0.4");
+        });
 
-        // 3. Center Card
+        // 2. Center Card
         tl.to(cardRef.current, {
             y: 0,
             scale: 1,
             duration: 0.8,
             ease: 'back.out(1.2)'
-        });
+        }, "-=0.2");
 
+        // 3. Reveal Content
         tl.fromTo(contentRef.current,
             { y: 30, opacity: 0 },
             { y: 0, opacity: 1, stagger: 0.1, duration: 0.5 }
@@ -380,41 +424,66 @@ const InviteLandingPage = () => {
             {/* --- ENVELOPE LAYER --- */}
             <div ref={envelopeGroupRef} className="relative z-50 opacity-0 flex items-center justify-center">
                 
-                {/* WHITE DOSSIER (The "Cover") */}
+                {/* WHITE DOSSIER (Borderless Design) */}
                 <div 
                     ref={envelopeRef}
-                    className="absolute w-[360px] md:w-[520px] h-[240px] md:h-[320px] bg-white shadow-2xl rounded-lg cursor-pointer hover:shadow-xl transition-shadow duration-300 z-50 flex flex-col items-center justify-center overflow-hidden border-2 border-black"
-                    onClick={handleOpenEnvelope}
+                    className="absolute w-[360px] md:w-[520px] h-[240px] md:h-[320px] bg-gray-50 shadow-2xl rounded-lg z-50 flex flex-col items-center justify-center overflow-visible"
                 >
                     {/* Top Flap Indicator - Animated */}
                     <div 
                         ref={flapRef}
-                        className="absolute top-0 w-full h-16 bg-gray-50 border-b border-gray-200 flex items-end justify-center z-20 origin-top"
-                        style={{ transformStyle: 'preserve-3d' }}
+                        className="absolute top-0 w-full h-16 bg-gray-100 flex items-end justify-center z-20 origin-top shadow-sm border-b border-gray-200"
+                        style={{ transformStyle: 'preserve-3d', backfaceVisibility: 'hidden' }}
                     >
-                         <div className="w-24 h-1 bg-gray-200 rounded-full mb-2"></div>
+                         {/* Flap Circle button */}
+                         <div className="w-4 h-4 rounded-full bg-red-800 border-2 border-red-950 opacity-80 mb-2"></div>
                     </div>
 
-                    <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mb-4 text-white shadow-lg mt-8">
-                        <Lock size={24} />
-                    </div>
-                    <h2 className="text-3xl tracking-[0.3em] font-black text-black mb-2">CONFIDENTIAL</h2>
-                    <div className="h-px w-24 bg-black mb-4"></div>
-                    <p className="text-[10px] text-gray-900 font-mono tracking-widest uppercase animate-pulse">
-                        [ TAP TO EXTRACT INVITATION ]
-                    </p>
+                    {/* INTERACTIVE THREAD CLOSURE */}
+                    {interactionPhase === 'locked' && (
+                        <div 
+                            className="absolute z-50 cursor-pointer string-closure hover:scale-110 transition-transform"
+                            onClick={handleUnseal}
+                            style={{ top: '60px' }} // Positioned near flap
+                        >
+                             {/* The Thread Visual */}
+                             <div className="relative w-16 h-16 flex items-center justify-center">
+                                {/* Bottom Button */}
+                                <div className="absolute w-6 h-6 rounded-full bg-gray-300 border border-gray-400 shadow-inner z-10"></div>
+                                {/* String Winding (SVG) */}
+                                <svg width="60" height="100" viewBox="0 0 60 100" className="absolute top-[-20px] drop-shadow-md pointer-events-none">
+                                    <path 
+                                        d="M30 20 C 10 30, 10 50, 30 50 C 50 50, 50 20, 30 20" 
+                                        fill="none" 
+                                        stroke="#B91C1C" 
+                                        strokeWidth="2"
+                                    />
+                                    <path 
+                                        d="M30 50 L 30 80" 
+                                        fill="none" 
+                                        stroke="#B91C1C" 
+                                        strokeWidth="2"
+                                    />
+                                </svg>
+                             </div>
+                        </div>
+                    )}
 
-                    {/* Corner Marks (The "Outline" anchor points visually) */}
-                    <div className="absolute top-0 left-0 w-8 h-8 border-l-4 border-t-4 border-black"></div>
-                    <div className="absolute top-0 right-0 w-8 h-8 border-r-4 border-t-4 border-black"></div>
-                    <div className="absolute bottom-0 left-0 w-8 h-8 border-l-4 border-b-4 border-black"></div>
-                    <div className="absolute bottom-0 right-0 w-8 h-8 border-r-4 border-b-4 border-black"></div>
+                    <div className="mt-16 text-center pointer-events-none">
+                        <h2 className="text-3xl tracking-[0.3em] font-black text-black mb-2 opacity-80">CONFIDENTIAL</h2>
+                        <div className="h-px w-24 bg-gray-300 mb-4 mx-auto"></div>
+                        <p className="text-[10px] text-red-700 font-mono tracking-widest uppercase animate-pulse font-bold">
+                            {interactionPhase === 'locked' ? '[ BREAK SEAL TO OPEN ]' : '[ PULL DOCUMENT UP ]'}
+                        </p>
+                    </div>
                 </div>
 
                 {/* Card */}
                 <div 
                     ref={cardRef}
-                    className="w-[340px] md:w-[480px] bg-white rounded-xl p-8 md:p-12 text-center shadow-2xl border-2 border-gray-100 opacity-0 z-40 transform translate-y-4"
+                    onMouseDown={handleDragStart}
+                    onTouchStart={handleDragStart}
+                    className={`w-[340px] md:w-[480px] bg-white rounded-xl p-8 md:p-12 text-center shadow-2xl border-2 border-gray-100 opacity-0 z-40 transform translate-y-4 ${interactionPhase === 'unsealed' ? 'cursor-grab active:cursor-grabbing' : ''}`}
                 >
                     <div ref={contentRef}>
                         <div className="mb-8 flex justify-center">
