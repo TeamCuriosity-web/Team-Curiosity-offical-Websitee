@@ -273,29 +273,29 @@ const InviteLandingPage = () => {
             {/* --- ENVELOPE LAYER --- */}
             <div ref={envelopeGroupRef} className="relative z-50 opacity-0 flex items-center justify-center">
                 
-                {/* BLACK DOSSIER (The "Cover") */}
+                {/* WHITE DOSSIER (The "Cover") - Requested Update */}
                 <div 
                     ref={envelopeRef}
-                    className="absolute w-[360px] md:w-[520px] h-[240px] md:h-[320px] bg-[#0a0a0a] shadow-2xl rounded-lg cursor-pointer hover:shadow-xl transition-shadow duration-300 z-50 flex flex-col items-center justify-center overflow-hidden border-t border-gray-800"
+                    className="absolute w-[360px] md:w-[520px] h-[240px] md:h-[320px] bg-white shadow-2xl rounded-lg cursor-pointer hover:shadow-xl transition-shadow duration-300 z-50 flex flex-col items-center justify-center overflow-hidden border border-gray-200"
                     onClick={handleOpenEnvelope}
                 >
                     {/* Top Flap Indicator */}
-                    <div className="absolute top-0 w-full h-2 bg-gray-800"></div>
+                    <div className="absolute top-0 w-full h-2 bg-gray-100 border-b border-gray-200"></div>
 
-                    <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-6 text-white border border-white/10 backdrop-blur-sm">
+                    <div className="w-20 h-20 bg-black rounded-full flex items-center justify-center mb-6 text-white shadow-lg">
                         <Lock size={28} />
                     </div>
-                    <h2 className="text-3xl tracking-[0.3em] font-bold text-white mb-2">CONFIDENTIAL</h2>
-                    <div className="h-px w-24 bg-gray-700 mb-4"></div>
+                    <h2 className="text-3xl tracking-[0.3em] font-bold text-black mb-2">CONFIDENTIAL</h2>
+                    <div className="h-px w-24 bg-gray-300 mb-4"></div>
                     <p className="text-[10px] text-gray-500 font-mono tracking-widest uppercase animate-pulse">
                         [ TAP TO EXTRACT FILE ]
                     </p>
 
                     {/* Corner Marks */}
-                    <div className="absolute top-4 left-4 w-4 h-4 border-l border-t border-gray-600"></div>
-                    <div className="absolute top-4 right-4 w-4 h-4 border-r border-t border-gray-600"></div>
-                    <div className="absolute bottom-4 left-4 w-4 h-4 border-l border-b border-gray-600"></div>
-                    <div className="absolute bottom-4 right-4 w-4 h-4 border-r border-b border-gray-600"></div>
+                    <div className="absolute top-4 left-4 w-4 h-4 border-l border-t border-black"></div>
+                    <div className="absolute top-4 right-4 w-4 h-4 border-r border-t border-black"></div>
+                    <div className="absolute bottom-4 left-4 w-4 h-4 border-l border-b border-black"></div>
+                    <div className="absolute bottom-4 right-4 w-4 h-4 border-r border-b border-black"></div>
                 </div>
 
                 {/* Card (Starts Hidden BEHIND the cover, or physically slightly inside) */}
