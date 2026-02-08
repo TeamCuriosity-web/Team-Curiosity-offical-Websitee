@@ -26,6 +26,7 @@ import ManifestoPage from './components/pages/ManifestoPage';
 import StartBuildingPage from './components/pages/StartBuildingPage';
 import ProfilePage from './components/pages/ProfilePage';
 import ChatPage from './components/pages/ChatPage';
+import GuidePage from './components/pages/GuidePage';
 
 // UI
 import LegendaryLoader from './components/ui/LegendaryLoader';
@@ -155,6 +156,7 @@ const AppContent = () => {
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route path="/super-admin" element={<SuperAdminDashboard />} />
+          <Route path="/guide" element={<GuidePage />} />
         </Routes>
       </div>
     </>
