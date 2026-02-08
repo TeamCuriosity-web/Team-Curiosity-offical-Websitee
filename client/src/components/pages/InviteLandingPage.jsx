@@ -389,17 +389,17 @@ const InviteLandingPage = () => {
             ease: 'power2.inOut'
         }, "<"); // "<" syncs start time with previous tween
 
-        // Float Animation
-        gsap.to(envelopeGroupRef.current, {
-            y: -10,
-            duration: 3,
-            repeat: -1,
-            yoyo: true,
-            ease: 'sine.inOut',
-            delay: 10 // Start floating later
-        });
-
-    }, { scope: containerRef });
+            // Float Animation
+             gsap.to(envelopeGroupRef.current, {
+                y: -10,
+                duration: 3,
+                repeat: -1,
+                yoyo: true,
+                ease: 'sine.inOut',
+                delay: 10 // Start floating later
+            });
+    
+        }, { scope: containerRef, dependencies: [audioEnabled] });
 
     const flapRef = useRef(null);
 
@@ -563,21 +563,7 @@ const InviteLandingPage = () => {
             <canvas ref={canvasRef} className="absolute inset-0 z-0 pointer-events-none" />
             <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#000000_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none"></div>
 
-            {/* --- AUDIO AIRLOCK OVERLAY --- */}
-            {!audioEnabled && (
-                <div className="absolute inset-0 z-[100] bg-black flex items-center justify-center">
-                    <button 
-                        onClick={handleStartExperience}
-                        className="px-8 py-4 bg-white text-black font-black tracking-[0.3em] hover:scale-105 transition-transform"
-                    >
-                        INITIALIZE SYSTEM
-                    </button>
-                    <p className="absolute bottom-10 text-gray-500 text-xs font-mono">AUDIO & HAPTICS REQUIRED</p>
-                </div>
-            )}
-
             {/* --- INTRO TEXT LAYER --- */}
-            {audioEnabled && (
             <div ref={textGroupRef} className="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none p-4">
                 <div 
                     className="text-[10vw] md:text-[8rem] font-black tracking-tighter mb-4 text-center leading-[0.85] uppercase"
@@ -593,7 +579,6 @@ const InviteLandingPage = () => {
                     {renderText("An Exclusive Platform", "block")}
                 </div>
             </div>
-            )}
 
             {/* --- ENVELOPE LAYER --- */}
             <div ref={envelopeGroupRef} className="relative z-50 opacity-0 flex items-center justify-center">
