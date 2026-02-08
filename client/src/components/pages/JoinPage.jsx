@@ -27,7 +27,9 @@ const JoinPage = () => {
     branch: '',
     section: '',
     programmingLanguages: '', 
-    avatar: ''
+    avatar: '',
+    github: '',
+    linkedin: ''
   });
 
   const [validationErrors, setValidationErrors] = useState({});
@@ -232,6 +234,7 @@ const JoinPage = () => {
                         />
                       </div>
                   </div>
+                  </div>
                   <div>
                     <label className="block text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">Tech Stack (Arsenal)</label>
                     <input
@@ -244,6 +247,33 @@ const JoinPage = () => {
                     <p className="text-[10px] text-gray-400 mt-1">Comma separated values</p>
                   </div>
               </div>
+          </div>
+
+          <div className="h-px bg-gray-100 w-full"></div>
+
+          {/* 3. Social Intelligence */}
+          <div className="space-y-4">
+               <h3 className="text-xs font-bold text-black uppercase border-b border-black pb-2 mb-4 flex items-center gap-2">Social Intelligence</h3>
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label className="block text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">GitHub Profile</label>
+                        <input
+                            className="w-full bg-gray-50 border border-gray-200 rounded p-3 text-sm focus:border-black focus:ring-0 outline-none transition-all font-mono"
+                            placeholder="https://github.com/username"
+                            value={formData.github}
+                            onChange={(e) => setFormData({...formData, github: e.target.value})}
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">LinkedIn Profile</label>
+                        <input
+                            className="w-full bg-gray-50 border border-gray-200 rounded p-3 text-sm focus:border-black focus:ring-0 outline-none transition-all font-mono"
+                            placeholder="https://linkedin.com/in/username"
+                            value={formData.linkedin}
+                            onChange={(e) => setFormData({...formData, linkedin: e.target.value})}
+                        />
+                    </div>
+               </div>
           </div>
 
           <Button type="submit" variant="primary" className="w-full h-14 text-sm tracking-widest font-bold">

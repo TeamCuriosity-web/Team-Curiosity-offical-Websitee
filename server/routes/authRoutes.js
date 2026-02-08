@@ -16,7 +16,8 @@ router.post('/register', async (req, res) => {
   console.log("Register Request Body:", req.body);
   const { 
     name, email, password, inviteToken,
-    avatar, college, branch, section, programmingLanguages 
+    avatar, college, branch, section, programmingLanguages,
+    github, linkedin
   } = req.body;
 
   try {
@@ -72,6 +73,8 @@ router.post('/register', async (req, res) => {
       branch,
       section,
       programmingLanguages,
+      github,
+      linkedin,
       isApproved,
       // Default profile image to avatar if selected, or dicebear fallback
       profileImage: avatar || `https://api.dicebear.com/7.x/notionists/svg?seed=${name}` 
@@ -138,6 +141,8 @@ router.post('/login', async (req, res) => {
         branch: user.branch,
         section: user.section,
         programmingLanguages: user.programmingLanguages,
+        github: user.github,
+        linkedin: user.linkedin,
         bio: user.bio,
         avatar: user.avatar
       });
@@ -147,6 +152,77 @@ router.post('/login', async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
+});
+
+// @desc    Update user details
+// @route   PUT /api/auth/updatedetails
+// @access  Private
+router.put('/updatedetails', async (req, res) => {
+    // Basic middleware replacement since we don't have the middleware imported yet
+    // Real app should use auth middleware. For now assuming client sends ID in body or we parse it
+    // Actually, let's look at how we can get the user.
+    // If not using middleware, we usually expect a header.
+    // Let's assume the client sends the ID to update or we trust the request for now if header is checked elsewhere.
+    // Ideally: Use the 'protect' middleware.
+    
+    // Quick fix: Require ID in body for now, or just trust the update if we assume protected by frontend (NOT SECURE but matches current pattern if middleware isn't here).
+    // BETTER: Import verifyToken if available. 
+    // Let's check imports. Just 'jwt' and models. 
+    
+    // Simple verify logic inline
+    let token;
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+        token = req.headers.authorization.split(' ')[1];
+    }
+
+    if (!token) {
+        return res.status(401).json({ message: 'Not authorized, no token' });
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findById(decoded.id);
+
+        if (user) {
+            user.name = req.body.name || user.name;
+            user.college = req.body.college || user.college;
+            user.branch = req.body.branch || user.branch;
+            user.section = req.body.section || user.section;
+            user.github = req.body.github || user.github;
+            user.linkedin = req.body.linkedin || user.linkedin;
+            
+            if (req.body.programmingLanguages) {
+                 user.programmingLanguages = req.body.programmingLanguages; // Expect array or handle split
+            }
+            if (req.body.password) {
+                user.password = req.body.password;
+            }
+
+            const updatedUser = await user.save();
+
+            res.json({
+                _id: updatedUser._id,
+                name: updatedUser.name,
+                email: updatedUser.email,
+                role: updatedUser.role,
+                token: generateToken(updatedUser._id),
+                isApproved: updatedUser.isApproved,
+                profileImage: updatedUser.profileImage,
+                college: updatedUser.college,
+                branch: updatedUser.branch,
+                section: updatedUser.section,
+                programmingLanguages: updatedUser.programmingLanguages,
+                github: updatedUser.github,
+                linkedin: updatedUser.linkedin,
+                bio: updatedUser.bio,
+                avatar: updatedUser.avatar
+            });
+        } else {
+            res.status(404).json({ message: 'User not found' });
+        }
+    } catch (error) {
+        res.status(401).json({ message: 'Not authorized, token failed' });
+    }
 });
 
 module.exports = router;

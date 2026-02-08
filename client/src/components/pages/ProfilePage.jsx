@@ -11,6 +11,25 @@ const ProfilePage = () => {
     const [message, setMessage] = useState('');
     const [sending, setSending] = useState(false);
     const [sentSuccess, setSentSuccess] = useState(false);
+    
+    // Edit Mode State
+    const [isEditing, setIsEditing] = useState(false);
+    const [editData, setEditData] = useState({
+        github: user?.github || '',
+        linkedin: user?.linkedin || ''
+    });
+
+    const handleSaveProfile = async () => {
+        try {
+            const { data } = await api.put('/auth/updatedetails', editData);
+            // Update local storage and user state
+            localStorage.setItem('user', JSON.stringify(data));
+            setIsEditing(false);
+            window.location.reload(); // Quick refresh to reflect changes everywhere
+        } catch (err) {
+            alert("Failed to update profile. " + (err.response?.data?.message || ''));
+        }
+    };
 
     if (!user) {
         navigate('/login');
@@ -140,6 +159,52 @@ const ProfilePage = () => {
                             ) : (
                                 <div className="text-gray-400 italic text-sm">No technical data recorded.</div>
                             )}
+                        </div>
+                        
+                        {/* Social Uplinks - Editable */}
+                        <div className="mt-8 pt-8 border-t border-gray-100">
+                             <h3 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-4 flex items-center gap-2">
+                                <Shield size={16} /> Social Uplinks
+                            </h3>
+                            <div className="space-y-3">
+                                <div className="flex items-center gap-3">
+                                    <span className="w-20 text-[10px] font-bold uppercase text-gray-400">GITHUB</span>
+                                    {isEditing ? (
+                                        <input 
+                                            className="flex-1 bg-gray-50 border border-black rounded px-2 py-1 text-xs font-mono"
+                                            value={editData.github}
+                                            onChange={(e) => setEditData({...editData, github: e.target.value})}
+                                            placeholder="https://github.com/..."
+                                        />
+                                    ) : (
+                                        <a href={user.github} target="_blank" rel="noreferrer" className="text-sm font-mono truncate text-blue-600 hover:underline">{user.github || 'N/A'}</a>
+                                    )}
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <span className="w-20 text-[10px] font-bold uppercase text-gray-400">LINKEDIN</span>
+                                    {isEditing ? (
+                                        <input 
+                                            className="flex-1 bg-gray-50 border border-black rounded px-2 py-1 text-xs font-mono"
+                                            value={editData.linkedin}
+                                            onChange={(e) => setEditData({...editData, linkedin: e.target.value})}
+                                            placeholder="https://linkedin.com/..."
+                                        />
+                                    ) : (
+                                        <a href={user.linkedin} target="_blank" rel="noreferrer" className="text-sm font-mono truncate text-blue-600 hover:underline">{user.linkedin || 'N/A'}</a>
+                                    )}
+                                </div>
+                                
+                                <div className="pt-4">
+                                    {isEditing ? (
+                                        <div className="flex gap-2">
+                                            <Button onClick={handleSaveProfile} variant="primary" className="text-xs h-8 px-4">SAVE DATA</Button>
+                                            <Button onClick={() => setIsEditing(false)} variant="outline" className="text-xs h-8 px-4">CANCEL</Button>
+                                        </div>
+                                    ) : (
+                                        <Button onClick={() => setIsEditing(true)} variant="outline" className="text-xs h-8 px-4 w-full">EDIT UPLINKS</Button>
+                                    )}
+                                </div>
+                            </div>
                         </div>
 
                         <div className="mt-8 pt-8 border-t border-gray-100">
