@@ -180,8 +180,6 @@ const InviteLandingPage = () => {
 
     // --- GSAP Choreography ---
     useGSAP(() => {
-        if (!audioEnabled) return; // Wait for user start
-
         const tl = gsap.timeline();
         // ... (Rest of choreography)
         
