@@ -135,7 +135,7 @@ router.post('/invite', protect, admin, async (req, res) => {
         // Return the full link (frontend will handle domain adjustment)
         // We return a generic structure, frontend can adjust origin
         res.json({ 
-            inviteLink: `${req.protocol}://${req.get('host')}/join?token=${token}`,
+            inviteLink: `${req.protocol}://${req.get('host')}/invite?token=${token}`,
             token,
             expiresAt: expires
         });
