@@ -125,11 +125,15 @@ const ChatPage = () => {
                             const currentUserId = user.id || user._id;
                             const msgSenderId = msg.sender?._id || msg.sender?.id || msg.sender;
                             
+                            // Debug logging to help diagnose
+                            // console.log('Chat Debug:', { msgSenderId, currentUserId, match: msgSenderId == currentUserId });
+
                             // Check if the message sender matches current user
-                            // specific check for optimistic updates where sender might be the user object
                             const isMe = 
-                                (typeof msgSenderId === 'string' && msgSenderId === currentUserId) ||
-                                (msgSenderId?.toString() === currentUserId?.toString());
+                                (currentUserId && msgSenderId) && (
+                                    (typeof msgSenderId === 'string' && msgSenderId === currentUserId) ||
+                                    (msgSenderId?.toString() === currentUserId?.toString())
+                                );
 
                             const senderName = msg.sender?.name || 'Unknown Agent';
                             const senderRole = msg.sender?.role || 'operative';
