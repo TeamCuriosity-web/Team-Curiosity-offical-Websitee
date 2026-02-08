@@ -15,6 +15,8 @@ const ChatPage = () => {
     const [room, setRoom] = useState('general');
     const [message, setMessage] = useState('');
     const [projects, setProjects] = useState([]);
+    const [messageList, setMessageList] = useState([]);
+    const bottomRef = useRef(null);
 
     useEffect(() => {
         const storedUser = JSON.parse(localStorage.getItem('user'));
