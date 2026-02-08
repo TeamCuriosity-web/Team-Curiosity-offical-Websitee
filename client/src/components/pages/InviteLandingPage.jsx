@@ -30,6 +30,15 @@ const InviteLandingPage = () => {
         }
     };
 
+    // Refs for state persistence to avoid re-running effects
+    const particlesRef = useRef([]);
+    const phaseRef = useRef('0-init');
+    
+    // Sync ref with state
+    useEffect(() => {
+        phaseRef.current = phase;
+    }, [phase]);
+
     // --- Particle System ---
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -42,9 +51,8 @@ const InviteLandingPage = () => {
         updateCanvasSize();
         window.addEventListener('resize', updateCanvasSize);
 
-        let particles = [];
-        const particleCount = 3000; // Good density for outline
-
+        // Initialize particles ONCE
+        const particleCount = 3000; 
         const envelopeWidth = 520;
         const envelopeHeight = 320;
 
@@ -58,25 +66,19 @@ const InviteLandingPage = () => {
                 this.color = '#000000';
                 
                 // Calculate Outline Target
-                // Distribute particles along the perimeter of the rect
-                // Perimeter = 2(w+h)
                 const perimeter = 2 * (envelopeWidth + envelopeHeight);
                 const positionOnPerimeter = Math.random() * perimeter;
 
                 if (positionOnPerimeter < envelopeWidth) {
-                    // Top Edge
                     this.targetX = (canvas.width / 2) - (envelopeWidth/2) + positionOnPerimeter;
                     this.targetY = (canvas.height / 2) - (envelopeHeight/2);
                 } else if (positionOnPerimeter < envelopeWidth + envelopeHeight) {
-                    // Right Edge
                     this.targetX = (canvas.width / 2) + (envelopeWidth/2);
                     this.targetY = (canvas.height / 2) - (envelopeHeight/2) + (positionOnPerimeter - envelopeWidth);
                 } else if (positionOnPerimeter < (envelopeWidth * 2) + envelopeHeight) {
-                    // Bottom Edge
                     this.targetX = (canvas.width / 2) + (envelopeWidth/2) - (positionOnPerimeter - (envelopeWidth + envelopeHeight));
                     this.targetY = (canvas.height / 2) + (envelopeHeight/2);
                 } else {
-                    // Left Edge
                     this.targetX = (canvas.width / 2) - (envelopeWidth/2);
                     this.targetY = (canvas.height / 2) + (envelopeHeight/2) - (positionOnPerimeter - (envelopeWidth*2 + envelopeHeight));
                 }
@@ -99,25 +101,24 @@ const InviteLandingPage = () => {
 
             update() {
                 if (!this.active) return;
+                
+                const currentPhase = phaseRef.current;
 
-                if (phase === '3-disintegrate') {
+                if (currentPhase === '3-disintegrate') {
                     this.x += this.vx;
                     this.y += this.vy;
-                    this.vx *= 0.98; // Friction for "floating" feel
+                    this.vx *= 0.98;
                     this.vy *= 0.98;
                 } 
-                else if (phase === '4-vibrate') {
-                    // Jitter in place
+                else if (currentPhase === '4-vibrate') {
                     this.x += (Math.random() - 0.5) * 2;
                     this.y += (Math.random() - 0.5) * 2;
                 }
-                else if (phase === '5-outline') {
-                    // Move to Outline Target
+                else if (currentPhase === '5-outline') {
                     this.x += (this.targetX - this.x) * 0.08;
                     this.y += (this.targetY - this.y) * 0.08;
                 }
-                else if (phase === '6-envelope-active') {
-                     // Keep them on the border perfectly
+                else if (currentPhase === '6-envelope-active') {
                      this.x = this.targetX;
                      this.y = this.targetY;
                 }
@@ -132,14 +133,20 @@ const InviteLandingPage = () => {
             }
         }
 
-        // Init Pool
-        for(let i=0; i<particleCount; i++) particles.push(new Particle(i));
+        // Only init if empty
+        if (particlesRef.current.length === 0) {
+            for(let i=0; i<particleCount; i++) particlesRef.current.push(new Particle(i));
+        }
 
-        // Animation Loop
         let animationId;
         const animate = () => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => {
+            particlesRef.current.forEach(p => {
+                // Check if we need to spawn (only once per particle conceptually, but simplified here)
+                if (phaseRef.current === '3-disintegrate' && !p.active) {
+                     p.spawnAtText();
+                }
+                
                 p.update();
                 p.draw();
             });
@@ -147,15 +154,11 @@ const InviteLandingPage = () => {
         };
         animate();
 
-        if (phase === '3-disintegrate') {
-            particles.forEach(p => p.spawnAtText());
-        }
-
         return () => {
             cancelAnimationFrame(animationId);
             window.removeEventListener('resize', updateCanvasSize);
         };
-    }, [phase]);
+    }, []); // Empty dependency array = PERMANENT LOOP
 
 
     // --- GSAP Choreography ---
