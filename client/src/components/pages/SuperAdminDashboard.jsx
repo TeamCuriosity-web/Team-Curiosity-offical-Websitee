@@ -195,7 +195,12 @@ const SuperAdminDashboard = () => {
                 // Fallback if parsing fails (e.g. if backend just returns the link and our logic fails)
                 // We'll just replace 'localhost:5000' or whatever backend host with client host
                 // This is a rough patch.
-                setInviteLink(data.inviteLink); 
+                // FORCE FRONTEND URL (GitHub Pages or Localhost)
+            const isLocal = window.location.hostname === 'localhost';
+            const basePath = isLocal ? '' : '/Team-Curiosity-offical-Websitee';
+            const fullLink = `${window.location.origin}${basePath}/invite?token=${data.token}`;
+            
+            setInviteLink(fullLink); 
             }
         } catch (err) { console.error(err); }
     };
