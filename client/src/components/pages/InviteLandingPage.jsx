@@ -82,13 +82,15 @@ const InviteLandingPage = () => {
                     this.vx *= 1.05;
                     this.vy *= 1.05;
                 } else if (phase === 'coalesce') {
-                    // Smooth lerp to specific target position (forming the rectangle)
+                    // Smooth lerp to specific target
                     this.x += (this.targetX - this.x) * 0.08;
                     this.y += (this.targetY - this.y) * 0.08;
                     
-                    // Kill velocity
+                    // Freeze velocity
                     this.vx = 0;
                     this.vy = 0;
+
+                    // DO NOT SHRINK. Just stay there.
                 }
             }
 
@@ -144,36 +146,36 @@ const InviteLandingPage = () => {
             "-=1.0"
         );
 
-        // Phase 2: Fill Animation (Outline -> Solid)
+        // Phase 2: Fill Animation
         tl.to([mainTextRef.current, subTextRef.current], {
-            color: '#000000', // Fill with black
+            color: '#000000', 
             WebkitTextStrokeColor: '#000000',
             duration: 1.5,
             ease: 'power2.inOut',
             onStart: () => setPhase('text-fill')
         })
-        .to({}, { duration: 0.5 }); // Short pause to admire
+        .to({}, { duration: 0.2 });
 
         // Phase 3: Disintegrate
         tl.to(textGroupRef.current, {
             opacity: 0,
             scale: 1.1,
             filter: 'blur(20px)',
-            duration: 0.2, // Instant vanish into particles
+            duration: 0.1, 
             ease: 'power1.in',
             onStart: () => setPhase('disintegrate') 
         });
 
-        // Phase 4: Coalesce
-        tl.to({}, { duration: 2.0, onStart: () => setPhase('coalesce') }); 
+        // Phase 4: Coalesce (Particles flying)
+        tl.to({}, { duration: 1.5, onStart: () => setPhase('coalesce') }); 
 
-        // Phase 5: Envelope Form
+        // Phase 5: Envelope Form (Fade In, Don't Scale)
         tl.fromTo(envelopeGroupRef.current, 
-            { scale: 0, autoAlpha: 1 }, 
+            { opacity: 0, scale: 1 }, // Start full size, invisible 
             { 
-                scale: 1, 
-                duration: 0.8, 
-                ease: 'back.out(1.2)', 
+                opacity: 1,
+                duration: 1.0, 
+                ease: 'power2.inOut', 
                 onStart: () => setPhase('envelope') // Stop particles
             }
         );
