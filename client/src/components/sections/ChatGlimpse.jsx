@@ -30,7 +30,8 @@ const ChatGlimpse = () => {
         fetchPreview();
     }, []);
 
-    if (recentMessages.length === 0) return null;
+    // Remove early return
+    // if (recentMessages.length === 0) return null;
 
     return (
         <section ref={containerRef} className="py-20 border-t border-gray-100">
@@ -65,7 +66,9 @@ const ChatGlimpse = () => {
                 </div>
 
                 <div className="space-y-4">
-                    {recentMessages.map((msg) => (
+                <div className="space-y-4">
+                    {recentMessages.length > 0 ? (
+                        recentMessages.map((msg) => (
                         <div key={msg._id} className="flex gap-3 items-start opacity-70 hover:opacity-100 transition-opacity">
                             <div className="w-6 h-6 rounded bg-gray-200 flex items-center justify-center text-[10px] font-bold mt-1">
                                 {(msg.sender.name || 'U').charAt(0)}
@@ -80,7 +83,13 @@ const ChatGlimpse = () => {
                                 <p className="text-sm text-gray-800 line-clamp-1">{msg.content}</p>
                             </div>
                         </div>
-                    ))}
+                        ))
+                    ) : (
+                        <div className="text-center py-8 opacity-50 font-mono text-sm">
+                            <div className="mb-2">NO ACTIVE TRANSMISSIONS</div>
+                            <div className="text-xs">Secure Channel Idle</div>
+                        </div>
+                    )}
                 </div>
                 
                 <div className="mt-6 pt-4 border-t border-gray-200 text-center">

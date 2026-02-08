@@ -107,8 +107,9 @@ const Hero = () => {
                         <div className="block overflow-hidden">
                              <SplitText className="text-black" stagger={0.03} delay={0.5}>We Build</SplitText>
                         </div>
-                        <div className="block overflow-hidden">
-                             <SplitText className="text-transparent bg-clip-text bg-gradient-to-r from-black via-black to-gray-500" stagger={0.03} delay={0.8}>The Future</SplitText>
+                        <div className="block overflow-hidden mt-2">
+                             {/* Gradient text often breaks with char splitting due to bg-clip. Using standard block reveal for this part. */}
+                             <span className="hero-btn block text-transparent bg-clip-text bg-gradient-to-r from-black via-black to-gray-500" style={{ opacity: 0 }}>The Future</span>
                         </div>
                     </h1>
                 </div>
