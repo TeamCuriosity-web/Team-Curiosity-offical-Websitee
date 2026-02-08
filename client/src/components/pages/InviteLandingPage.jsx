@@ -253,15 +253,22 @@ const InviteLandingPage = () => {
         tl.call(() => setPhase('5-outline'));
         tl.to({}, { duration: 2.0 }); // Time to travel to border
 
-        // Phase 6: Fill Envelope Content
+        // Phase 6: Fill Envelope Content / Materialize
         tl.call(() => setPhase('6-envelope-active'));
         
-        // Fade in the REAL envelope div (which has white bg, masking the particles behind or blending)
-        // User said "Outline ... will fill with text etc"
+        // Fade in the REAL envelope div
         tl.fromTo(envelopeGroupRef.current,
             { opacity: 0, scale: 1 },
             { opacity: 1, duration: 1.0, ease: 'power2.inOut' }
         );
+
+        // SMOOTH TRANSITION: Fade out particles AS envelope appears
+        // This removes the "particle border" seamlessly
+        tl.to(canvasRef.current, {
+            opacity: 0,
+            duration: 1.0,
+            ease: 'power2.inOut'
+        }, "<"); // "<" syncs start time with previous tween
 
         // Float Animation
         gsap.to(envelopeGroupRef.current, {
