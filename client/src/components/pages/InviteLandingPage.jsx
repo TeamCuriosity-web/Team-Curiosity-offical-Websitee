@@ -423,14 +423,14 @@ const InviteLandingPage = () => {
             {/* --- INTRO TEXT LAYER --- */}
             <div ref={textGroupRef} className="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none p-4">
                 <div 
-                    className="text-[10vw] md:text-[8rem] font-black tracking-tighter mb-4 text-center leading-[0.85] uppercase"
+                    className="text-[12vw] md:text-[8rem] font-black tracking-tighter mb-4 text-center leading-[0.85] uppercase"
                     style={{ WebkitTextStroke: '2px black' }}
                 >
                     {renderText("TEAM", "block")}
                     {renderText("CURIOSITY", "block")}
                 </div>
                 <div 
-                    className="text-sm md:text-2xl font-light tracking-[0.2em] uppercase"
+                    className="text-sm md:text-2xl font-light tracking-[0.2em] uppercase text-center"
                     style={{ WebkitTextStroke: '1px black' }}
                 >
                     {renderText("An Exclusive Platform", "block")}
@@ -438,12 +438,12 @@ const InviteLandingPage = () => {
             </div>
 
             {/* --- ENVELOPE LAYER --- */}
-            <div ref={envelopeGroupRef} className="relative z-50 opacity-0 flex items-center justify-center">
+            <div ref={envelopeGroupRef} className="relative z-50 opacity-0 flex items-center justify-center w-full px-4">
                 
                 {/* WHITE DOSSIER (Borderless Design) */}
                 <div 
                     ref={envelopeRef}
-                    className="absolute w-[360px] md:w-[520px] h-[240px] md:h-[320px] bg-gray-50 shadow-2xl rounded-lg z-50 flex flex-col items-center justify-center overflow-visible"
+                    className="absolute w-[90vw] max-w-[360px] md:max-w-[520px] h-[240px] md:h-[320px] bg-gray-50 shadow-2xl rounded-lg z-50 flex flex-col items-center justify-center overflow-visible"
                 >
                     {/* Top Flap Indicator - Animated */}
                     <div 
@@ -498,7 +498,7 @@ const InviteLandingPage = () => {
                     ref={cardRef}
                     onMouseDown={handleDragStart}
                     onTouchStart={handleDragStart}
-                    className={`w-[340px] md:w-[480px] bg-white rounded-xl p-8 md:p-12 text-center shadow-2xl border-2 border-gray-100 opacity-0 z-40 transform translate-y-4 ${interactionPhase === 'unsealed' ? 'cursor-grab active:cursor-grabbing' : ''}`}
+                    className={`w-[85vw] max-w-[480px] bg-white rounded-xl p-6 md:p-12 text-center shadow-2xl border-2 border-gray-100 opacity-0 z-40 transform translate-y-4 ${interactionPhase === 'unsealed' ? 'cursor-grab active:cursor-grabbing' : ''}`}
                 >
                      {/* DRAG INDICATOR (Only visible when unsealed) */}
                      {interactionPhase === 'unsealed' && (
