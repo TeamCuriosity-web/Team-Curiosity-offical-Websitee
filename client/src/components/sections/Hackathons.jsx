@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Trophy, Calendar, Target, Clock, ArrowUpRight, MapPin, Award } from 'lucide-react';
+import { Trophy, Calendar, Target, Clock, ArrowUpRight, MapPin, Award, Code, Users } from 'lucide-react';
 import api from '../../services/api';
 
 const Hackathons = () => {
@@ -39,30 +39,37 @@ const Hackathons = () => {
     <section className="py-12 animate-fade-in container mx-auto px-6">
       
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row justify-between items-end mb-12 border-b-2 border-black pb-4">
-          <div className="space-y-2">
-            <h2 className="text-4xl font-bold text-black tracking-tighter uppercase">Hackathons</h2>
-            <p className="text-secondary font-mono text-sm">Global competitions and conquests.</p>
+      <div className="flex flex-col md:flex-row justify-between items-end mb-16 border-b-4 border-black pb-6">
+          <div className="space-y-3">
+            <h2 className="text-5xl md:text-6xl font-black text-black tracking-tighter uppercase relative inline-block">
+                Hackathons
+                <span className="absolute -top-2 -right-4 text-xs font-mono bg-black text-white px-1 transform rotate-12">v.2.0</span>
+            </h2>
+            <p className="text-gray-600 font-mono text-sm md:text-base max-w-lg border-l-2 border-red-500 pl-4">
+                Deploying code in high-stakes environments. Global competitive operations and conquests.
+            </p>
           </div>
-          <div className="flex items-center gap-2 font-mono text-xs text-red-600">
-             <span className="relative flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600"></span>
-            </span>
-            LIVE OPERATIONS
+          <div className="flex flex-col items-end gap-2 mt-6 md:mt-0">
+               <div className="flex items-center gap-2 font-mono text-xs font-bold uppercase bg-red-100 text-red-600 px-3 py-1 rounded-full border border-red-200">
+                    <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600"></span>
+                    </span>
+                    System Status: Active
+               </div>
           </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-4 mb-8 border-b border-gray-200">
+      <div className="flex gap-2 mb-10">
         {['Upcoming', 'Past'].map((tab) => (
             <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`pb-2 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 ${
+                className={`px-6 py-3 text-sm font-bold uppercase tracking-widest transition-all border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] ${
                     activeTab === tab 
-                    ? 'border-black text-black' 
-                    : 'border-transparent text-gray-400 hover:text-gray-600'
+                    ? 'bg-black text-white' 
+                    : 'bg-white text-black hover:bg-gray-50'
                 }`}
             >
                 {tab}
@@ -71,84 +78,96 @@ const Hackathons = () => {
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-1 gap-6">
+      <div className="grid grid-cols-1 gap-8">
         {filteredEvents.map((event, idx) => (
             <div 
                 key={event._id}
-                className="group flex flex-col md:flex-row items-center justify-between p-6 bg-white border-2 border-black hover:bg-black hover:text-white transition-all duration-300 shadow-sm hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.2)] cursor-default"
+                className={`group relative overflow-hidden bg-white border-2 border-black transition-all duration-300 hover:-translate-y-1 ${event.status === 'won' ? 'shadow-[12px_12px_0px_0px_#fbbf24]' : 'shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]'}`}
             >
-                {/* 1. Icon & Title */}
-                <div className="flex items-center gap-6 w-full md:w-1/3">
-                    <div className="p-3 bg-gray-100 rounded border border-black text-black group-hover:bg-white group-hover:text-black transition-colors min-w-[50px] min-h-[50px] flex items-center justify-center">
-                        {event.status === 'won' ? <Trophy size={24} className="text-yellow-600" /> : <Target size={24} />}
+                {/* Winner Banner */}
+                {event.status === 'won' && (
+                    <div className="absolute top-6 -right-8 w-32 bg-yellow-400 text-black text-[10px] font-bold uppercase tracking-widest text-center transform rotate-45 border-y-2 border-black z-10 py-1 shadow-sm">
+                        Winner
                     </div>
-                    <div>
-                        <div className="flex items-center gap-2 mb-1">
-                            <span className="font-mono text-[10px] uppercase text-gray-500 group-hover:text-gray-400 border border-gray-200 px-1 rounded">
-                                {event.status}
-                            </span>
+                )}
+
+                <div className="flex flex-col md:flex-row">
+                    
+                    {/* Left: Visual & Status */}
+                    <div className="w-full md:w-1/4 p-8 bg-gray-50 border-b-2 md:border-b-0 md:border-r-2 border-black flex flex-col items-center justify-center text-center group-hover:bg-yellow-50 transition-colors">
+                        <div className={`w-20 h-20 mb-4 rounded-full border-2 border-black flex items-center justify-center bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ${event.status === 'won' ? 'text-yellow-500' : 'text-gray-800'}`}>
+                            {event.status === 'won' ? <Trophy size={32} /> : (event.status === 'upcoming' ? <Clock size={32} /> : <Target size={32} />)}
                         </div>
-                        <h3 className="text-xl font-bold uppercase tracking-tight">{event.name}</h3>
+                        <div className="font-mono text-xs font-bold uppercase tracking-widest bg-black text-white px-2 py-1 mb-2">
+                            {event.status}
+                        </div>
+                        <div className="font-mono text-[10px] text-gray-500 flex items-center gap-1">
+                            <Calendar size={10} /> {event.formattedDate}
+                        </div>
+                    </div>
+
+                    {/* Middle: Content */}
+                    <div className="w-full md:w-2/4 p-8 flex flex-col justify-center">
+                        <h3 className="text-3xl font-black uppercase tracking-tighter mb-3 group-hover:text-red-600 transition-colors">
+                            {event.name}
+                        </h3>
+                        
                         {event.location && (
-                            <div className="flex items-center gap-1 text-xs font-mono text-gray-500 group-hover:text-gray-400 mt-1">
-                                <MapPin size={10} /> {event.location}
+                             <div className="flex items-center gap-2 text-xs font-bold text-gray-500 uppercase tracking-wide mb-4">
+                                <MapPin size={12} className="text-red-500" /> 
+                                {event.location}
                             </div>
                         )}
-                    </div>
-                </div>
 
-                {/* 2. Description & Tech (Middle) */}
-                <div className="hidden md:block w-1/3 px-4">
-                    <p className="text-sm font-mono text-secondary group-hover:text-gray-300 line-clamp-2">
-                        {event.description || "Mission details classified..."}
-                    </p>
-                    <div className="flex items-center gap-4 mt-3 text-xs font-bold uppercase tracking-wider">
-                        <div className="flex items-center gap-1 text-gray-500 group-hover:text-gray-400">
-                            <Calendar size={12} /> {event.formattedDate}
+                        <p className="text-gray-600 font-mono text-sm leading-relaxed mb-6 border-l-2 border-gray-200 pl-4 py-1">
+                            {event.description || "Mission objective details are currently classified. Awaiting further intelligence briefings."}
+                        </p>
+
+                        <div className="flex flex-wrap gap-2">
+                             {/* Mock Tags if none exist yet */}
+                             {['React', 'Node.js', 'AI'].map(tag => (
+                                 <span key={tag} className="flex items-center gap-1 text-[10px] font-bold uppercase border border-black px-2 py-1 bg-white hover:bg-black hover:text-white transition-colors">
+                                     <Code size={10} /> {tag}
+                                 </span>
+                             ))}
                         </div>
                     </div>
-                </div>
 
-                {/* 3. Status/Achievement & Action (Right) */}
-                <div className="flex items-center justify-between w-full md:w-1/3 pl-0 md:pl-10 mt-4 md:mt-0">
-                    
-                    <div className="text-right flex-1 pr-6">
-                        {activeTab === 'Past' ? (
-                            <>
-                                <p className="text-[10px] uppercase font-bold tracking-widest text-secondary group-hover:text-gray-400">Result</p>
-                                <div className="font-mono text-sm uppercase font-bold flex items-center justify-end gap-1">
-                                    {event.achievement ? (
-                                        <span className="text-yellow-600 group-hover:text-yellow-400 flex items-center gap-1">
-                                            <Award size={14} /> {event.achievement}
-                                        </span>
-                                    ) : (
-                                        <span>Participted</span>
-                                    )}
+                    {/* Right: Action & Results */}
+                    <div className="w-full md:w-1/4 p-8 flex flex-col justify-between items-end border-t-2 md:border-t-0 md:border-l-2 border-black bg-gray-50/50">
+                        <div className="text-right">
+                             <p className="text-[10px] font-bold uppercase text-gray-400 tracking-widest mb-1">Squad Size</p>
+                             <div className="flex items-center justify-end gap-1 font-mono font-bold text-sm">
+                                <Users size={14} /> 4 Operatives
+                             </div>
+                        </div>
+
+                        <div className="w-full mt-8 md:mt-0">
+                            {activeTab === 'Past' && event.achievement ? (
+                                <div className="text-right">
+                                    <p className="text-[10px] font-bold uppercase text-gray-400 tracking-widest mb-1">Result</p>
+                                    <div className="inline-block bg-yellow-400 border-2 border-black px-3 py-2 font-black uppercase text-sm transform -rotate-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                                        <Award size={16} className="inline-block mr-1 -mt-1" />
+                                        {event.achievement}
+                                    </div>
                                 </div>
-                            </>
-                        ) : (
-                             <>
-                                <p className="text-[10px] uppercase font-bold tracking-widest text-secondary group-hover:text-gray-400">Countdown</p>
-                                <p className="font-mono text-sm uppercase">T-Minus: Active</p>
-                            </>
-                        )}
+                            ) : (
+                                <button className="w-full group/btn relative flex items-center justify-center gap-2 bg-black text-white font-bold uppercase text-xs py-4 border-2 border-transparent hover:bg-white hover:text-black hover:border-black transition-all">
+                                    <span>View Intel</span>
+                                    <ArrowUpRight size={14} className="group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
+                                </button>
+                            )}
+                        </div>
                     </div>
 
-                    <a 
-                        href="#" // Hackathons might not have links in the model yet, but if they do: event.link
-                        onClick={(e) => e.preventDefault()} // Placeholder action
-                        className="p-3 rounded-full transition-all duration-300 z-10 relative bg-black text-white group-hover:bg-white group-hover:text-black border border-transparent group-hover:border-black"
-                    >
-                         <ArrowUpRight size={18} className="transition-transform duration-300 group-hover:rotate-45" />
-                    </a>
                 </div>
-
             </div>
         ))}
 
         {filteredEvents.length === 0 && (
-             <div className="text-center py-12 border-2 border-dashed border-gray-300 rounded font-mono text-sm text-gray-400 uppercase">
-                NO {activeTab} HACKATHONS LOGGED.
+             <div className="text-center py-20 border-4 border-dashed border-gray-200 rounded-lg">
+                <p className="font-mono text-gray-400 uppercase tracking-widest mb-2">Signal Lost</p>
+                <h3 className="text-xl font-bold text-gray-300">No {activeTab} Operations Found</h3>
             </div>
         )}
       </div>
