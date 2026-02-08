@@ -83,14 +83,11 @@ const InviteLandingPage = () => {
                     this.vy *= 1.05;
                 } else if (phase === 'coalesce') {
                     // Smooth lerp to specific target
-                    this.x += (this.targetX - this.x) * 0.08;
-                    this.y += (this.targetY - this.y) * 0.08;
+                    this.x += (this.targetX - this.x) * 0.1; // Faster snap
+                    this.y += (this.targetY - this.y) * 0.1;
                     
-                    // Freeze velocity
                     this.vx = 0;
                     this.vy = 0;
-
-                    // DO NOT SHRINK. Just stay there.
                 }
             }
 
@@ -110,7 +107,6 @@ const InviteLandingPage = () => {
         let animationId;
         const animate = () => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
             particles.forEach(p => {
                 p.update();
                 p.draw();
@@ -119,7 +115,6 @@ const InviteLandingPage = () => {
         };
         animate();
 
-        // Trigger spawning
         if (phase === 'disintegrate') {
             particles.forEach(p => p.spawnAtText());
         }
@@ -131,11 +126,10 @@ const InviteLandingPage = () => {
     }, [phase]);
 
 
-    // --- GSAP Choreography ---
     useGSAP(() => {
         const tl = gsap.timeline();
 
-         // Phase 1: Text Stroke Appearance
+         // Phase 1: Text Intro
         tl.fromTo(mainTextRef.current, 
             { opacity: 0, scale: 0.8 },
             { opacity: 1, scale: 1, duration: 1.5, ease: 'power4.out' }
@@ -166,18 +160,26 @@ const InviteLandingPage = () => {
             onStart: () => setPhase('disintegrate') 
         });
 
-        // Phase 4: Coalesce (Particles flying)
-        tl.to({}, { duration: 1.5, onStart: () => setPhase('coalesce') }); 
+        // Phase 4: Coalesce (Build the Black Block)
+        tl.to({}, { duration: 1.2, onStart: () => setPhase('coalesce') }); 
 
-        // Phase 5: Envelope Form (Fade In, Don't Scale)
-        tl.fromTo(envelopeGroupRef.current, 
-            { opacity: 0, scale: 1 }, // Start full size, invisible 
+        // Phase 5: Flash & Materialize
+        tl.to(canvasRef.current, {
+            filter: 'invert(1)', // Flash effect using CSS filter
+            duration: 0.1,
+            yoyo: true,
+            repeat: 1,
+            onStart: () => setPhase('envelope') // Stop particles
+        })
+        .to(canvasRef.current, { opacity: 0, duration: 0.2 }) // Fade out particles AFTER flash
+        .fromTo(envelopeGroupRef.current, 
+            { scale: 1, opacity: 0 }, 
             { 
                 opacity: 1,
-                duration: 1.0, 
-                ease: 'power2.inOut', 
-                onStart: () => setPhase('envelope') // Stop particles
-            }
+                duration: 0.1, // Instant swap during flash
+                immediateRender: false
+            },
+            "-=0.3" // Sync with flash
         );
         
         // Float
