@@ -271,7 +271,7 @@ const InviteLandingPage = () => {
                 delay: 10 // Start floating later
             });
     
-        }, { scope: containerRef, dependencies: [audioEnabled] });
+        }, { scope: containerRef });
 
     const flapRef = useRef(null);
 
