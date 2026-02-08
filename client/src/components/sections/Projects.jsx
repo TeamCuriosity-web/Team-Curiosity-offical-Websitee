@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowUpRight, Server, Activity, Lock, Database } from 'lucide-react';
 import api from '../../services/api';
 
@@ -7,8 +7,7 @@ const Projects = () => {
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('Ongoing');
-
-
+    const navigate = useNavigate();
 
     const filteredProjects = projects.filter(p => (p.status || 'ongoing').toLowerCase() === activeTab.toLowerCase());
 
@@ -65,7 +64,7 @@ const Projects = () => {
         {filteredProjects.map((project, idx) => (
             <div 
                 key={project._id} 
-                onClick={() => window.location.href = `/projects/${project._id}`}
+                onClick={() => navigate(`/projects/${project._id}`)}
                 className="group flex flex-col md:flex-row items-center justify-between p-6 bg-white border-2 border-black hover:bg-black hover:text-white transition-all duration-300 shadow-sm hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.2)] cursor-pointer"
             >
                 
