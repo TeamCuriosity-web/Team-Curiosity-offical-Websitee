@@ -37,7 +37,7 @@ const InviteLandingPage = () => {
         window.addEventListener('resize', updateCanvasSize);
 
         let particles = [];
-        const particleCount = 1500; // Denser for text
+        const particleCount = 4000; // Ultra Dense for high resolution
 
         class Particle {
             constructor() {
@@ -48,7 +48,7 @@ const InviteLandingPage = () => {
                 this.size = 0;
                 this.color = '#000000';
                 
-                // Target: The Envelope Rectangle (approx 500x300)
+                // Target: The Envelope Rectangle 
                 const envelopeWidth = 500;
                 const envelopeHeight = 300;
                 this.targetX = (canvas.width / 2) + (Math.random() - 0.5) * envelopeWidth;
@@ -58,18 +58,18 @@ const InviteLandingPage = () => {
             }
 
             spawnAtText() {
-                // Tighter text volume for "TEAM CURIOSITY"
+                // Tighter text volume
                 const textWidth = Math.min(window.innerWidth * 0.8, 1000);
-                const textHeight = window.innerWidth < 768 ? 100 : 250; 
+                const textHeight = 200; 
                 
                 this.x = (canvas.width / 2) + (Math.random() - 0.5) * textWidth;
                 this.y = (canvas.height / 2) + (Math.random() - 0.5) * textHeight;
                 
-                // Low velocity start
                 this.vx = (Math.random() - 0.5) * 2;
                 this.vy = (Math.random() - 0.5) * 2;
                 
-                this.size = Math.random() * 2 + 1.5;
+                // Small, crisp particles (sand/dust)
+                this.size = Math.random() * 1.5 + 0.5;
                 this.active = true;
             }
 
@@ -79,13 +79,13 @@ const InviteLandingPage = () => {
                 if (phase === 'disintegrate') {
                     this.x += this.vx;
                     this.y += this.vy;
-                    // Keep momentum for the "going away" feel
-                    this.vx *= 0.99; 
-                    this.vy *= 0.99;
+                    // Slow, drifting disintegration
+                    this.vx *= 1.01; 
+                    this.vy *= 1.01;
                 } else if (phase === 'coalesce') {
-                    // Strong Magnetic Return (The "Come Back")
-                    this.x += (this.targetX - this.x) * 0.15; 
-                    this.y += (this.targetY - this.y) * 0.15;
+                    // Snap to target
+                    this.x += (this.targetX - this.x) * 0.05; 
+                    this.y += (this.targetY - this.y) * 0.05;
                     
                     this.vx = 0;
                     this.vy = 0;
@@ -152,18 +152,18 @@ const InviteLandingPage = () => {
         })
         .to({}, { duration: 0.5 });
 
-        // Phase 3: Disintegrate (Slow Expansion)
+        // Phase 3: Disintegrate (Clear & Crisp)
         tl.to(textGroupRef.current, {
             opacity: 0,
-            scale: 1.1,
-            filter: 'blur(15px)',
-            duration: 3.5, 
-            ease: 'power2.in',
+            scale: 1.02, // Subtle expansion
+            // No blur - keep it sharp
+            duration: 4.0, 
+            ease: 'power1.in',
             onStart: () => setPhase('disintegrate') 
         });
 
-        // Phase 4: Coalesce (Rapid Structure Form)
-        tl.to({}, { duration: 1.5, onStart: () => setPhase('coalesce') }); 
+        // Phase 4: Coalesce
+        tl.to({}, { duration: 2.0, onStart: () => setPhase('coalesce') }); 
 
         // Phase 5: Materialize (No Flash, just smooth transformation)
         tl.to(canvasRef.current, { 
