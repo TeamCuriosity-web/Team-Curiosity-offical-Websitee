@@ -108,7 +108,7 @@ const ChatPage = () => {
                 </div>
 
                 {/* Chat Area */}
-                <Card className="flex-1 flex flex-col bg-white border-black/10 shadow-lg relative overflow-hidden">
+                <Card className="flex-1 flex flex-col bg-white border-black/10 shadow-lg relative overflow-hidden !p-0">
                     {/* Header */}
                     <div className="p-4 border-b flex justify-between items-center bg-white z-10">
                         <div className="flex items-center gap-2">
