@@ -234,12 +234,14 @@ const SuperAdminDashboard = () => {
                 </div>
 
                 {/* Tabs */}
-                <div className="flex mb-8 border-b border-gray-200">
+                <div className="flex mb-8 border-b border-gray-200 overflow-x-auto">
                     <TabButton id="requests" label="Requests" icon={Lock} activeTab={activeTab} setActiveTab={setActiveTab} />
                     <TabButton id="admins" label="Admins" icon={Shield} activeTab={activeTab} setActiveTab={setActiveTab} />
                     <TabButton id="members" label="Members" icon={Users} activeTab={activeTab} setActiveTab={setActiveTab} />
                     <TabButton id="projects" label="Projects" icon={Cpu} activeTab={activeTab} setActiveTab={setActiveTab} />
                     <TabButton id="hackathons" label="Hackathons" icon={Zap} activeTab={activeTab} setActiveTab={setActiveTab} />
+                    <TabButton id="comms" label="Comms" icon={Activity} activeTab={activeTab} setActiveTab={setActiveTab} />
+                    <TabButton id="system" label="System" icon={Database} activeTab={activeTab} setActiveTab={setActiveTab} />
                 </div>
 
                 {/* --- REQUESTS TAB --- */}
@@ -514,6 +516,96 @@ const SuperAdminDashboard = () => {
                     </div>
                 )}
 
+                {/* --- COMMS TAB --- */}
+                {activeTab === 'comms' && (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <LightCard>
+                            <h3 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
+                                <Activity size={18} className="text-blue-600"/> Broadcast Network
+                            </h3>
+                            <form onSubmit={async (e) => {
+                                e.preventDefault();
+                                const formData = new FormData(e.target);
+                                const payload = {
+                                    message: formData.get('message'),
+                                    type: formData.get('type'),
+                                    recipient: formData.get('recipient')
+                                };
+                                try {
+                                    await api.post('/notifications', payload);
+                                    alert('Transmission Sent Successfully');
+                                    e.target.reset();
+                                } catch(err) { alert('Transmission Failed'); }
+                            }} className="space-y-4">
+                                <div>
+                                    <label className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Target Audience</label>
+                                    <select name="recipient" className="w-full bg-white border border-gray-200 p-3 rounded text-sm text-gray-900 outline-none mt-1 shadow-sm">
+                                        <option value="all">Global Broadcast (All Users)</option>
+                                        <option value="admin">Command Channel (Admins Only)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Message Type</label>
+                                    <select name="type" className="w-full bg-white border border-gray-200 p-3 rounded text-sm text-gray-900 outline-none mt-1 shadow-sm">
+                                        <option value="alert">Critical Alert</option>
+                                        <option value="message">Standard Message</option>
+                                        <option value="system">System Notification</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Content</label>
+                                    <textarea name="message" required className="w-full bg-white border border-gray-200 p-3 rounded text-sm text-gray-900 outline-none h-32 mt-1 shadow-sm" placeholder="Enter transmission content..." />
+                                </div>
+                                <button className="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-md font-bold py-3 rounded text-xs uppercase tracking-widest transition-all">
+                                    Initiate Broadcast
+                                </button>
+                            </form>
+                        </LightCard>
+                        
+                        <LightCard className="bg-blue-50/50 border-blue-100">
+                             <div className="flex items-center gap-2 mb-4 text-blue-800 font-bold uppercase tracking-widest text-xs">
+                                 <Activity size={14}/> Network Status
+                             </div>
+                             <div className="space-y-2 text-sm text-blue-900">
+                                 <p>Commencing broadcast sends real-time alerts to all active terminals.</p>
+                                 <p>• <strong>Global Broadcast</strong>: Visible to Members, Admins, and Super Admins.</p>
+                                 <p>• <strong>Command Channel</strong>: Encrypted channel for Admin personnel only.</p>
+                             </div>
+                        </LightCard>
+                    </div>
+                )}
+
+                {/* --- SYSTEM TAB --- */}
+                {activeTab === 'system' && (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <LightCard className="border-red-200">
+                            <h3 className="text-lg font-bold text-red-700 mb-6 flex items-center gap-2">
+                                <Database size={18}/> Danger Zone
+                            </h3>
+                            
+                            <div className="p-4 bg-red-50 border border-red-100 rounded mb-6">
+                                <h4 className="font-bold text-red-800 text-sm mb-2">Purge Chat Logs</h4>
+                                <p className="text-xs text-red-600 mb-4">
+                                    Permanently delete all message history from the main server. This action cannot be undone.
+                                    Target: All Project Channels & General Chat.
+                                </p>
+                                <button 
+                                    onClick={async () => {
+                                        if(window.confirm('CRITICAL WARNING: CONFIRM PURGE PROTOCOL? All chat history will be erased.')) {
+                                            try {
+                                                await api.delete('/chat/clear');
+                                                alert('Purge Complete. Systems Normal.');
+                                            } catch(err) { alert('Purge Failed: Authorization Denied or Server Error.'); }
+                                        }
+                                    }}
+                                    className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded uppercase tracking-widest shadow-sm flex items-center gap-2"
+                                >
+                                    <Trash2 size={14} /> Execute Purge
+                                </button>
+                            </div>
+                        </LightCard>
+                    </div>
+                )}
             </div>
         </div>
     );

@@ -170,12 +170,12 @@ const AdminDashboard = () => {
             </div>
 
             {/* Navigation Tabs */}
-            <div className="flex gap-1 mb-8 border-b border-gray-200">
-                {['requests', 'projects', 'hackathons', 'team'].map(tab => (
+            <div className="flex gap-1 mb-8 border-b border-gray-200 overflow-x-auto">
+                {['requests', 'projects', 'hackathons', 'team', 'comms'].map(tab => (
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
-                        className={`px-6 py-3 text-sm font-bold uppercase tracking-wider border-b-2 transition-colors flex items-center gap-2 ${
+                        className={`px-6 py-3 text-sm font-bold uppercase tracking-wider border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${
                             activeTab === tab 
                                 ? 'border-black text-black' 
                                 : 'border-transparent text-gray-400 hover:text-gray-600'
@@ -398,6 +398,52 @@ const AdminDashboard = () => {
                     </>
                 )}
 
+                {/* --- COMMS TAB --- */}
+                {activeTab === 'comms' && (
+                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <Card className="p-6">
+                            <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+                                <Terminal size={18}/> Broadcast Center
+                            </h3>
+                            <form onSubmit={async (e) => {
+                                e.preventDefault();
+                                const formData = new FormData(e.target);
+                                const payload = {
+                                    message: formData.get('message'),
+                                    type: formData.get('type'),
+                                    recipient: formData.get('recipient')
+                                };
+                                try {
+                                    await api.post('/notifications', payload);
+                                    alert('Message Dispatched'); // "Transmission Sent" equivalent
+                                    e.target.reset();
+                                } catch(err) { alert('Dispatch Failed'); }
+                            }} className="space-y-4">
+                                <div>
+                                    <label className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Recipients</label>
+                                    <select name="recipient" className="w-full border border-gray-200 p-2 rounded text-sm text-gray-900 outline-none mt-1 bg-white">
+                                        <option value="all">All Personnel</option>
+                                        <option value="admin">Admin Channel Only</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Priority</label>
+                                    <select name="type" className="w-full border border-gray-200 p-2 rounded text-sm text-gray-900 outline-none mt-1 bg-white">
+                                        <option value="message">Standard</option>
+                                        <option value="alert">High Alert</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Briefing</label>
+                                    <textarea name="message" required className="w-full border border-gray-200 p-2 rounded text-sm text-gray-900 outline-none h-32 mt-1" placeholder="Type notification..." />
+                                </div>
+                                <Button type="submit" variant="primary" className="w-full text-xs">
+                                    Send Broadcast
+                                </Button>
+                            </form>
+                        </Card>
+                    </div>
+                )}
             </div>
         </div>
     );

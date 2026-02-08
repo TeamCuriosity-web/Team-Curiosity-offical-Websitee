@@ -11,16 +11,17 @@ router.post('/', protect, async (req, res) => {
   try {
     const { message, type, recipient } = req.body;
     
-    // If user is not admin, they can only send to 'admin' (for now)
-    // Or we can allow user-to-user if needed later.
-    // For this specific request: "functionality to send notification to admin"
-    
     let verifiedRecipient = recipient;
 
-    // Normal users sending to admin
-    if (req.user.role === 'member' || req.user.role === 'user') {
+    // Logic: 
+    // SuperAdmin/Admin can send to 'all', 'admin', or specific user.
+    // Member/User can ONLY send to 'admin'.
+
+    if (req.user.role !== 'admin' && req.user.role !== 'superadmin') {
+        // Force recipient to admin if normal user
         verifiedRecipient = 'admin';
-    }
+    } 
+    // If admin is sending, we respect their choice (e.g., 'all')
 
     const newNotification = new Notification({
       message,
@@ -39,24 +40,24 @@ router.post('/', protect, async (req, res) => {
 });
 
 // @route   GET /api/notifications
-// @desc    Get notifications for the current user (or admins)
+// @desc    Get notifications for the current user
 // @access  Private
 router.get('/', protect, async (req, res) => {
   try {
     let query = {};
 
-    // If Admin/SuperAdmin, fetch messages sent to 'admin' OR their specific ID
-    if (req.user.role === 'admin' || req.user.role === 'super-admin') {
-        query = { 
-            $or: [
-                { recipient: 'admin' }, 
-                { recipient: req.user.id }
-            ] 
-        };
-    } else {
-        // Normal users only see messages sent specifically to them
-        query = { recipient: req.user.id };
+    // Base query: Messages sent SPECIFICALLY to this user OR broadcast to 'all'
+    const orConditions = [
+        { recipient: req.user.id },
+        { recipient: 'all' }
+    ];
+
+    // If Admin/SuperAdmin, ALSO fetch messages sent to 'admin'
+    if (req.user.role === 'admin' || req.user.role === 'superadmin') {
+        orConditions.push({ recipient: 'admin' });
     }
+
+    query = { $or: orConditions };
 
     const notifications = await Notification.find(query)
         .sort({ createdAt: -1 })
