@@ -181,22 +181,27 @@ const InviteLandingPage = () => {
     // --- GSAP Choreography ---
     useGSAP(() => {
         const tl = gsap.timeline();
-        // ... (Rest of choreography)
         
-        // Ensure chars are visible first
-        gsap.set(charRefs.current, { autoAlpha: 1 });
-
-        // Phase 1: Fly In (One by One)
-        // Come from "away" (z-axis or y/x axis with blur)
-        tl.from(charRefs.current, {
+        // STRICT INITIALIZATION: Force initial states to prevent FOUC/Invisible bugs
+        // This ensures elements are ready before '.from()' tweens try to animate them
+        gsap.set(containerRef.current, { autoAlpha: 1 });
+        gsap.set(charRefs.current, { 
+            autoAlpha: 1, 
             y: 100,
-            x: () => (Math.random() - 0.5) * 200, // Random scatter
-            rotation: () => (Math.random() - 0.5) * 90,
+            x: 0,
             opacity: 0,
-            scale: 2,
-            filter: 'blur(10px)',
+            scale: 2
+        });
+        
+        // Phase 1: Fly In (One by One)
+        tl.to(charRefs.current, {
+            y: 0,
+            x: 0,
+            opacity: 1,
+            scale: 1,
+            filter: 'blur(0px)',
             duration: 1.2,
-            stagger: 0.05, // "One by one"
+            stagger: 0.05, 
             ease: 'back.out(1.7)',
             onStart: () => setPhase('1-fly-in')
         });
@@ -385,7 +390,7 @@ const InviteLandingPage = () => {
         // 3. Reveal Content
         tl.fromTo(contentRef.current,
             { y: 30, opacity: 0 },
-            { y: 0, opacity: 1, stagger: 0.1, duration: 0.5 }
+            { y: 0, opacity: 1, stagger: 0.1, duration: 0.5, pointerEvents: 'auto' }
         );
     };
 
@@ -508,7 +513,7 @@ const InviteLandingPage = () => {
                         </div>
                      )}
 
-                    <div ref={contentRef}>
+                    <div ref={contentRef} className="opacity-0 pointer-events-none">
                         <div className="mb-8 flex justify-center">
                             <Terminal size={40} className="text-black" />
                         </div>
