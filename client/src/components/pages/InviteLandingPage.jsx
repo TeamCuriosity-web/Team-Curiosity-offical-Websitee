@@ -69,6 +69,105 @@ const InviteLandingPage = () => {
         }
     };
     
+    // --- ADVANCED AUDIO SYNTHESIS ENGINE (Procedural SFX) ---
+    const playSound = (type) => {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
+
+        // 1. TEXT / PARTICLES (Granular Sand/Dust)
+        if (type === 'text-grain') {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            const filter = ctx.createBiquadFilter();
+
+            osc.type = 'sawtooth';
+            osc.frequency.value = 50 + Math.random() * 100; // Low rumble
+            
+            filter.type = 'highpass';
+            filter.frequency.value = 3000; // Hiss
+            
+            gain.gain.setValueAtTime(0.05, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05); // Short click
+
+            osc.connect(filter);
+            filter.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.05);
+        }
+
+        // 2. WAX BREAK (Sharp Snap)
+        else if (type === 'wax-break') {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(150, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.1);
+            
+            gain.gain.setValueAtTime(0.8, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.15);
+        }
+
+        // 3. THREAD UNWIND (Friction Zip)
+        else if (type === 'thread-unwind') {
+             // Create Noise Buffer
+             const bufferSize = ctx.sampleRate * 0.6; // 0.6s
+             const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+             const data = buffer.getChannelData(0);
+             for (let i = 0; i < bufferSize; i++) {
+                 data[i] = Math.random() * 2 - 1;
+             }
+             const noise = ctx.createBufferSource();
+             noise.buffer = buffer;
+
+             const filter = ctx.createBiquadFilter();
+             filter.type = 'bandpass';
+             filter.frequency.setValueAtTime(1000, ctx.currentTime);
+             filter.frequency.linearRampToValueAtTime(2000, ctx.currentTime + 0.3); // Pitch up zip
+
+             const gain = ctx.createGain();
+             gain.gain.setValueAtTime(0.2, ctx.currentTime);
+             gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.4);
+
+             noise.connect(filter);
+             filter.connect(gain);
+             gain.connect(ctx.destination);
+             noise.start();
+        }
+
+        // 4. PAPER SLIDE (White Noise Swipe)
+        else if (type === 'slide') {
+            const bufferSize = ctx.sampleRate * 0.2;
+            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = Math.random() * 2 - 1;
+            }
+            const noise = ctx.createBufferSource();
+            noise.buffer = buffer;
+            
+            const filter = ctx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.value = 600;
+
+            const gain = ctx.createGain();
+            gain.gain.setValueAtTime(0.05, ctx.currentTime);
+            gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.15);
+
+            noise.connect(filter);
+            filter.connect(gain);
+            gain.connect(ctx.destination);
+            noise.start();
+        }
+    };
+    
     // Helper to push chars to refs
     const addToRefs = (el) => {
         if (el && !charRefs.current.includes(el)) {
