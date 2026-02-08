@@ -152,13 +152,14 @@ const InviteLandingPage = () => {
         })
         .to({}, { duration: 0.5 });
 
-        // Phase 3: Disintegrate (Clear & Crisp)
+        // Phase 3: Disintegrate (INSTANT BREAK)
+        // The user wants it to "break", not "invisible" (fade).
+        // So we snap the text out and let the particles take over instantly.
         tl.to(textGroupRef.current, {
             opacity: 0,
-            scale: 1.02, // Subtle expansion
-            // No blur - keep it sharp
-            duration: 4.0, 
-            ease: 'power1.in',
+            scale: 1.05,
+            duration: 0.05, // SNAP
+            ease: 'none',
             onStart: () => setPhase('disintegrate') 
         });
 
