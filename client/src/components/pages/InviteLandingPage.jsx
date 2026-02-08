@@ -593,6 +593,7 @@ const InviteLandingPage = () => {
                     {renderText("An Exclusive Platform", "block")}
                 </div>
             </div>
+            )}
 
             {/* --- ENVELOPE LAYER --- */}
             <div ref={envelopeGroupRef} className="relative z-50 opacity-0 flex items-center justify-center">
