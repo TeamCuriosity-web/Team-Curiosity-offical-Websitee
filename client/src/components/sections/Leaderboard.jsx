@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Github, Terminal, GitCommit, Activity, Clock, ShieldAlert } from 'lucide-react';
+import { Github, Terminal, GitCommit, Activity, Clock, ShieldAlert, UserX } from 'lucide-react';
 import api from '../../services/api';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
@@ -13,8 +13,20 @@ const Leaderboard = () => {
         const fetchLeaderboardData = async () => {
             try {
                 const { data: teamMembers } = await api.get('/team');
-                const eligibleMembers = teamMembers.filter(m => m.github && m.github.length > 0);
-                const sorted = eligibleMembers.sort((a, b) => (b.commitCount || 0) - (a.commitCount || 0));
+                
+                // Show ALL members, even without GitHub
+                // Sort: Commits (desc), then hasGitHub (yes first), then Name (asc)
+                const sorted = teamMembers.sort((a, b) => {
+                    const commitDiff = (b.commitCount || 0) - (a.commitCount || 0);
+                    if (commitDiff !== 0) return commitDiff;
+                    
+                    const aHasGit = a.github && a.github.length > 0 ? 1 : 0;
+                    const bHasGit = b.github && b.github.length > 0 ? 1 : 0;
+                    if (bHasGit !== aHasGit) return bHasGit - aHasGit;
+
+                    return a.name.localeCompare(b.name);
+                });
+
                 setLeaders(sorted);
             } catch (err) {
                 console.error("Leaderboard init failed", err);
@@ -53,6 +65,8 @@ const Leaderboard = () => {
     const formatTimeAgo = (dateString) => {
         if (!dateString) return 'OFFLINE';
         const date = new Date(dateString);
+        if (isNaN(date.getTime())) return 'UNKNOWN'; // Handle invalid dates
+        
         const now = new Date();
         const seconds = Math.floor((now - date) / 1000);
         
@@ -104,7 +118,7 @@ const Leaderboard = () => {
                         <ShieldAlert size={64} className="mx-auto mb-6 text-black" />
                         <h3 className="text-3xl font-black uppercase">NO SIGNAL DETECTED</h3>
                         <p className="max-w-md mx-auto mt-2 text-gray-500">
-                            :: ERROR: No operative data found. Connect GitHub to synchronize.
+                            :: ERROR: No operative data found in database.
                         </p>
                     </div>
                 ) : (
@@ -125,7 +139,7 @@ const Leaderboard = () => {
                                     <span className="font-black text-2xl md:text-xl text-gray-300 group-hover:text-gray-600">
                                         {String(idx + 1).padStart(2, '0')}
                                     </span>
-                                    {idx === 0 && <span className="bg-yellow-400 text-black text-[10px] px-1 font-bold border border-black">TOP</span>}
+                                    {idx === 0 && member.commitCount > 0 && <span className="bg-yellow-400 text-black text-[10px] px-1 font-bold border border-black">TOP</span>}
                                 </div>
 
                                 {/* Operative Info */}
@@ -140,7 +154,11 @@ const Leaderboard = () => {
                                     <div className="overflow-hidden">
                                         <h4 className="font-black text-lg uppercase truncate">{member.name}</h4>
                                         <div className="flex items-center gap-2 text-xs text-gray-500 group-hover:text-gray-400 font-bold">
-                                            <Github size={12} /> @{member.githubUsername}
+                                            {member.githubUsername ? (
+                                                <><Github size={12} /> @{member.githubUsername}</>
+                                            ) : (
+                                                <><UserX size={12} /> NO GITHUB LINKED</>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -148,7 +166,7 @@ const Leaderboard = () => {
                                 {/* Commits */}
                                 <div className="col-span-3 flex md:justify-end items-center gap-2">
                                     <div className="md:hidden text-xs text-gray-500 group-hover:text-gray-400 uppercase">Commits:</div>
-                                    <span className="font-black text-2xl group-hover:text-green-400 flex items-center gap-2">
+                                    <span className={`font-black text-2xl flex items-center gap-2 ${member.commitCount > 0 ? 'group-hover:text-green-400' : 'text-gray-300'}`}>
                                         <GitCommit size={18} /> {member.commitCount || 0}
                                     </span>
                                 </div>
@@ -156,7 +174,7 @@ const Leaderboard = () => {
                                 {/* Last Active */}
                                 <div className="col-span-3 flex md:justify-end items-center gap-2">
                                     <div className="md:hidden text-xs text-gray-500 group-hover:text-gray-400 uppercase">Last Signal:</div>
-                                    <div className={`text-xs font-bold px-2 py-1 border ${member.lastCommit ? 'border-green-600 text-green-700 bg-green-50 group-hover:bg-green-900 group-hover:text-green-300 group-hover:border-green-400' : 'border-gray-200 text-gray-400'}`}>
+                                    <div className={`text-xs font-bold px-2 py-1 border ${member.lastCommit ? 'border-green-600 text-green-700 bg-green-50 group-hover:bg-green-900 group-hover:text-green-300 group-hover:border-green-400' : 'border-gray-200 text-gray-400 bg-gray-100'}`}>
                                         <span className="flex items-center gap-2">
                                            <Clock size={12} /> {formatTimeAgo(member.lastCommit)}
                                         </span>
