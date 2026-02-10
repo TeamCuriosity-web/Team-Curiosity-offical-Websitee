@@ -70,10 +70,10 @@ const Leaderboard = () => {
                             <Terminal size={14} /> SYSTEM_ROOT: ACCESSING DATABASE...
                         </div>
                         <div className="text-black font-bold">
-                            >> INITIATING PROTOCOL: LEADERBOARD_V2
+                            &gt;&gt; INITIATING PROTOCOL: LEADERBOARD_V2
                         </div>
                         <div className="text-green-600 font-bold">
-                            >> CONNECTION ESTABLISHED. RENDERING DATA...
+                            &gt;&gt; CONNECTION ESTABLISHED. RENDERING DATA...
                         </div>
                     </div>
                     <h2 className="mt-6 text-5xl md:text-7xl font-black tracking-tighter uppercase">
@@ -84,7 +84,7 @@ const Leaderboard = () => {
                 {loading ? (
                     <div className="flex flex-col items-center justify-center py-32 border-2 border-black border-dashed bg-gray-50">
                         <Activity size={48} className="text-black animate-pulse mb-4" />
-                        <p className="text-black font-bold animate-pulse tracking-widest">>> ESTABLISHING SECURE CONNECTION...</p>
+                        <p className="text-black font-bold animate-pulse tracking-widest">&gt;&gt; ESTABLISHING SECURE CONNECTION...</p>
                     </div>
                 ) : leaders.length === 0 ? (
                     <div className="text-center py-20 border-2 border-black bg-gray-50">
