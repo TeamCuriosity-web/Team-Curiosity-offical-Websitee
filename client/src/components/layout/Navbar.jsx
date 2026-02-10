@@ -36,10 +36,29 @@ const Navbar = () => {
     <>
         <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-white/80 backdrop-blur-md border-b border-transparent ${scrolled ? 'border-border' : ''}`}>
         <div className="container mx-auto px-6 h-20 flex items-center justify-between">
-            {/* ... Logo ... */}
-            <Link to="/" className="text-xl font-bold tracking-tight text-black flex items-center gap-1 font-mono z-50 relative hover:opacity-80 transition-opacity">
-                <span className="text-secondary">//</span>
-                <span>CURIOSITY</span>
+            {/* Logo */}
+            <Link to="/" className="flex items-center gap-2 z-50 relative hover:opacity-80 transition-opacity group">
+                <svg width="220" height="40" viewBox="0 0 220 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-10 w-auto">
+                    {/* Dark Tech Hexagon Base */}
+                    <path d="M25 5L36.547 11.6667V25L25 31.6667L13.453 25V11.6667L25 5Z" fill="#0B0F1A" stroke="#00F3FF" strokeWidth="1.5"/>
+                    
+                    {/* Neural Circuits */}
+                    <path d="M37 18H42M8 18H13" stroke="#00F3FF" strokeWidth="1" strokeLinecap="round" className="opacity-60"/>
+                    <circle cx="44" cy="18" r="1.5" fill="#00F3FF" className="animate-pulse"/>
+                    <circle cx="6" cy="18" r="1.5" fill="#00F3FF" className="animate-pulse"/>
+
+                    {/* The Eye of Constant Vigilance */}
+                    <path d="M18 18.5C18 18.5 21.5 13.5 25 13.5C28.5 13.5 32 18.5 32 18.5C32 18.5 28.5 23.5 25 23.5C21.5 23.5 18 18.5 18 18.5Z" stroke="#00F3FF" strokeWidth="1.5" fill="none"/>
+                    
+                    {/* The Pupil & Hidden Question */}
+                    <circle cx="25" cy="18.5" r="3.5" fill="#00F3FF"/>
+                    {/* Negative space Question Mark */}
+                    <path d="M25 16.5C25.8 16.5 26.2 16.9 26.2 17.5C26.2 18.2 25 18.4 25 19.2" stroke="#0B0F1A" strokeWidth="1.2" strokeLinecap="round"/>
+                    <circle cx="25" cy="20.5" r="0.7" fill="#0B0F1A"/>
+
+                    {/* Typography - Adjusted for Light Navbar Visibility */}
+                    <text x="52" y="24" fontFamily="monospace" fontWeight="bold" fontSize="20" fill="#000000" letterSpacing="0.05em">TEAM CURIOSITY</text>
+                </svg>
             </Link>
 
             {/* Desktop Nav */}
