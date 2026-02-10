@@ -36,87 +36,50 @@ const Navbar = () => {
     <>
         <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-white/80 backdrop-blur-md border-b border-transparent ${scrolled ? 'border-border' : ''}`}>
         <div className="container mx-auto px-6 h-20 flex items-center justify-between">
-            {/* Logo - The Ultimate Animated "Badge" */}
-            <Link to="/" className="flex items-center gap-2 z-50 relative hover:scale-[1.02] transition-transform duration-500 group">
-                <svg width="240" height="48" viewBox="0 0 240 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-12 w-auto drop-shadow-2xl">
+            {/* Logo - Abstract Kinetic Emblem */}
+            <Link to="/" className="flex items-center gap-4 z-50 relative hover:opacity-80 transition-opacity group">
+                 <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-10 w-10">
                     <defs>
-                        <linearGradient id="neonGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" stopColor="#00F3FF"/>
-                            <stop offset="100%" stopColor="#BD00FF"/>
-                        </linearGradient>
-                        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-                            <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
-                            <feMerge>
-                                <feMergeNode in="coloredBlur"/>
-                                <feMergeNode in="SourceGraphic"/>
-                            </feMerge>
-                        </filter>
                         <style>
                             {`
-                                .logo-path {
-                                    stroke-dasharray: 100;
-                                    stroke-dashoffset: 100;
-                                    animation: draw 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+                                .shard {
+                                    transform-origin: center;
+                                    animation: assemble 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
                                 }
-                                .logo-fade {
+                                .shard-1 { animation-delay: 0.1s; transform: translate(-10px, -10px) rotate(-45deg); opacity: 0; }
+                                .shard-2 { animation-delay: 0.2s; transform: translate(10px, -5px) rotate(30deg); opacity: 0; }
+                                .shard-3 { animation-delay: 0.3s; transform: translate(-5px, 15px) rotate(90deg); opacity: 0; }
+                                .core-glow {
+                                    animation: pulse-core 3s infinite ease-in-out;
                                     opacity: 0;
-                                    animation: fade 1s ease-out 1s forwards;
+                                    animation-delay: 1.5s; /* Wait for assembly */
+                                    animation-fill-mode: forwards; 
                                 }
-                                .logo-pulse {
-                                    animation: pulse 3s infinite ease-in-out;
+                                
+                                @keyframes assemble {
+                                    to { transform: translate(0, 0) rotate(0deg); opacity: 1; }
                                 }
-                                .circuit-line {
-                                    stroke-dasharray: 50;
-                                    stroke-dashoffset: 50;
-                                    animation: draw 1s cubic-bezier(0.4, 0, 0.2, 1) 0.5s forwards;
-                                }
-                                .text-reveal {
-                                    opacity: 0;
-                                    transform: translateY(5px);
-                                    animation: slideUp 0.8s ease-out 1.2s forwards;
-                                }
-                                @keyframes draw {
-                                    to { stroke-dashoffset: 0; }
-                                }
-                                @keyframes fade {
-                                    to { opacity: 1; }
-                                }
-                                @keyframes slideUp {
-                                    to { opacity: 1; transform: translateY(0); }
-                                }
-                                @keyframes pulse {
-                                    0%, 100% { fill-opacity: 0.6; r: 3; }
-                                    50% { fill-opacity: 1; r: 4; filter: url(#glow); }
+                                @keyframes pulse-core {
+                                    0%, 100% { opacity: 0.3; transform: scale(0.95); }
+                                    50% { opacity: 0.8; transform: scale(1.05); }
                                 }
                             `}
                         </style>
                     </defs>
-
-                    {/* Dark Matter Badge Container */}
-                    <rect x="2" y="4" width="236" height="40" rx="20" fill="#050505" stroke="url(#neonGradient)" strokeWidth="1" className="logo-path"/>
                     
-                    {/* Neural Core / Eye Symbol */}
-                    <g transform="translate(24, 24)">
-                        {/* Outer Eye Arcs */}
-                        <path d="M-12 0C-12 0 -6 -8 0 -8C6 -8 12 0 12 0" stroke="#00F3FF" strokeWidth="1.5" fill="none" className="logo-path" style={{animationDelay: '0.2s'}}/>
-                        <path d="M-12 0C-12 0 -6 8 0 8C6 8 12 0 12 0" stroke="#00F3FF" strokeWidth="1.5" fill="none" className="logo-path" style={{animationDelay: '0.4s'}}/>
-                        
-                        {/* The Pupil (Pulse) */}
-                        <circle cx="0" cy="0" r="3" fill="#00F3FF" className="logo-pulse logo-fade"/>
-                        
-                        {/* Negative Space Question Mark (Subtle) */}
-                        <path d="M0 -3C1.5 -3 2.5 -2 2.5 -1C2.5 0.5 0 0.5 0 2" stroke="#050505" strokeWidth="1.2" strokeLinecap="round" className="logo-fade"/>
-                    </g>
-
-                    {/* Neural Circuits extending right */}
-                    <path d="M40 24H50L55 20H65" stroke="#00F3FF" strokeWidth="1" fill="none" className="circuit-line"/>
-                    <circle cx="65" cy="20" r="1.5" fill="#BD00FF" className="logo-fade" style={{animationDelay: '1.2s'}}/>
-
-                    {/* Typography - The Reveal */}
-                    <text x="75" y="29" fontFamily="'JetBrains Mono', monospace" fontWeight="700" fontSize="16" fill="white" letterSpacing="0.1em" className="text-reveal">
-                        TEAM CURIOSITY
-                    </text>
+                    {/* The Impossible Triangle Fragments */}
+                    <path d="M20 5L30 25H10L20 5Z" fill="#171717" stroke="#00F3FF" strokeWidth="1" className="shard shard-1"/>
+                    <path d="M10 25L5 35L15 35L10 25Z" fill="#171717" stroke="#00F3FF" strokeWidth="1" className="shard shard-2"/>
+                    <path d="M30 25L35 35L25 35L30 25Z" fill="#171717" stroke="#00F3FF" strokeWidth="1" className="shard shard-3"/>
+                    
+                    {/* Central Bind Point (Invisible until lock) */}
+                    <circle cx="20" cy="27" r="2" fill="#00F3FF" className="core-glow"/>
                 </svg>
+                
+                <div className="flex flex-col justify-center animate-[fadeIn_1s_ease-out_1.5s_forwards] opacity-0">
+                    <span className="text-sm font-bold tracking-[0.2em] text-black leading-none">TEAM</span>
+                    <span className="text-sm font-bold tracking-[0.2em] text-black leading-none">CURIOSITY</span>
+                </div>
             </Link>
 
             {/* Desktop Nav */}
