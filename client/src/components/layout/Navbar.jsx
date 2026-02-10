@@ -36,28 +36,24 @@ const Navbar = () => {
     <>
         <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-white/80 backdrop-blur-md border-b border-transparent ${scrolled ? 'border-border' : ''}`}>
         <div className="container mx-auto px-6 h-20 flex items-center justify-between">
-            {/* Logo */}
+            {/* Logo - Elegant Minimalist Design */}
             <Link to="/" className="flex items-center gap-2 z-50 relative hover:opacity-80 transition-opacity group">
-                <svg width="220" height="40" viewBox="0 0 220 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-10 w-auto">
-                    {/* Dark Tech Hexagon Base */}
-                    <path d="M25 5L36.547 11.6667V25L25 31.6667L13.453 25V11.6667L25 5Z" fill="#0B0F1A" stroke="#00F3FF" strokeWidth="1.5"/>
+                <svg width="200" height="36" viewBox="0 0 200 36" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-9 w-auto">
+                    {/* The "Arc of Curiosity" - Minimalist Eye */}
+                    <path d="M10 18C10 18 14 10 22 10C30 10 34 18 34 18" stroke="#171717" strokeWidth="2.5" strokeLinecap="round"/>
+                    <path d="M10 18C10 18 14 26 22 26C30 26 34 18 34 18" stroke="#171717" strokeWidth="2.5" strokeLinecap="round" className="opacity-50"/>
                     
-                    {/* Neural Circuits */}
-                    <path d="M37 18H42M8 18H13" stroke="#00F3FF" strokeWidth="1" strokeLinecap="round" className="opacity-60"/>
-                    <circle cx="44" cy="18" r="1.5" fill="#00F3FF" className="animate-pulse"/>
-                    <circle cx="6" cy="18" r="1.5" fill="#00F3FF" className="animate-pulse"/>
+                    {/* The "Spark" - Neon Core */}
+                    <circle cx="22" cy="18" r="3" fill="#00F3FF"/>
+                    <circle cx="22" cy="18" r="6" stroke="#00F3FF" strokeWidth="1" className="opacity-0 group-hover:opacity-100 transition-opacity duration-300"/>
 
-                    {/* The Eye of Constant Vigilance */}
-                    <path d="M18 18.5C18 18.5 21.5 13.5 25 13.5C28.5 13.5 32 18.5 32 18.5C32 18.5 28.5 23.5 25 23.5C21.5 23.5 18 18.5 18 18.5Z" stroke="#00F3FF" strokeWidth="1.5" fill="none"/>
-                    
-                    {/* The Pupil & Hidden Question */}
-                    <circle cx="25" cy="18.5" r="3.5" fill="#00F3FF"/>
-                    {/* Negative space Question Mark */}
-                    <path d="M25 16.5C25.8 16.5 26.2 16.9 26.2 17.5C26.2 18.2 25 18.4 25 19.2" stroke="#0B0F1A" strokeWidth="1.2" strokeLinecap="round"/>
-                    <circle cx="25" cy="20.5" r="0.7" fill="#0B0F1A"/>
+                    {/* Geometric Data Point */}
+                    <rect x="38" y="16" width="4" height="4" fill="#171717"/>
 
-                    {/* Typography - Adjusted for Light Navbar Visibility */}
-                    <text x="52" y="24" fontFamily="monospace" fontWeight="bold" fontSize="20" fill="#000000" letterSpacing="0.05em">TEAM CURIOSITY</text>
+                    {/* Typography - Clean & High End */}
+                    <text x="50" y="23" fontFamily="system-ui, -apple-system, sans-serif" fontWeight="800" fontSize="16" fill="#171717" letterSpacing="0.08em"  className="uppercase">
+                        TEAM CURIOSITY
+                    </text>
                 </svg>
             </Link>
 
