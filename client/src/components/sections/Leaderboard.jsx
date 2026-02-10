@@ -1,20 +1,20 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Github, Terminal, GitCommit, Activity, Clock, ShieldAlert, UserX } from 'lucide-react';
+import { Github, Trophy, GitCommit, Activity, Clock, Shield, Zap } from 'lucide-react';
 import api from '../../services/api';
-import gsap from 'gsap';
-import { useGSAP } from '@gsap/react';
+// Removing complex GSAP for now to ensure visibility is robust
+// import gsap from 'gsap'; 
+// import { useGSAP } from '@gsap/react';
 
 const Leaderboard = () => {
     const [leaders, setLeaders] = useState([]);
     const [loading, setLoading] = useState(true);
-    const containerRef = useRef(null);
 
     useEffect(() => {
         const fetchLeaderboardData = async () => {
             try {
                 const { data: teamMembers } = await api.get('/team');
                 
-                // Show ALL members, even without GitHub
+                // Show ALL members.
                 // Sort: Commits (desc), then hasGitHub (yes first), then Name (asc)
                 const sorted = teamMembers.sort((a, b) => {
                     const commitDiff = (b.commitCount || 0) - (a.commitCount || 0);
@@ -37,151 +37,159 @@ const Leaderboard = () => {
         fetchLeaderboardData();
     }, []);
 
-    useGSAP(() => {
-        if (!loading && leaders.length > 0) {
-            const tl = gsap.timeline();
-            
-            // Terminal boot sequence
-            tl.from('.terminal-line', {
-                opacity: 0,
-                x: -20,
-                duration: 0.1,
-                stagger: 0.05,
-                ease: 'none'
-            });
-
-            // Cards entry
-            tl.from('.operative-card', {
-                y: 50,
-                opacity: 0,
-                duration: 0.5,
-                stagger: 0.1,
-                ease: 'power2.out'
-            }, '+=0.2');
-        }
-    }, { scope: containerRef, dependencies: [loading, leaders] });
-
-    // Format relative time
+    // Format relative time helper
     const formatTimeAgo = (dateString) => {
-        if (!dateString) return 'OFFLINE';
+        if (!dateString) return 'Offline';
         const date = new Date(dateString);
-        if (isNaN(date.getTime())) return 'UNKNOWN'; // Handle invalid dates
+        if (isNaN(date.getTime())) return 'Unknown';
         
         const now = new Date();
         const seconds = Math.floor((now - date) / 1000);
         
         let interval = seconds / 31536000;
-        if (interval > 1) return Math.floor(interval) + " YRS AGO";
+        if (interval > 1) return Math.floor(interval) + "y ago";
         interval = seconds / 2592000;
-        if (interval > 1) return Math.floor(interval) + " MONTHS AGO";
+        if (interval > 1) return Math.floor(interval) + "mo ago";
         interval = seconds / 86400;
-        if (interval > 1) return Math.floor(interval) + " DAYS AGO";
+        if (interval > 1) return Math.floor(interval) + "d ago";
         interval = seconds / 3600;
-        if (interval > 1) return Math.floor(interval) + " HRS AGO";
+        if (interval > 1) return Math.floor(interval) + "h ago";
         interval = seconds / 60;
-        if (interval > 1) return Math.floor(interval) + " MINS AGO";
-        return "JUST NOW";
+        if (interval > 1) return Math.floor(interval) + "m ago";
+        return "Just now";
     };
 
     return (
-        <section ref={containerRef} className="py-24 relative min-h-screen bg-white text-black font-mono border-t-2 border-black">
-             {/* Background Grid */}
-             <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:2rem_2rem] opacity-50"></div>
+        <section className="py-24 relative min-h-screen bg-[#050505] text-white overflow-hidden">
+             {/* Background Ambience */}
+             <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-900/20 rounded-full blur-[120px]"></div>
+                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-900/20 rounded-full blur-[120px]"></div>
+                <div className="absolute top-[20%] right-[20%] w-[20%] h-[20%] bg-cyan-900/10 rounded-full blur-[100px]"></div>
+             </div>
 
-            <div className="container mx-auto px-6 z-10">
+            <div className="container mx-auto px-6 relative z-10">
                 
-                {/* Header Terminal Block */}
-                <div className="mb-16 border-l-4 border-black pl-6 py-2 max-w-4xl">
-                    <div className="flex flex-col gap-1 text-sm uppercase tracking-wider">
-                        <div className="terminal-line flex items-center gap-2 text-gray-500">
-                            <Terminal size={14} /> SYSTEM_ROOT: ACCESSING DATABASE...
-                        </div>
-                        <div className="terminal-line text-black font-bold">
-                            >> INITIATING PROTOCOL: LEADERBOARD_V2
-                        </div>
-                        <div className="terminal-line text-green-600 font-bold">
-                            >> CONNECTION ESTABLISHED. RENDERING DATA...
-                        </div>
+                {/* Header */}
+                <div className="text-center mb-20">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-cyan-400 mb-6 uppercase tracking-wider backdrop-blur-md">
+                        <Activity size={12} className="animate-pulse" /> Live Intelligence
                     </div>
-                    <h2 className="mt-6 text-5xl md:text-7xl font-black tracking-tighter uppercase terminal-line">
+                    <h2 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 text-transparent bg-clip-text bg-gradient-to-b from-white to-white/60">
                         Team Leaderboard
                     </h2>
+                    <p className="text-gray-400 max-w-2xl mx-auto text-lg">
+                        Real-time tracking of engineering contributions. <br className="hidden md:block"/> 
+                        Ranked by <span className="text-white font-semibold">GitHub Commits</span> and active status.
+                    </p>
                 </div>
 
                 {loading ? (
-                    <div className="flex flex-col items-center justify-center py-32 border-2 border-black border-dashed bg-gray-50">
-                        <Activity size={48} className="text-black animate-pulse mb-4" />
-                        <p className="text-black font-bold animate-pulse tracking-widest">>> ESTABLISHING SECURE CONNECTION...</p>
+                    <div className="flex flex-col items-center justify-center py-20">
+                        <div className="w-12 h-12 border-4 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin mb-4"></div>
+                        <p className="text-gray-500 font-mono text-sm uppercase tracking-widest">Syncing Data...</p>
                     </div>
                 ) : leaders.length === 0 ? (
-                    <div className="text-center py-20 border-2 border-black bg-gray-50">
-                        <ShieldAlert size={64} className="mx-auto mb-6 text-black" />
-                        <h3 className="text-3xl font-black uppercase">NO SIGNAL DETECTED</h3>
-                        <p className="max-w-md mx-auto mt-2 text-gray-500">
-                            :: ERROR: No operative data found in database.
-                        </p>
+                    <div className="text-center py-20 bg-white/5 rounded-3xl border border-white/10 backdrop-blur-sm max-w-3xl mx-auto">
+                        <Shield size={48} className="mx-auto mb-4 text-gray-600" />
+                        <h3 className="text-xl font-bold text-white mb-2">No Data Available</h3>
+                        <p className="text-gray-400">Unable to retrieve team metrics at this time.</p>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 gap-4">
-                        {/* Headers */}
-                        <div className="hidden md:grid grid-cols-12 gap-4 px-6 pb-2 text-xs font-bold text-gray-400 uppercase tracking-widest border-b border-black">
-                            <div className="col-span-1">Rank</div>
-                            <div className="col-span-5">Operative</div>
-                            <div className="col-span-3 text-right">Commit Strength</div>
-                            <div className="col-span-3 text-right">Last Signal</div>
-                        </div>
+                    <div className="max-w-5xl mx-auto">
+                        {/* Top Protocol - The podium or highlighted top user could go here, 
+                            but a clean list is often more "Dashboard" premium. 
+                            Let's do a highlighted top 3 list style. */}
 
-                        {leaders.map((member, idx) => (
-                            <div key={member._id} className="operative-card group relative bg-white border border-black hover:bg-black hover:text-white transition-all duration-200 p-4 md:px-6 md:py-4 flex flex-col md:grid md:grid-cols-12 md:items-center gap-4 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-                                
-                                {/* Rank */}
-                                <div className="col-span-1 flex items-center gap-2">
-                                    <span className="font-black text-2xl md:text-xl text-gray-300 group-hover:text-gray-600">
-                                        {String(idx + 1).padStart(2, '0')}
-                                    </span>
-                                    {idx === 0 && member.commitCount > 0 && <span className="bg-yellow-400 text-black text-[10px] px-1 font-bold border border-black">TOP</span>}
-                                </div>
+                        <div className="grid gap-4">
+                            {/* Column Headers */}
+                            <div className="grid grid-cols-12 px-6 py-2 text-xs font-bold text-gray-500 uppercase tracking-widest">
+                                <div className="col-span-2 md:col-span-1">Rank</div>
+                                <div className="col-span-6 md:col-span-5">Engineer</div>
+                                <div className="col-span-4 md:col-span-3 text-right">Commit Power</div>
+                                <div className="hidden md:block md:col-span-3 text-right">Last Signal</div>
+                            </div>
 
-                                {/* Operative Info */}
-                                <div className="col-span-5 flex items-center gap-4">
-                                    <div className="w-12 h-12 border-2 border-black p-0.5 shrink-0 bg-white">
-                                        <img 
-                                            src={member.profileImage || member.avatar || "https://github.com/github.png"} 
-                                            alt={member.name} 
-                                            className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" 
-                                        />
-                                    </div>
-                                    <div className="overflow-hidden">
-                                        <h4 className="font-black text-lg uppercase truncate">{member.name}</h4>
-                                        <div className="flex items-center gap-2 text-xs text-gray-500 group-hover:text-gray-400 font-bold">
-                                            {member.githubUsername ? (
-                                                <><Github size={12} /> @{member.githubUsername}</>
+                            {leaders.map((member, idx) => {
+                                const isTop3 = idx < 3;
+                                const rankColor = idx === 0 ? 'text-yellow-400' : idx === 1 ? 'text-gray-300' : idx === 2 ? 'text-orange-400' : 'text-gray-600';
+                                const glowClass = idx === 0 ? 'shadow-[0_0_30px_-5px_rgba(250,204,21,0.15)] border-yellow-500/30' : 
+                                                  idx === 1 ? 'shadow-[0_0_30px_-5px_rgba(255,255,255,0.1)] border-white/20' : 
+                                                  idx === 2 ? 'shadow-[0_0_30px_-5px_rgba(249,115,22,0.1)] border-orange-500/30' : 
+                                                  'border-white/5 hover:border-white/20 hover:bg-white/5';
+
+                                return (
+                                    <div 
+                                        key={member._id} 
+                                        className={`
+                                            relative grid grid-cols-12 items-center px-6 py-5 rounded-2xl border transition-all duration-300 cursor-default
+                                            ${idx % 2 === 0 ? 'bg-white/[0.02]' : 'bg-transparent'}
+                                            ${glowClass}
+                                            backdrop-blur-sm
+                                        `}
+                                    >
+                                        {/* Rank */}
+                                        <div className="col-span-2 md:col-span-1 flex items-center gap-3">
+                                            <span className={`text-xl md:text-2xl font-black ${rankColor}`}>
+                                                #{idx + 1}
+                                            </span>
+                                        </div>
+
+                                        {/* User Info */}
+                                        <div className="col-span-6 md:col-span-5 flex items-center gap-4">
+                                            <div className="relative">
+                                                <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full p-[2px] ${isTop3 ? 'bg-gradient-to-br from-white/20 to-transparent' : 'bg-white/10'}`}>
+                                                    <img 
+                                                        src={member.profileImage || member.avatar || "https://github.com/github.png"} 
+                                                        alt={member.name} 
+                                                        className="w-full h-full rounded-full object-cover bg-gray-800"
+                                                    />
+                                                </div>
+                                                {member.lastCommit && (
+                                                    <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-[#050505]"></div>
+                                                )}
+                                            </div>
+                                            <div className="overflow-hidden">
+                                                <h4 className={`font-bold text-sm md:text-base truncate ${isTop3 ? 'text-white' : 'text-gray-300'}`}>
+                                                    {member.name}
+                                                    {idx === 0 && <span className="ml-2 inline-block text-[10px] bg-yellow-400/10 text-yellow-400 px-1.5 py-0.5 rounded border border-yellow-400/20">MVP</span>}
+                                                </h4>
+                                                <div className="flex items-center gap-1 text-xs text-gray-500 font-mono mt-0.5">
+                                                    {member.githubUsername ? (
+                                                        <><Github size={10} /> @{member.githubUsername}</>
+                                                    ) : (
+                                                        <span className="opacity-50">No GitHub Linked</span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Commits */}
+                                        <div className="col-span-4 md:col-span-3 text-right flex justify-end items-center gap-3">
+                                            <div className="flex flex-col items-end">
+                                                <span className={`font-bold text-lg md:text-xl ${member.commitCount > 0 ? 'text-white' : 'text-gray-600'}`}>
+                                                    {member.commitCount || 0}
+                                                </span>
+                                                <span className="text-[10px] text-gray-600 uppercase tracking-wider font-mono">Commits</span>
+                                            </div>
+                                            {member.commitCount > 0 && <Zap size={16} className={`hidden md:block ${idx === 0 ? 'text-yellow-400' : 'text-cyan-500'}`} />}
+                                        </div>
+
+                                        {/* Last Active */}
+                                        <div className="hidden md:flex col-span-3 text-right justify-end items-center gap-2 text-gray-400">
+                                            {member.lastCommit ? (
+                                                <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
+                                                    <Clock size={12} className="text-cyan-400" />
+                                                    <span className="text-xs font-mono text-cyan-100">{formatTimeAgo(member.lastCommit)}</span>
+                                                </div>
                                             ) : (
-                                                <><UserX size={12} /> NO GITHUB LINKED</>
+                                                <span className="text-xs text-gray-600 font-mono px-2">--</span>
                                             )}
                                         </div>
                                     </div>
-                                </div>
-
-                                {/* Commits */}
-                                <div className="col-span-3 flex md:justify-end items-center gap-2">
-                                    <div className="md:hidden text-xs text-gray-500 group-hover:text-gray-400 uppercase">Commits:</div>
-                                    <span className={`font-black text-2xl flex items-center gap-2 ${member.commitCount > 0 ? 'group-hover:text-green-400' : 'text-gray-300'}`}>
-                                        <GitCommit size={18} /> {member.commitCount || 0}
-                                    </span>
-                                </div>
-
-                                {/* Last Active */}
-                                <div className="col-span-3 flex md:justify-end items-center gap-2">
-                                    <div className="md:hidden text-xs text-gray-500 group-hover:text-gray-400 uppercase">Last Signal:</div>
-                                    <div className={`text-xs font-bold px-2 py-1 border ${member.lastCommit ? 'border-green-600 text-green-700 bg-green-50 group-hover:bg-green-900 group-hover:text-green-300 group-hover:border-green-400' : 'border-gray-200 text-gray-400 bg-gray-100'}`}>
-                                        <span className="flex items-center gap-2">
-                                           <Clock size={12} /> {formatTimeAgo(member.lastCommit)}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
+                                );
+                            })}
+                        </div>
                     </div>
                 )}
             </div>
