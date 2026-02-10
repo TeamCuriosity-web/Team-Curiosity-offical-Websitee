@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Github, Trophy, GitCommit, Crown, Medal } from 'lucide-react';
+import { Github, Trophy, GitCommit, Crown, Medal, Loader2 } from 'lucide-react';
 import api from '../../services/api';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
@@ -57,8 +57,6 @@ const Leaderboard = () => {
         }
     }, { scope: containerRef, dependencies: [loading, leaders] });
 
-    if (loading) return null; // Or a subtle loader
-
     return (
         <section ref={containerRef} className="py-24 relative overflow-hidden min-h-screen flex flex-col justify-center">
              {/* Dynamic Background */}
@@ -78,7 +76,12 @@ const Leaderboard = () => {
                     </p>
                 </div>
 
-                {leaders.length === 0 ? (
+                {loading ? (
+                    <div className="flex flex-col items-center justify-center py-20 min-h-[400px]">
+                        <Loader2 size={48} className="text-purple-500 animate-spin mb-4" />
+                        <p className="text-gray-400 font-mono text-sm animate-pulse tracking-widest">ESTABLISHING CONNECTION...</p>
+                    </div>
+                ) : leaders.length === 0 ? (
                     <div className="text-center py-20 opacity-50 leaderboard-header">
                         <Github size={64} className="mx-auto mb-6 text-gray-600" />
                         <h3 className="text-3xl font-bold uppercase text-gray-300">No Data Available</h3>
