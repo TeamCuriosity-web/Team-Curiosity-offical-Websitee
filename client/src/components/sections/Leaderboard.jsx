@@ -1,95 +1,130 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Github, Trophy, GitCommit } from 'lucide-react';
+import { Github, Trophy, GitCommit, Crown, Medal } from 'lucide-react';
 import api from '../../services/api';
-import { useScrollReveal } from '../../utils/animations';
+import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
 
 const Leaderboard = () => {
     const [leaders, setLeaders] = useState([]);
     const [loading, setLoading] = useState(true);
     const containerRef = useRef(null);
 
-    useScrollReveal(containerRef, { mode: 'up', distance: 40, stagger: 0.1 });
-
     useEffect(() => {
         const fetchLeaderboardData = async () => {
             try {
-                // 1. Fetch Team Data (now includes commitCount from backend)
                 const { data: teamMembers } = await api.get('/team');
-                
-                // 2. Filter for those with GitHub handles and valid commit counts
-                // Ensure proper property access depending on what backend returns
                 const eligibleMembers = teamMembers.filter(m => m.github && m.github.length > 0);
-
-                // 3. Sort by Commits
                 const sorted = eligibleMembers.sort((a, b) => (b.commitCount || 0) - (a.commitCount || 0));
                 setLeaders(sorted);
-
             } catch (err) {
                 console.error("Leaderboard init failed", err);
             } finally {
                 setLoading(false);
             }
         };
-
         fetchLeaderboardData();
     }, []);
 
-    if (loading) return null;
+    useGSAP(() => {
+        if (!loading && leaders.length > 0) {
+            const tl = gsap.timeline();
+            
+            // Header animation
+            tl.from('.leaderboard-header', {
+                y: -50,
+                opacity: 0,
+                duration: 1,
+                ease: 'power3.out'
+            });
+
+            // Podium animation (staggered)
+            tl.from('.podium-card', {
+                y: 100,
+                opacity: 0,
+                duration: 0.8,
+                stagger: 0.2,
+                ease: 'back.out(1.7)'
+            }, '-=0.5');
+
+            // List items animation
+            tl.from('.leader-list-item', {
+                x: -50,
+                opacity: 0,
+                duration: 0.5,
+                stagger: 0.1,
+                ease: 'power2.out'
+            }, '-=0.3');
+        }
+    }, { scope: containerRef, dependencies: [loading, leaders] });
+
+    if (loading) return null; // Or a subtle loader
 
     return (
-        <section ref={containerRef} className="py-24 relative overflow-hidden">
-             {/* Background Elements */}
-             <div className="absolute top-0 left-0 w-full h-full -z-10 bg-white">
-                <div className="absolute top-1/4 right-0 w-96 h-96 bg-purple-100 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
-                <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+        <section ref={containerRef} className="py-24 relative overflow-hidden min-h-screen flex flex-col justify-center">
+             {/* Dynamic Background */}
+             <div className="absolute top-0 left-0 w-full h-full -z-10 bg-[#0a0a0a]">
+                <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[120px] animate-pulse"></div>
+                <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '2s' }}></div>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-indigo-900/10 rounded-full blur-[100px]"></div>
              </div>
 
-            <div className="container mx-auto px-6">
-                <div className="text-center mb-16">
-                     <h2 className="text-4xl md:text-5xl font-black tracking-tighter uppercase mb-4 flex items-center justify-center gap-3">
-                        <Trophy className="text-yellow-500" size={40} /> Team Leaderboard
+            <div className="container mx-auto px-6 z-10">
+                <div className="text-center mb-20 leaderboard-header">
+                     <h2 className="text-5xl md:text-7xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 drop-shadow-[0_0_15px_rgba(168,85,247,0.5)] mb-6 uppercase">
+                        Team Leaderboard
                     </h2>
-                    <p className="text-secondary font-mono text-sm max-w-2xl mx-auto">
-                        Real-time contribution tracking. Rank determined by total GitHub commits.
+                    <p className="text-gray-400 font-mono text-sm md:text-base max-w-2xl mx-auto border border-white/10 bg-white/5 backdrop-blur-sm py-2 px-6 rounded-full inline-block">
+                        <span className="text-purple-400">●</span> LIVE INTELLIGENCE TRACKING
                     </p>
                 </div>
 
                 {leaders.length === 0 ? (
-                    <div className="text-center py-20 opacity-50">
-                        <Github size={48} className="mx-auto mb-4" />
-                        <h3 className="text-2xl font-bold uppercase">No Intelligence Data</h3>
-                        <p className="font-mono text-sm max-w-md mx-auto mt-2">
-                            No team members with GitHub activity found.
+                    <div className="text-center py-20 opacity-50 leaderboard-header">
+                        <Github size={64} className="mx-auto mb-6 text-gray-600" />
+                        <h3 className="text-3xl font-bold uppercase text-gray-300">No Data Available</h3>
+                        <p className="font-mono text-sm max-w-md mx-auto mt-2 text-gray-500">
+                            Connect GitHub accounts to populate the grid.
                         </p>
                     </div>
                 ) : (
                     <>
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-end max-w-6xl mx-auto">
+                        {/* PODIUM SECTION */}
+                        <div className="flex flex-col md:flex-row justify-center items-end gap-6 md:gap-10 mb-20 min-h-[450px]">
                             {/* 2nd Place */}
-                            {leaders[1] && <LeaderCard member={leaders[1]} rank={2} />}
+                            {leaders[1] && <PodiumCard member={leaders[1]} rank={2} />}
                             
                             {/* 1st Place */}
-                            {leaders[0] && <LeaderCard member={leaders[0]} rank={1} />}
+                            {leaders[0] && <PodiumCard member={leaders[0]} rank={1} />}
                             
                             {/* 3rd Place */}
-                            {leaders[2] && <LeaderCard member={leaders[2]} rank={3} />}
+                            {leaders[2] && <PodiumCard member={leaders[2]} rank={3} />}
                         </div>
 
-                        {/* Rest of the list */}
+                        {/* LIST SECTION */}
                         {leaders.length > 3 && (
-                            <div className="mt-12 max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="max-w-5xl mx-auto space-y-3">
                                 {leaders.slice(3).map((member, idx) => (
-                                    <div key={member._id} className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
-                                        <div className="flex items-center gap-4">
-                                             <span className="font-mono text-lg font-bold text-gray-400 w-8">#{idx + 4}</span>
-                                             <img src={member.profileImage || member.avatar || "https://github.com/github.png"} alt={member.name} className="w-10 h-10 rounded-full bg-gray-100 object-cover" />
+                                    <div key={member._id} className="leader-list-item group relative overflow-hidden bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-md rounded-xl p-4 flex items-center justify-between transition-all duration-300 hover:scale-[1.01] hover:border-purple-500/30 hover:shadow-[0_0_20px_rgba(168,85,247,0.1)]">
+                                        <div className="flex items-center gap-6">
+                                             <span className="font-mono text-xl font-bold text-gray-600 w-12 text-center group-hover:text-white transition-colors">#{idx + 4}</span>
+                                             
+                                             <div className="relative">
+                                                <div className="w-12 h-12 rounded-full p-[2px] bg-gradient-to-tr from-gray-700 to-gray-900 group-hover:from-purple-500 group-hover:to-blue-500 transition-all duration-500">
+                                                    <img src={member.profileImage || member.avatar || "https://github.com/github.png"} alt={member.name} className="w-full h-full rounded-full object-cover bg-black" />
+                                                </div>
+                                             </div>
+                                             
                                              <div>
-                                                 <h4 className="font-bold text-sm uppercase">{member.name}</h4>
-                                                 <p className="text-[10px] font-mono text-gray-500">{member.githubUsername}</p>
+                                                 <h4 className="font-bold text-white text-lg tracking-wide uppercase group-hover:text-purple-300 transition-colors">{member.name}</h4>
+                                                 <div className="flex items-center gap-2 text-xs font-mono text-gray-400">
+                                                    <Github size={12} /> {member.githubUsername}
+                                                 </div>
                                              </div>
                                         </div>
-                                        <div className="font-mono font-bold text-purple-600 flex items-center gap-2">
-                                            <GitCommit size={14} /> {member.commitCount || 0}
+                                        
+                                        <div className="flex items-center gap-3 px-4 py-2 bg-black/20 rounded-lg border border-white/5 group-hover:border-purple-500/30 transition-colors">
+                                            <GitCommit size={16} className="text-purple-400" />
+                                            <span className="font-mono font-bold text-white text-lg">{member.commitCount || 0}</span>
                                         </div>
                                     </div>
                                 ))}
@@ -102,55 +137,68 @@ const Leaderboard = () => {
     );
 };
 
-const LeaderCard = ({ member, rank }) => {
+const PodiumCard = ({ member, rank }) => {
     const isFirst = rank === 1;
     const isSecond = rank === 2;
     const isThird = rank === 3;
 
+    // Rank Styles
+    const rankColors = {
+        1: { border: 'border-yellow-500', shadow: 'shadow-yellow-500/20', text: 'text-yellow-400', bg: 'bg-yellow-500', crown: 'text-yellow-400' },
+        2: { border: 'border-gray-300', shadow: 'shadow-gray-400/20', text: 'text-gray-300', bg: 'bg-gray-400', crown: 'text-gray-300' },
+        3: { border: 'border-orange-500', shadow: 'shadow-orange-500/20', text: 'text-orange-400', bg: 'bg-orange-500', crown: 'text-orange-400' }
+    };
+
+    const style = rankColors[rank];
+
     return (
-        <div className={`relative group ${isFirst ? 'order-first lg:order-2 lg:-mt-12 z-10' : 'order-last lg:order-1'}`}>
+        <div className={`podium-card relative group w-full max-w-[320px] ${isFirst ? 'order-first md:order-2 -mt-12 z-20' : rank === 2 ? 'order-last md:order-1' : 'order-last md:order-3'}`}>
+            {/* Glow Effect */}
+            <div className={`absolute inset-0 bg-gradient-to-b ${isFirst ? 'from-yellow-500/20' : isSecond ? 'from-gray-500/20' : 'from-orange-500/20'} to-transparent opacity-0 group-hover:opacity-100 blur-2xl transition-opacity duration-700`}></div>
+
             <div className={`
-                relative bg-white/80 backdrop-blur-md border-2 p-6 rounded-2xl flex flex-col items-center text-center transition-all duration-500 hover:transform hover:-translate-y-2
-                ${isFirst ? 'border-yellow-400 shadow-[0_20px_50px_rgba(250,204,21,0.2)] h-[350px] justify-center' : ''}
-                ${isSecond ? 'border-gray-300 shadow-[0_10px_30px_rgba(0,0,0,0.1)] h-[300px] justify-center' : ''}
-                ${isThird ? 'border-orange-300 shadow-[0_10px_30px_rgba(249,115,22,0.1)] h-[280px] justify-center' : ''}
+                relative bg-[#1a1a1a]/80 backdrop-blur-xl border ${style.border} p-8 rounded-3xl flex flex-col items-center text-center transition-all duration-500 hover:-translate-y-3 hover:shadow-[0_20px_40px_rgba(0,0,0,0.5)]
+                ${isFirst ? 'h-[420px] border-2 shadow-[0_0_30px_rgba(234,179,8,0.15)]' : 'h-[360px] border opacity-90 hover:opacity-100'}
             `}>
                 
                 {/* Crown/Rank Badge */}
                 <div className={`
-                    absolute -top-6 w-12 h-12 flex items-center justify-center rounded-full font-black text-white text-xl shadow-lg
-                    ${isFirst ? 'bg-yellow-400 scale-125' : ''}
-                    ${isSecond ? 'bg-gray-400' : ''}
-                    ${isThird ? 'bg-orange-400' : ''}
+                    absolute -top-6 w-14 h-14 flex items-center justify-center rounded-full font-black text-black text-xl shadow-[0_10px_20px_rgba(0,0,0,0.3)] z-10
+                    ${style.bg} ${isFirst ? 'scale-125 shadow-[0_0_25px_rgba(234,179,8,0.6)]' : ''}
                 `}>
-                    #{rank}
+                    {isFirst ? <Crown size={24} fill="currentColor" /> : <span className="text-xl">#{rank}</span>}
                 </div>
 
+                {/* Avatar */}
                 <div className={`
-                    mb-6 rounded-full p-1 border-2 border-dashed
-                    ${isFirst ? 'w-32 h-32 border-yellow-400' : 'w-24 h-24 border-gray-200'}
+                    mb-6 rounded-full p-1 bg-gradient-to-br ${isFirst ? 'from-yellow-300 to-yellow-600' : isSecond ? 'from-gray-200 to-gray-500' : 'from-orange-300 to-orange-600'}
+                    ${isFirst ? 'w-36 h-36' : 'w-24 h-24'} shadow-2xl relative
                 `}>
                     <img 
                         src={member.profileImage || member.avatar || "https://github.com/github.png"} 
                         alt={member.name} 
-                        className="w-full h-full rounded-full object-cover"
+                        className="w-full h-full rounded-full object-cover border-4 border-[#1a1a1a]"
                     />
+                     {/* Floating Badge */}
+                     <div className="absolute -bottom-2 -right-2 bg-[#1a1a1a] p-2 rounded-full border border-white/10">
+                        <Github size={isFirst ? 24 : 18} className="text-white" />
+                     </div>
                 </div>
 
-                <h3 className={`font-black uppercase tracking-tight mb-1 ${isFirst ? 'text-2xl' : 'text-xl'}`}>
+                {/* Name */}
+                <h3 className={`font-black uppercase tracking-tight mb-2 text-white ${isFirst ? 'text-3xl' : 'text-xl'}`}>
                     {member.name}
                 </h3>
-                <div className="flex items-center gap-2 text-secondary text-xs font-mono mb-6">
-                    <Github size={12} /> {member.githubUsername}
-                </div>
+                <p className={`font-mono text-xs mb-8 ${style.text} tracking-wider opacity-80`}>
+                    @{member.githubUsername}
+                </p>
 
+                {/* Stats */}
                 <div className={`
-                    px-6 py-3 rounded-full font-mono font-bold text-lg flex items-center gap-2
-                    ${isFirst ? 'bg-yellow-50 text-yellow-700' : ''}
-                    ${isSecond ? 'bg-gray-50 text-gray-700' : ''}
-                    ${isThird ? 'bg-orange-50 text-orange-700' : ''}
+                    mt-auto w-full py-4 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center gap-3 group-hover:bg-white/10 transition-colors
                 `}>
-                    <GitCommit size={20} /> {member.commitCount || 0} EST. COMMITS
+                    <GitCommit size={isFirst ? 24 : 20} className={style.text} /> 
+                    <span className="font-mono font-bold text-2xl text-white tracking-widest">{member.commitCount || 0}</span>
                 </div>
             </div>
         </div>
