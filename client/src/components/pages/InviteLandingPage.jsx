@@ -203,6 +203,7 @@ const InviteLandingPage = () => {
             duration: 1.2,
             stagger: 0.05, 
             ease: 'back.out(1.7)',
+            delay: 1.6, // Wait for Logo Assembly (1.5s)
             onStart: () => setPhase('1-fly-in')
         });
 
@@ -427,6 +428,42 @@ const InviteLandingPage = () => {
 
             {/* --- INTRO TEXT LAYER --- */}
             <div ref={textGroupRef} className="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none p-4">
+                <div className="mb-8 md:mb-12 relative z-20 opacity-0 animate-[fadeIn_0.5s_ease-out_forwards]">
+                    <svg width="160" height="160" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-32 h-32 md:w-48 md:h-48 drop-shadow-2xl">
+                        <defs>
+                            <style>
+                                {`
+                                    .invite-shard {
+                                        transform-origin: center;
+                                        animation: invite-assemble 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+                                    }
+                                    .invite-shard-1 { animation-delay: 0.1s; transform: translate(-20px, -20px) rotate(-90deg); opacity: 0; }
+                                    .invite-shard-2 { animation-delay: 0.2s; transform: translate(20px, -10px) rotate(60deg); opacity: 0; }
+                                    .invite-shard-3 { animation-delay: 0.3s; transform: translate(-10px, 30px) rotate(180deg); opacity: 0; }
+                                    .invite-core-glow {
+                                        animation: invite-pulse-core 3s infinite ease-in-out;
+                                        opacity: 0;
+                                        animation-delay: 1.5s;
+                                        animation-fill-mode: forwards; 
+                                    }
+                                    
+                                    @keyframes invite-assemble {
+                                        to { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+                                    }
+                                    @keyframes invite-pulse-core {
+                                        0%, 100% { opacity: 0.3; transform: scale(0.95); }
+                                        50% { opacity: 0.8; transform: scale(1.05); }
+                                    }
+                                `}
+                            </style>
+                        </defs>
+                        <path d="M20 5L30 25H10L20 5Z" fill="#000000" stroke="#00F3FF" strokeWidth="0.5" className="invite-shard invite-shard-1"/>
+                        <path d="M10 25L5 35L15 35L10 25Z" fill="#000000" stroke="#00F3FF" strokeWidth="0.5" className="invite-shard invite-shard-2"/>
+                        <path d="M30 25L35 35L25 35L30 25Z" fill="#000000" stroke="#00F3FF" strokeWidth="0.5" className="invite-shard invite-shard-3"/>
+                        <circle cx="20" cy="27" r="2" fill="#00F3FF" className="invite-core-glow"/>
+                    </svg>
+                </div>
+
                 <div 
                     className="text-[12vw] md:text-[8rem] font-black tracking-tighter mb-4 text-center leading-[0.85] uppercase"
                     style={{ WebkitTextStroke: '2px black' }}
