@@ -1,37 +1,39 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Hash, Terminal, Users, ChevronRight } from 'lucide-react';
+import { Hash, Terminal, Users, ChevronRight, Lock } from 'lucide-react';
 import api from '../../services/api';
 import { useScrollReveal } from '../../utils/animations';
 
 const ChatGlimpse = () => {
     const [recentMessages, setRecentMessages] = useState([]);
-    const [onlineCount, setOnlineCount] = useState(1); // Mock for now
+    const [onlineCount, setOnlineCount] = useState(1);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const containerRef = useRef(null);
     const contentRef = useRef(null);
 
     useScrollReveal(containerRef, { mode: 'up', distance: 20 });
-    
     // Scale up the chat window like it's opening
     useScrollReveal(contentRef, { mode: 'scale', duration: 0.8, delay: 0.2 });
 
     useEffect(() => {
-        const fetchPreview = async () => {
-            try {
-                // Determine API URL based on environment
-                const baseUrl = 'https://team-curiosity-offical-websitee.onrender.com/api';
-                // Adjust fetch logic if needed, reusing api instance
-                const { data } = await api.get('/chat/history?room=general'); 
-                setRecentMessages(data.slice(0, 3)); // Show only last 3
-            } catch (err) {
-                console.error("Failed to fetch chat preview");
-            }
-        };
-        fetchPreview();
-    }, []);
+        const token = localStorage.getItem('token');
+        setIsAuthenticated(!!token);
 
-    // Remove early return
-    // if (recentMessages.length === 0) return null;
+        if (token) {
+            const fetchPreview = async () => {
+                try {
+                    // Determine API URL based on environment
+                    const baseUrl = 'https://team-curiosity-offical-websitee.onrender.com/api';
+                    // Adjust fetch logic if needed, reusing api instance
+                    const { data } = await api.get('/chat/history?room=general'); 
+                    setRecentMessages(data.slice(0, 3)); // Show only last 3
+                } catch (err) {
+                    // console.error("Failed to fetch chat preview");
+                }
+            };
+            fetchPreview();
+        }
+    }, []);
 
     return (
         <section ref={containerRef} className="py-20 border-t border-gray-100">
@@ -44,14 +46,14 @@ const ChatGlimpse = () => {
                         Real-time intelligence sharing. Join the <span className="font-mono bg-gray-100 px-1 rounded text-black">#general</span> channel to coordinate with the team.
                     </p>
                 </div>
-                <Link to="/chat">
+                <Link to={isAuthenticated ? "/chat" : "/join"}>
                     <button className="group flex items-center gap-2 px-6 py-3 bg-black text-white rounded-full font-bold hover:bg-gray-800 transition-all">
-                        Open Secure Frequency <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform"/>
+                        {isAuthenticated ? "Open Secure Frequency" : "Join to Access Comms"} <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform"/>
                     </button>
                 </Link>
             </div>
 
-            <div ref={contentRef} className="bg-gray-50 border border-gray-200 rounded-xl p-6 md:p-8 relative overflow-hidden">
+            <div ref={contentRef} className="bg-gray-50 border border-gray-200 rounded-xl p-6 md:p-8 relative overflow-hidden min-h-[300px]">
                 <div className="absolute top-0 right-0 p-4 opacity-10">
                     <Terminal size={120} />
                 </div>
@@ -61,12 +63,18 @@ const ChatGlimpse = () => {
                         <Hash size={16} /> general
                     </div>
                     <div className="flex items-center gap-2 font-mono text-xs text-gray-500 uppercase">
-                        <Users size={14} /> {onlineCount} Operative(s) Online
+                        <Users size={14} /> {isAuthenticated ? `${onlineCount} Operative(s) Online` : "Network Encrypted"}
                     </div>
                 </div>
 
                 <div className="space-y-4">
-                    {recentMessages.length > 0 ? (
+                    {!isAuthenticated ? (
+                         <div className="flex flex-col items-center justify-center py-12 opacity-60">
+                            <Lock size={48} className="mb-4 text-gray-400" />
+                            <h3 className="text-xl font-bold uppercase tracking-widest text-gray-500">Signal Encrypted</h3>
+                            <p className="font-mono text-xs text-gray-400 mt-2">Classified transmission. Login required to decrypt.</p>
+                         </div>
+                    ) : recentMessages.length > 0 ? (
                         recentMessages.map((msg) => (
                         <div key={msg._id} className="flex gap-3 items-start opacity-70 hover:opacity-100 transition-opacity">
                             <div className="w-6 h-6 rounded bg-gray-200 flex items-center justify-center text-[10px] font-bold mt-1">
@@ -92,8 +100,8 @@ const ChatGlimpse = () => {
                 </div>
                 
                 <div className="mt-6 pt-4 border-t border-gray-200 text-center">
-                    <Link to="/chat" className="text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-black transition-colors">
-                        View all transmissions
+                    <Link to={isAuthenticated ? "/chat" : "/login"} className="text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-black transition-colors">
+                        {isAuthenticated ? "View all transmissions" : "Authenticate to view"}
                     </Link>
                 </div>
             </div>
