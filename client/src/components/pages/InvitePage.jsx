@@ -1,254 +1,416 @@
+import GiftPacket from './GiftPacket';
+import InvitationCard from './InvitationCard';
 import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { useSearchParams } from 'react-router-dom';
 
 const InvitePage = () => {
     const containerRef = useRef(null);
-    const logoPartARef = useRef(null);
-    const logoPartBRef = useRef(null);
-    const logoPartCRef = useRef(null);
-    const logoPartDRef = useRef(null);
-    const logoCoreRef = useRef(null);
+    const topTriangleRef = useRef(null);
+    const bottomLeftRef = useRef(null);
+    const bottomRightRef = useRef(null);
+    const coreRef = useRef(null);
     const textRef = useRef(null);
     const charsRef = useRef([]);
+    const subCharsRef = useRef([]);
     const shineGradientRef = useRef(null);
     
     const [searchParams] = useSearchParams();
-    const invitedName = searchParams.get('name') || 'Guest';
+
+    const [showPacket, setShowPacket] = useState(false);
 
     useEffect(() => {
         const ctx = gsap.context(() => {
-            const logoParts = [logoPartARef.current, logoPartBRef.current, logoPartCRef.current, logoPartDRef.current];
-
-            // INITIAL SETUP
-            gsap.set(logoParts, { opacity: 1 });
-            gsap.set(logoPartARef.current, { x: '-140%', y: '-30%', rotation: -6 });
-            gsap.set(logoPartBRef.current, { x: '120%', y: '-40%', rotation: 8 });
-            gsap.set(logoPartCRef.current, { x: '-120%', y: '130%', rotation: 5 });
-            gsap.set(logoPartDRef.current, { x: '140%', y: '110%', rotation: -7 });
-            gsap.set(logoCoreRef.current, { opacity: 0, scale: 0.4 });
-            gsap.set(textRef.current, { opacity: 0 });
-            gsap.set(charsRef.current, { opacity: 0, scale: 0.88, fillOpacity: 0 });
-            gsap.set(shineGradientRef.current, { attr: { x1: '120%', x2: '200%' } });
+            // Set initial positions - parts off-screen
+            gsap.set(topTriangleRef.current, { x: '-200%', opacity: 1 });
+            gsap.set(bottomLeftRef.current, { x: '200%', opacity: 1 });
+            gsap.set(bottomRightRef.current, { y: '200%', opacity: 1 });
+            gsap.set(coreRef.current, { opacity: 0, scale: 0 });
+            gsap.set(textRef.current, { opacity: 0, y: 40, scale: 0.7 });
+            
+            // Set each character to start from far (small and invisible)
+            gsap.set(charsRef.current, { scale: 0.3, opacity: 0, fillOpacity: 0 });
+            gsap.set(subCharsRef.current, { scale: 0.3, opacity: 0, fillOpacity: 0 });
 
             const tl = gsap.timeline({ delay: 0.3 });
 
-            // PHASE 1: LOGO ASSEMBLY
-            tl.to(logoParts, {
+            // PHASE 1: Smooth movement to center (ASSEMBLY)
+            const allParts = [topTriangleRef.current, bottomLeftRef.current, bottomRightRef.current];
+            
+            tl.to(allParts, {
                 x: 0,
                 y: 0,
-                rotation: 0,
-                duration: 1.15,
-                ease: 'power3.out',
-                stagger: 0.06
+                duration: 1.1,
+                ease: 'power2.out'
             });
-            tl.to(logoParts, {
+
+            // Final snap into position
+            tl.to(allParts, {
                 x: 0,
                 y: 0,
                 duration: 0.25,
                 ease: 'power3.out'
-            }, '-=0.25');
-            tl.to(logoCoreRef.current, {
+            }, '-=0.1');
+
+            // Show core glow after assembly
+            tl.to(coreRef.current, {
                 opacity: 1,
                 scale: 1,
-                duration: 0.35,
+                duration: 0.3,
                 ease: 'power3.out'
-            }, '-=0.2');
-            tl.to(logoCoreRef.current, {
-                boxShadow: '0 0 18px rgba(201, 188, 140, 0.45)',
-                duration: 0.4,
-                yoyo: true,
-                repeat: 1,
-                ease: 'power2.out'
-            });
+            }, '-=0.1');
+
+            // Hold assembled state briefly
             tl.to({}, { duration: 0.5 });
 
-            // PHASE 2: LOGO DISASSEMBLY
-            tl.to(logoCoreRef.current, {
+            // PHASE 2: DISASSEMBLY - Logo breaks apart and exits
+            // Core fades first
+            tl.to(coreRef.current, {
                 opacity: 0,
-                scale: 0.6,
+                scale: 0,
                 duration: 0.3,
                 ease: 'power2.in'
             });
-            tl.to(logoPartARef.current, {
-                x: '-160%',
+
+            // Parts exit in different directions - COMPLETELY GONE
+            tl.to(topTriangleRef.current, {
+                x: '-200%',
                 y: '-50%',
+                opacity: 0,
+                scale: 0.95,
                 duration: 0.9,
                 ease: 'power2.in'
-            }, '-=0.1');
-            tl.to(logoPartBRef.current, {
-                x: '150%',
-                y: '-80%',
-                duration: 0.9,
-                ease: 'power2.in'
-            }, '-=0.9');
-            tl.to(logoPartCRef.current, {
-                x: '-150%',
-                y: '160%',
-                duration: 0.9,
-                ease: 'power2.in'
-            }, '-=0.9');
-            tl.to(logoPartDRef.current, {
-                x: '160%',
-                y: '140%',
+            }, '-=0.2');
+
+            tl.to(bottomLeftRef.current, {
+                x: '200%',
+                opacity: 0,
+                scale: 0.95,
                 duration: 0.9,
                 ease: 'power2.in'
             }, '-=0.9');
 
-            // PHASE 3: TEXT ANIMATION
+            tl.to(bottomRightRef.current, {
+                y: '-200%',
+                opacity: 0,
+                scale: 0.95,
+                duration: 0.9,
+                ease: 'power2.in'
+            }, '-=0.9');
+
+            // PHASE 3: TEXT ENTRY - Hero moment with depth
             tl.to(textRef.current, {
                 opacity: 1,
-                duration: 0.2
-            }, '+=0.1');
-            tl.to(charsRef.current, {
-                opacity: 1,
+                y: 0,
                 scale: 1,
-                duration: 0.35,
-                ease: 'power3.out',
-                stagger: 0.05
-            });
+                duration: 0.8,
+                ease: 'power3.out'
+            }, '+=0.3');
+
+            // Step 1: Each character zooms in from far (LEFT to RIGHT: T, E, A, M...)
             tl.to(charsRef.current, {
-                fillOpacity: 1,
-                duration: 0.85,
-                ease: 'power2.inOut',
-                stagger: 0.06
+                scale: 1,
+                opacity: 1,
+                duration: 0.3,
+                ease: 'power2.out',
+                stagger: 0.08  // Each character enters sequentially
+            }, '-=0.3');
+
+            // Sub-text entry
+            tl.to(subCharsRef.current, {
+                scale: 1,
+                opacity: 0.6, // Slightly dimmer for sub-text initially
+                duration: 0.3,
+                ease: 'power2.out',
+                stagger: 0.04
             }, '-=0.2');
-            tl.to(shineGradientRef.current, {
-                attr: { x1: '-20%', x2: '60%' },
-                duration: 0.7,
+
+            // Step 2: Fill each character (stroke to fill effect)
+            tl.to([charsRef.current, subCharsRef.current], {
+                fillOpacity: 1,
+                opacity: 1,
+                duration: 1.5,
                 ease: 'power2.inOut',
-                repeat: 1,
-                onRepeat: () => {
-                    gsap.set(shineGradientRef.current, { attr: { x1: '120%', x2: '200%' } });
+                stagger: {
+                    amount: 0.8,
+                    from: "start"
+                }
+            }, '-=0.5');
+
+            // Shine effect - Run ONCE
+            const shineTween = tl.to(shineGradientRef.current, {
+                attr: { x1: '-100%', x2: '0%' },
+                duration: 2.0,
+                ease: 'power1.inOut',
+                repeat: 0, 
+                onComplete: () => {
+                     // Start position for next shine if repeated
+                    gsap.set(shineGradientRef.current, { attr: { x1: '100%', x2: '200%' } });
                 }
             }, '+=0.2');
 
-            // Hold text briefly - Animation ends here
-            tl.to({}, { duration: 0.3 });
+            // Hold text briefly
+            tl.to({}, { duration: 0.5 }); // Additional hold before exit
+
+            // PHASE 4: TEXT EXIT (Particle Dispersion and Convergence)
+            // Step 1: Unfill and Scatter
+            tl.to([...charsRef.current, ...subCharsRef.current], {
+                fillOpacity: 0,
+                x: () => (Math.random() - 0.5) * 500,
+                y: () => (Math.random() - 0.5) * 500,
+                rotation: () => (Math.random() - 0.5) * 360,
+                duration: 0.8,
+                ease: 'power2.out',
+                stagger: {
+                    amount: 0.5,
+                    from: "random"
+                }
+            });
+
+            // Step 2: Converge to center (Assembly Effect)
+            tl.to([...charsRef.current, ...subCharsRef.current], {
+                x: 0,
+                y: 0,
+                scale: 0,
+                opacity: 0,
+                duration: 0.6,
+                ease: 'power3.inOut',
+                stagger: {
+                    amount: 0.3,
+                    from: "edges"
+                },
+                onComplete: () => {
+                    // Trigger Phase 5: Gift Packet Animation (Assembling from particles)
+                    setShowPacket(true);
+                }
+            }, "-=0.2");
+
+            // Hide main text container
+            tl.to(textRef.current, {
+                opacity: 0,
+                duration: 0.1
+            });
 
         }, containerRef);
 
         return () => ctx.revert();
     }, []);
 
+    // --- PROCESS COMPLETE HANDLER ---
+    const [showCard, setShowCard] = useState(false);
+
+    const handlePacketOpen = () => {
+        // Trigger Invitation Card
+        setShowCard(true);
+    };
+
     const text = "TEAM CURIOSITY";
+    const subText = "BEYOND THE LIMITS";
     const chars = text.split('');
+    const subChars = subText.split('');
 
     return (
         <div 
             className="min-h-screen bg-[#f7f7f7] flex items-center justify-center" 
             style={{ 
-                overflow: 'visible',
+                overflow: 'hidden',
                 userSelect: 'none',
                 WebkitUserSelect: 'none'
             }}
         >
+            {/* Invitation Card Layer */}
+            {showCard && <InvitationCard />}
+
+            {/* Gift Packet Layer - On Top when active, behind card when opened */}
+            {showPacket && !showCard && <GiftPacket onOpen={handlePacketOpen} />}
+            
+            {/* If packet is open (card shown), keep packet mounted but maybe behind or handled by CSS? 
+                Actually, GiftPacket handles its own exit/scale out. 
+                But if we unmount it (!showCard condition above forces unmount), the exit animation might be cut off.
+                Better to keep it mounted or let it handle its own unmount?
+                GiftPacket calls onOpen AFTER its exit animation (scale out). 
+                So safe to unmount? 
+                Gift Packet code: "tl... onComplete: onOpen".
+                So when onOpen fires, animation IS complete. 
+                So unmounting is fine. 
+                Wait, the scale out happens parallel to flaps?
+                GiftPacket.jsx:
+                tl.to(... flaps ...).to(packetRef ... scale 1.2 opacity 0).
+                And onComplete of timeline calls onOpen.
+                So yes, at that point packet is invisible. Safe to unmount.
+            */}
+
             <div ref={containerRef} className="w-full h-full flex flex-col items-center justify-center" style={{ overflow: 'visible' }}>
+
                 {/* PHASE 1: Logo */}
                 <svg 
                     width="400" 
                     height="400" 
-                    viewBox="0 0 120 120" 
+                    viewBox="0 0 40 40" 
                     fill="none" 
                     xmlns="http://www.w3.org/2000/svg"
-                    className="drop-shadow-[0_12px_30px_rgba(18,18,18,0.12)]"
+                    className="drop-shadow-[0_8px_24px_rgba(0,0,0,0.12)]"
                 >
-                    <g ref={logoPartARef}>
+                    {/* Top Triangle Fragment - from LEFT */}
+                    <g ref={topTriangleRef}>
                         <path 
-                            d="M60 12L92 58H28L60 12Z" 
-                            fill="#161616" 
-                            stroke="#C9BC8C" 
-                            strokeWidth="1.2"
-                        />
-                    </g>
-                    <g ref={logoPartBRef}>
-                        <path 
-                            d="M28 58L12 88H44L28 58Z" 
-                            fill="#161616" 
-                            stroke="#C9BC8C" 
-                            strokeWidth="1.2"
-                        />
-                    </g>
-                    <g ref={logoPartCRef}>
-                        <path 
-                            d="M92 58L108 88H76L92 58Z" 
-                            fill="#161616" 
-                            stroke="#C9BC8C" 
-                            strokeWidth="1.2"
-                        />
-                    </g>
-                    <g ref={logoPartDRef}>
-                        <path 
-                            d="M60 46L76 82H44L60 46Z" 
-                            fill="#1F1F1F" 
-                            stroke="#B6AA7E" 
+                            d="M20 5L30 25H10L20 5Z" 
+                            fill="#000000" 
+                            stroke="#000000" 
                             strokeWidth="1"
                         />
                     </g>
-                    <circle ref={logoCoreRef} cx="60" cy="62" r="4" fill="#C9BC8C" />
+                    {/* Bottom Left Fragment - from RIGHT */}
+                    <g ref={bottomLeftRef}>
+                        <path 
+                            d="M10 25L5 35L15 35L10 25Z" 
+                            fill="#000000" 
+                            stroke="#000000" 
+                            strokeWidth="1"
+                        />
+                    </g>
+                    {/* Bottom Right Fragment - from BOTTOM */}
+                    <g ref={bottomRightRef}>
+                        <path 
+                            d="M30 25L35 35L25 35L30 25Z" 
+                            fill="#000000" 
+                            stroke="#000000" 
+                            strokeWidth="1"
+                        />
+                    </g>
+                    {/* Central Core Glow */}
+                    <circle 
+                        ref={coreRef}
+                        cx="20" 
+                        cy="27" 
+                        r="2.5" 
+                        fill="#000000"
+                    />
                 </svg>
 
-                {/* PHASE 3: Text */}
-                <div 
-                    ref={textRef}
-                    className="absolute inset-0 flex items-center justify-center"
-                >
+                {/* PHASE 3: Text Entry */}
+                <div className="absolute inset-0 flex items-center justify-center" style={{ overflow: 'visible' }}>
                     <svg 
-                        viewBox="0 0 1200 240" 
-                        className="w-[88vw] max-w-[1200px]"
+                        ref={textRef}
+                        viewBox="0 0 1000 400" 
+                        className="w-[85vw]"
                         preserveAspectRatio="xMidYMid meet"
+                        style={{ overflow: 'visible' }}
                     >
                         <defs>
-                            <linearGradient id="textFill" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stopColor="#111111" />
-                                <stop offset="100%" stopColor="#111111" />
+                            <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stopColor="#000000" />
+                                <stop offset="50%" stopColor="#000000" />
+                                <stop offset="100%" stopColor="#000000" />
                             </linearGradient>
                             <linearGradient 
-                                id="shine" 
+                                id="shineGradient" 
                                 ref={shineGradientRef}
-                                x1="120%" 
+                                x1="100%" 
                                 y1="0%" 
                                 x2="200%" 
                                 y2="0%"
                             >
                                 <stop offset="0%" stopColor="rgba(255,255,255,0)" />
-                                <stop offset="45%" stopColor="rgba(255,255,255,0.85)" />
+                                <stop offset="20%" stopColor="rgba(255,255,255,0)" />
+                                <stop offset="50%" stopColor="rgba(255,255,255,0.9)" />
+                                <stop offset="80%" stopColor="rgba(255,255,255,0)" />
                                 <stop offset="100%" stopColor="rgba(255,255,255,0)" />
                             </linearGradient>
+                            <filter id="textShadow" x="-50%" y="-50%" width="200%" height="200%">
+                                <feGaussianBlur in="SourceAlpha" stdDeviation="8" result="blur1"/>
+                                <feOffset in="blur1" dx="0" dy="6" result="offsetBlur1"/>
+                                <feFlood floodColor="#000000" floodOpacity="0.25"/>
+                                <feComposite in2="offsetBlur1" operator="in" result="shadow1"/>
+                                <feGaussianBlur in="SourceAlpha" stdDeviation="16" result="blur2"/>
+                                <feFlood floodColor="#000000" floodOpacity="0.15"/>
+                                <feComposite in2="blur2" operator="in" result="shadow2"/>
+                                <feMerge>
+                                    <feMergeNode in="shadow2"/>
+                                    <feMergeNode in="shadow1"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
                         </defs>
-                        <text 
-                            x="50%" 
-                            y="55%" 
-                            textAnchor="middle" 
-                            dominantBaseline="middle" 
-                            fontSize="160" 
-                            letterSpacing="14" 
-                            fontWeight="600" 
-                            fill="url(#textFill)" 
-                            stroke="#2A2A2A" 
-                            strokeWidth="2"
+                        {/* MAIN TEXT */}
+                        <text
+                            x="50%"
+                            y="40%"
+                            dominantBaseline="middle"
+                            textAnchor="middle"
+                            className="font-black uppercase"
+                            filter="url(#textShadow)"
+                            style={{
+                                fontSize: '130px',
+                                letterSpacing: '0.02em'
+                            }}
                         >
-                            {chars.map((char, index) => (
-                                <tspan 
-                                    key={`${char}-${index}`}
-                                    ref={(el) => { charsRef.current[index] = el; }}
+                            {chars.map((char, i) => (
+                                <tspan
+                                    key={i}
+                                    ref={el => charsRef.current[i] = el}
+                                    style={{
+                                        stroke: '#0a0a0a',
+                                        strokeWidth: '4',
+                                        fill: 'url(#textGradient)',
+                                        fillOpacity: 0,
+                                        paintOrder: 'stroke fill'
+                                    }}
                                 >
-                                    {char === ' ' ? '\u00A0' : char}
+                                    {char}
                                 </tspan>
                             ))}
                         </text>
-                        <rect 
-                            x="0" 
-                            y="0" 
-                            width="1200" 
-                            height="240" 
-                            fill="url(#shine)" 
-                            style={{ 
+                        <text
+                            x="50%"
+                            y="40%"
+                            dominantBaseline="middle"
+                            textAnchor="middle"
+                            className="font-black uppercase"
+                            style={{
+                                fontSize: '130px',
+                                letterSpacing: '0.02em',
+                                fill: 'url(#shineGradient)',
+                                opacity: 1,
                                 mixBlendMode: 'screen'
                             }}
-                        />
+                        >
+                            {text}
+                        </text>
+
+                        {/* SUB-TEXT */}
+                        <text
+                            x="50%"
+                            y="70%"
+                            dominantBaseline="middle"
+                            textAnchor="middle"
+                            className="font-bold uppercase"
+                            style={{
+                                fontSize: '42px',
+                                letterSpacing: '0.8em',
+                                fontWeight: 300
+                            }}
+                        >
+                            {subChars.map((char, i) => (
+                                <tspan
+                                    key={i}
+                                    ref={el => subCharsRef.current[i] = el}
+                                    style={{
+                                        stroke: '#000000',
+                                        strokeWidth: '1',
+                                        fill: '#000000',
+                                        fillOpacity: 0,
+                                        paintOrder: 'stroke fill'
+                                    }}
+                                >
+                                    {char}
+                                </tspan>
+                            ))}
+                        </text>
                     </svg>
                 </div>
+
+                {/* PHASE 5: The Box Container REMOVED */}
             </div>
         </div>
     );

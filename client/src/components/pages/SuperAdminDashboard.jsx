@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Card from '../ui/Card';
 import Button from '../ui/Button';
 import api from '../../services/adminApi'; // Use Admin Authenticated API
@@ -39,11 +40,8 @@ import { Shield, Users, Trash2, Lock, Cpu, Activity, Database, Code, Key, UserPl
 
 const SuperAdminDashboard = () => {
     const navigate = useNavigate();
-    const [loading, setLoading] = useState(true);
+    const queryClient = useQueryClient();
     const [activeTab, setActiveTab] = useState('requests'); // requests, admins, members, projects, hackathons
-    const [users, setUsers] = useState([]);
-    const [projects, setProjects] = useState([]);
-    const [hackathons, setHackathons] = useState([]);
     
     // Forms & State
     const [createAdminForm, setCreateAdminForm] = useState({ name: '', email: '' });
@@ -57,96 +55,130 @@ const SuperAdminDashboard = () => {
         name: '', description: '', achievement: '', status: 'upcoming'
     });
 
-    useEffect(() => {
-        const user = JSON.parse(localStorage.getItem('adminUser')); // Check Admin User
-        if (!user || user.role !== 'superadmin') {
-            navigate('/admin');
-            return;
-        }
-        fetchData();
-    }, []);
+    // --- QUERIES ---
+    const { data: users = [], isLoading: usersLoading, error: usersError } = useQuery({
+        queryKey: ['admin-users'],
+        queryFn: async () => {
+            const { data } = await api.get('/admin/users');
+            return data;
+        },
+        retry: false
+    });
 
-    const fetchData = async () => {
-        try {
-            const [usersRes, projectsRes, hackathonsRes] = await Promise.all([
-                api.get('/admin/users'),
-                api.get('/projects'),
-                api.get('/hackathons')
-            ]);
-            setUsers(usersRes.data);
-            setProjects(projectsRes.data);
-            setHackathons(hackathonsRes.data);
-        } catch (err) {
-            console.error(err);
-            if (err.response?.status === 401) navigate('/admin/login');
-        } finally {
-            setLoading(false);
+    const { data: projects = [], isLoading: projectsLoading } = useQuery({
+        queryKey: ['projects'],
+        queryFn: async () => {
+            const { data } = await api.get('/projects');
+            return data;
         }
-    };
+    });
+
+    const { data: hackathons = [], isLoading: hackathonsLoading } = useQuery({
+        queryKey: ['hackathons'],
+        queryFn: async () => {
+            const { data } = await api.get('/hackathons');
+            return data;
+        }
+    });
+
+    const isLoading = usersLoading || projectsLoading || hackathonsLoading;
+
+    if (usersError?.response?.status === 401) {
+        navigate('/admin/login');
+    }
+
+    // --- MUTATIONS ---
+    const createAdminMutation = useMutation({
+        mutationFn: (data) => api.post('/admin/create-admin', data),
+        onSuccess: (res) => {
+            queryClient.invalidateQueries(['admin-users']);
+            setNewAdminCreds({ email: res.data.email, password: res.data.generatedPassword });
+            setCreateAdminForm({ name: '', email: '' });
+        },
+        onError: (err) => alert(err.response?.data?.message || 'Failed to create admin')
+    });
+
+    const deleteUserMutation = useMutation({
+        mutationFn: (id) => api.delete(`/admin/users/${id}`),
+        onSuccess: () => queryClient.invalidateQueries(['admin-users']),
+        onError: () => alert('Deletion failed')
+    });
+
+    const projectMutation = useMutation({
+        mutationFn: (variables) => {
+             if (variables.editingId) {
+                 return api.put(`/projects/${variables.editingId}`, variables.payload);
+             } else {
+                 return api.post('/projects', variables.payload);
+             }
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries(['projects']);
+            setProjectForm({ title: '', description: '', longDescription: '', techStack: '', repoLink: '', liveLink: '', status: 'ongoing', difficulty: 'intermediate' });
+            setEditingId(null);
+        },
+        onError: (err) => alert(`Operation failed: ${err.message}`)
+    });
+
+    const deleteProjectMutation = useMutation({
+        mutationFn: (id) => api.delete(`/projects/${id}`),
+        onSuccess: () => queryClient.invalidateQueries(['projects']),
+        onError: () => alert('Deletion failed')
+    });
+
+    const hackathonMutation = useMutation({
+        mutationFn: (data) => api.post('/hackathons', data),
+        onSuccess: () => {
+             queryClient.invalidateQueries(['hackathons']);
+             setHackathonForm({ name: '', description: '', achievement: '', status: 'upcoming' });
+        },
+        onError: () => alert('Operation failed')
+    });
+
+    const deleteHackathonMutation = useMutation({
+        mutationFn: (id) => api.delete(`/hackathons/${id}`),
+        onSuccess: () => queryClient.invalidateQueries(['hackathons']),
+        onError: () => alert('Deletion failed')
+    });
+
+    const approveUserMutation = useMutation({
+        mutationFn: (id) => api.put(`/admin/users/${id}/approve`),
+        onSuccess: () => queryClient.invalidateQueries(['admin-users']),
+        onError: () => alert('Approval failed')
+    });
+
 
     // --- HANDLERS ---
 
-    const handleCreateAdmin = async (e) => {
+    const handleCreateAdmin = (e) => {
         e.preventDefault();
-        try {
-            const { data } = await api.post('/admin/create-admin', createAdminForm);
-            setUsers([...users, data]);
-            setNewAdminCreds({ email: data.email, password: data.generatedPassword });
-            setCreateAdminForm({ name: '', email: '' });
-        } catch (err) { alert(err.response?.data?.message || 'Failed to create admin'); }
+        createAdminMutation.mutate(createAdminForm);
     };
 
     const deleteUser = async (id) => {
         if (!window.confirm('WARNING: TERMINATION PROTOCOL INITIATED.\n\nConfirm deletion?')) return;
-        try {
-            await api.delete(`/admin/users/${id}`);
-            setUsers(users.filter(u => u._id !== id));
-        } catch (err) { alert('Deletion failed'); }
+        deleteUserMutation.mutate(id);
     };
 
-    const handleProjectSubmit = async (e) => {
+    const handleProjectSubmit = (e) => {
         e.preventDefault();
-        try {
-            const payload = { ...projectForm, techStack: typeof projectForm.techStack === 'string' ? projectForm.techStack.split(',').map(s => s.trim()) : projectForm.techStack };
-            if (editingId) {
-                const { data } = await api.put(`/projects/${editingId}`, payload);
-                setProjects(projects.map(p => p._id === editingId ? data : p));
-                setEditingId(null);
-            } else {
-                const { data } = await api.post('/projects', payload);
-                setProjects([...projects, data]);
-            }
-            setProjectForm({ title: '', description: '', longDescription: '', techStack: '', repoLink: '', liveLink: '', status: 'ongoing', difficulty: 'intermediate' });
-        } catch (err) { alert(`Operation failed: ${err.message}`); }
+        const payload = { ...projectForm, techStack: typeof projectForm.techStack === 'string' ? projectForm.techStack.split(',').map(s => s.trim()) : projectForm.techStack };
+        projectMutation.mutate({ editingId, payload });
     };
 
-    const handleHackathonSubmit = async (e) => {
+    const handleHackathonSubmit = (e) => {
         e.preventDefault();
-        try {
-            const { data } = await api.post('/hackathons', hackathonForm);
-            setHackathons([...hackathons, data]);
-            setHackathonForm({ name: '', description: '', achievement: '', status: 'upcoming' });
-        } catch (err) { alert('Operation failed'); }
+        hackathonMutation.mutate(hackathonForm);
     };
 
-    const deleteItem = async (type, id) => {
+    const deleteItem = (type, id) => {
         if (!window.confirm('Confirm deletion?')) return;
-        try {
-            if (type === 'project') {
-                await api.delete(`/projects/${id}`);
-                setProjects(projects.filter(p => p._id !== id));
-            } else if (type === 'hackathon') {
-                await api.delete(`/hackathons/${id}`);
-                setHackathons(hackathons.filter(h => h._id !== id));
-            }
-        } catch (err) { alert('Deletion failed'); }
+        if (type === 'project') deleteProjectMutation.mutate(id);
+        else if (type === 'hackathon') deleteHackathonMutation.mutate(id);
     };
 
-    const handleApproveUser = async (id) => {
-        try {
-            await api.put(`/admin/users/${id}/approve`);
-            setUsers(users.map(u => u._id === id ? { ...u, isApproved: true } : u));
-        } catch (err) { alert('Approval failed'); }
+    const handleApproveUser = (id) => {
+        approveUserMutation.mutate(id);
     };
 
     const handleEditClick = (project) => {

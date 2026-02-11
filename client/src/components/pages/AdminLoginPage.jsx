@@ -1,35 +1,37 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useMutation } from '@tanstack/react-query';
 import api from '../../services/api';
 import { Shield, Lock, Hexagon, ChevronRight, Activity } from 'lucide-react';
 
 const AdminLoginPage = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({ email: '', password: '' });
-    const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
     const [focused, setFocused] = useState(null);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setError('');
-
-        try {
-            const { data } = await api.post('/auth/login', formData);
+    const loginMutation = useMutation({
+        mutationFn: async (credentials) => {
+            const { data } = await api.post('/auth/login', credentials);
+            return data;
+        },
+        onSuccess: (data) => {
             if (data.role === 'admin' || data.role === 'superadmin') {
                 localStorage.setItem('adminToken', data.token);
                 localStorage.setItem('adminUser', JSON.stringify(data));
                 navigate(data.role === 'superadmin' ? '/super-admin' : '/admin');
             } else {
-                setError('PERMISSION DENIED: INVALID CLEARANCE DETECTED');
+                throw new Error('PERMISSION DENIED: INVALID CLEARANCE DETECTED');
             }
-        } catch (err) {
-            setError(err.response?.data?.message || 'AUTHENTICATION PROTOCOL FAILED');
-        } finally {
-            setLoading(false);
         }
+    });
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        loginMutation.mutate(formData);
     };
+
+    const loading = loginMutation.isPending;
+    const error = loginMutation.error ? (loginMutation.error.response?.data?.message || loginMutation.error.message || 'AUTHENTICATION PROTOCOL FAILED') : '';
 
     return (
         <div className="min-h-screen relative flex items-center justify-center overflow-hidden bg-gray-50 font-sans selection:bg-cyan-500/30">

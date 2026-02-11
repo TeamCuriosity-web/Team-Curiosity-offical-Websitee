@@ -27,7 +27,8 @@ import StartBuildingPage from './components/pages/StartBuildingPage';
 import ProfilePage from './components/pages/ProfilePage';
 import ChatPage from './components/pages/ChatPage';
 import GuidePage from './components/pages/GuidePage';
-import InviteLandingPage from './components/pages/InviteLandingPage';
+import InvitePage from './components/pages/InvitePage';
+import ReflectiveTypePage from './components/pages/ReflectiveTypePage';
 
 // UI
 import LegendaryLoader from './components/ui/LegendaryLoader';
@@ -165,7 +166,8 @@ const AppContent = () => {
           <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route path="/super-admin" element={<SuperAdminDashboard />} />
           <Route path="/guide" element={<GuidePage />} />
-          <Route path="/invite" element={<InviteLandingPage />} />
+          <Route path="/invite" element={<InvitePage />} />
+          <Route path="/reflective" element={<ReflectiveTypePage />} />
         </Routes>
       </div>
     </>
