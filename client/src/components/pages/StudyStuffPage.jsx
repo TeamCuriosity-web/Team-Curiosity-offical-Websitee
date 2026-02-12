@@ -90,62 +90,63 @@ const StudyStuffPage = () => {
     const CourseVideoCard = ({ title, instructor, duration, rating, thumbnailUrl, onClick }) => (
         <div 
             onClick={onClick} 
-            className="group relative cursor-pointer overflow-hidden rounded-3xl border-2 border-black/5 bg-white transition-all duration-500 hover:shadow-[0_45px_100px_-20px_rgba(0,0,0,0.15)] hover:-translate-y-3"
+            className="group relative cursor-pointer overflow-hidden rounded-2xl border border-black/5 bg-white transition-all duration-500 hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] hover:-translate-y-2"
+            style={{ fontFamily: "'Inter', sans-serif" }}
         >
             <div className="relative aspect-video overflow-hidden">
                 <img 
-                    src={thumbnailUrl || '/api/placeholder/800/450'} 
+                    src={thumbnailUrl || '/api/placeholder/400/225'} 
                     alt={title} 
-                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale-[0.4] group-hover:grayscale-0"
+                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale-[0.2] group-hover:grayscale-0"
                 />
                 
-                {/* Cinematic Overlays */}
+                {/* Information Overlays */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 
-                <div className="absolute top-4 left-4 flex gap-2">
-                    <div className="rounded-full bg-red-600 px-3 py-1 text-[9px] font-black uppercase tracking-widest text-white shadow-lg">
-                        Premium_Spec
+                <div className="absolute top-3 left-3 flex gap-2">
+                    <div className="rounded-full bg-red-600 px-3 py-1 text-[8px] font-black uppercase tracking-widest text-white shadow-lg">
+                        Premium
                     </div>
                 </div>
 
-                <div className="absolute top-4 right-4 flex h-8 items-center gap-1.5 rounded-xl bg-black/60 px-3 backdrop-blur-md">
-                    <Star size={12} fill="#facc15" className="text-yellow-400" />
-                    <span className="text-xs font-bold text-white">{rating}</span>
+                <div className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-lg bg-black/60 px-2.5 py-1 backdrop-blur-md">
+                    <Star size={10} fill="#facc15" className="text-yellow-400" />
+                    <span className="text-[10px] font-bold text-white">{rating}</span>
                 </div>
 
-                <div className="absolute bottom-4 right-4 rounded-xl bg-white/20 px-3 py-1.5 font-mono text-xs font-bold text-white backdrop-blur-md">
+                <div className="absolute top-3 right-3 rounded-lg bg-white/20 px-2.5 py-1 font-mono text-[9px] font-bold text-white backdrop-blur-md">
                     {duration}
                 </div>
 
-                {/* Play Interaction */}
+                {/* Play Button Overlay */}
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white text-black shadow-2xl transition-transform duration-300 group-hover:scale-110">
-                        <Play fill="black" size={24} className="translate-x-0.5" />
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-black shadow-xl transition-transform duration-300 group-hover:scale-110">
+                        <Play fill="black" size={20} className="translate-x-0.5" />
                     </div>
                 </div>
             </div>
 
-            <div className="p-10">
-                <div className="flex items-center gap-3 mb-4">
-                    <div className="h-6 w-1 bg-red-600"></div>
-                    <span className="text-[11px] font-black uppercase tracking-[0.3em] text-gray-400">Hub_Resource</span>
+            <div className="p-7">
+                <div className="flex items-center gap-3 mb-3">
+                    <div className="h-4 w-1 bg-red-600 rounded-full"></div>
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Archive_Protocol</span>
                 </div>
                 
-                <h4 className="mb-8 text-3xl font-black uppercase tracking-tighter text-gray-900 group-hover:text-red-600 transition-colors leading-[1.05]">
+                <h4 className="mb-6 text-xl font-bold tracking-tight text-gray-900 group-hover:text-red-600 transition-colors leading-tight" style={{ fontFamily: "'Outfit', sans-serif" }}>
                     {title}
                 </h4>
                 
-                <div className="flex items-center justify-between border-t border-black/5 pt-8">
-                    <div className="flex items-center gap-4">
-                        <div className="h-10 w-10 rounded-full bg-black flex items-center justify-center text-[10px] text-white font-bold">TC</div>
+                <div className="flex items-center justify-between border-t border-black/5 pt-5">
+                    <div className="flex items-center gap-3">
+                        <div className="h-8 w-8 rounded-full bg-black flex items-center justify-center text-[8px] font-black text-white">TC</div>
                         <div className="flex flex-col">
-                            <span className="text-[9px] font-black uppercase tracking-widest text-gray-400">Instructor</span>
-                            <span className="text-xs font-bold text-gray-700">{instructor || "Team Curiosity"}</span>
+                            <span className="text-[8px] font-black uppercase tracking-widest text-gray-400">Lead_Source</span>
+                            <span className="text-[11px] font-bold text-gray-700">{instructor || "Team Curiosity"}</span>
                         </div>
                     </div>
                     
-                    <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-red-600 opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-2">
-                        Execute_Watch <ArrowRight size={16} />
+                    <div className="flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-red-600 opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-1">
+                        Review <ArrowRight size={14} />
                     </div>
                 </div>
             </div>
@@ -253,7 +254,7 @@ const StudyStuffPage = () => {
                                         <p className="font-mono text-[10px] tracking-widest uppercase">Fetching_Repository...</p>
                                     </div>
                                 ) : courses.length > 0 ? (
-                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                                         {courses.map((course, i) => (
                                             <CourseVideoCard 
                                                 key={course._id || i} 
