@@ -1,11 +1,32 @@
-import React, { useLayoutEffect, useRef, useState } from 'react';
+import React, { useLayoutEffect, useRef, useState, useEffect } from 'react';
 import { Play, BookOpen, Clock, Star, ArrowRight, FileText, ChevronLeft, PlayCircle, Video, Download } from 'lucide-react';
 import { gsap } from 'gsap';
+import api from '../../services/api';
 
 const StudyStuffPage = () => {
     const containerRef = useRef(null);
     const [selectedDomain, setSelectedDomain] = useState(null); // 'Frontend' | 'Backend' | null
     const [activeTab, setActiveTab] = useState('Courses'); // 'Courses' | 'Notes'
+    const [courses, setCourses] = useState([]);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (selectedDomain && activeTab === 'Courses') {
+            fetchCourses();
+        }
+    }, [selectedDomain, activeTab]);
+
+    const fetchCourses = async () => {
+        setLoading(true);
+        try {
+            const { data } = await api.get(`/courses?domain=${selectedDomain}`);
+            setCourses(data);
+        } catch (err) {
+            console.error("Fetch courses error", err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useLayoutEffect(() => {
         const ctx = gsap.context(() => {
@@ -54,8 +75,8 @@ const StudyStuffPage = () => {
         </div>
     );
 
-    const CourseVideoCard = ({ title, instructor, duration, rating, color }) => (
-        <div className="hub-content-item group bg-white border-2 border-black overflow-hidden hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all duration-300">
+    const CourseVideoCard = ({ title, instructor, duration, rating, color, onClick }) => (
+        <div onClick={onClick} className="hub-content-item group bg-white border-2 border-black overflow-hidden hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 cursor-pointer">
             <div className={`relative h-44 w-full ${color} flex items-center justify-center border-b-2 border-black`}>
                 <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors"></div>
                 <Video size={40} className="text-white group-hover:scale-110 transition-transform" />
@@ -95,19 +116,6 @@ const StudyStuffPage = () => {
         </div>
     );
 
-    const frontendCourses = [
-        { title: "React 19 Deep Dive", duration: "4:25:00", rating: "4.9", color: "bg-cyan-500" },
-        { title: "GSAP Motion Secrets", duration: "2:15:00", rating: "4.8", color: "bg-green-500" },
-        { title: "Three.js Masterclass", duration: "5:40:00", rating: "5.0", color: "bg-blue-600" },
-        { title: "Tailwind UI Systems", duration: "1:50:00", rating: "4.7", color: "bg-indigo-500" }
-    ];
-
-    const backendCourses = [
-        { title: "Node.js Core Architecture", duration: "6:10:00", rating: "4.9", color: "bg-red-600" },
-        { title: "MongoDB Mastery", duration: "3:45:00", rating: "4.8", color: "bg-emerald-600" },
-        { title: "Socket.IO Real-time Sync", duration: "2:30:00", rating: "4.7", color: "bg-orange-500" },
-        { title: "JWT & Security Protocols", duration: "2:05:00", rating: "4.9", color: "bg-purple-600" }
-    ];
 
     return (
         <div ref={containerRef} className="min-h-screen bg-white p-6 pt-32 pb-20 overflow-hidden relative">
@@ -175,13 +183,31 @@ const StudyStuffPage = () => {
                         </div>
 
                         {/* Content Area */}
-                        <div className="pt-8">
+                        <div className="pt-8 min-h-[400px]">
                             {activeTab === 'Courses' ? (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                                    {(selectedDomain === 'Frontend' ? frontendCourses : backendCourses).map((course, i) => (
-                                        <CourseVideoCard key={i} {...course} />
-                                    ))}
-                                </div>
+                                loading ? (
+                                    <div className="flex flex-col items-center justify-center py-20 grayscale opacity-50">
+                                        <div className="w-12 h-12 border-4 border-black border-t-transparent rounded-full animate-spin mb-4"></div>
+                                        <p className="font-mono text-[10px] tracking-widest uppercase">Fetching_Repository...</p>
+                                    </div>
+                                ) : courses.length > 0 ? (
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                                        {courses.map((course, i) => (
+                                            <CourseVideoCard 
+                                                key={course._id || i} 
+                                                title={course.title}
+                                                duration={course.duration}
+                                                rating={course.rating}
+                                                color={selectedDomain === 'Frontend' ? 'bg-cyan-500' : 'bg-red-600'}
+                                                onClick={() => window.open(course.youtubeLink, '_blank')}
+                                            />
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="text-center py-20 border-2 border-dashed border-gray-200 rounded-xl">
+                                        <p className="font-mono text-xs text-gray-400 uppercase tracking-widest">No Protocol_Files found for this domain</p>
+                                    </div>
+                                )
                             ) : (
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl">
                                     {[1, 2, 3, 4, 5, 6].map(i => (

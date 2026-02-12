@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import Card from '../ui/Card';
 import Button from '../ui/Button';
 import api from '../../services/adminApi'; // Use Admin Authenticated API
-import { Copy, Users, Shield, Terminal, Database, Code, Trash2, Plus } from 'lucide-react';
+import { Copy, Users, Shield, Terminal, Database, Code, Trash2, Plus, Video, ExternalLink, Play } from 'lucide-react';
 
 const AdminDashboard = () => {
     const navigate = useNavigate();
@@ -14,10 +14,12 @@ const AdminDashboard = () => {
     const [users, setUsers] = useState([]);
     const [projects, setProjects] = useState([]);
     const [hackathons, setHackathons] = useState([]);
+    const [courses, setCourses] = useState([]);
     
     // Forms State
     const [projectForm, setProjectForm] = useState({ title: '', description: '', longDescription: '', techStack: '', repoLink: '', liveLink: '', status: 'ongoing', difficulty: 'intermediate' });
     const [hackathonForm, setHackathonForm] = useState({ name: '', description: '', achievement: '', status: 'upcoming' });
+    const [courseForm, setCourseForm] = useState({ title: '', youtubeLink: '', domain: 'Frontend', instructor: 'Team Curiosity', duration: '', youtubeId: '', thumbnailUrl: '' });
     const [inviteLink, setInviteLink] = useState('');
     const [editingId, setEditingId] = useState(null);
     const [currentUser, setCurrentUser] = useState(null);
@@ -39,14 +41,16 @@ const AdminDashboard = () => {
 
     const fetchData = async () => {
         try {
-            const [usersRes, projectsRes, hackathonsRes] = await Promise.all([
+            const [usersRes, projectsRes, hackathonsRes, coursesRes] = await Promise.all([
                 api.get('/admin/users'),
                 api.get('/projects'), // Public read is fine
-                api.get('/hackathons')
+                api.get('/hackathons'),
+                api.get('/courses')
             ]);
             setUsers(usersRes.data);
             setProjects(projectsRes.data);
             setHackathons(hackathonsRes.data);
+            setCourses(coursesRes.data);
         } catch (err) {
             console.error(err);
             if (err.response?.status === 401) navigate('/admin/login');
@@ -97,6 +101,9 @@ const AdminDashboard = () => {
             } else if (type === 'hackathon') {
                 await api.delete(`/hackathons/${id}`);
                 setHackathons(hackathons.filter(h => h._id !== id));
+            } else if (type === 'course') {
+                await api.delete(`/courses/${id}`);
+                setCourses(courses.filter(c => c._id !== id));
             }
         } catch (err) { alert('Deletion failed'); }
     };
@@ -156,6 +163,32 @@ const AdminDashboard = () => {
 
     // ... (existing functions)
 
+    const handleYoutubeLinkChange = async (url) => {
+        setCourseForm(prev => ({ ...prev, youtubeLink: url }));
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+        const match = url.match(regExp);
+        const videoId = (match && match[2].length === 11) ? match[2] : '';
+
+        if (videoId) {
+            const thumbUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+            setCourseForm(prev => ({ ...prev, youtubeId: videoId, thumbnailUrl: thumbUrl }));
+            try {
+                const response = await fetch(`https://noembed.com/embed?url=${url}`);
+                const data = await response.json();
+                if (data.title) setCourseForm(prev => ({ ...prev, title: data.title }));
+            } catch (err) { console.error(err); }
+        }
+    };
+
+    const handleCourseSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const { data } = await api.post('/courses', courseForm);
+            setCourses([data, ...courses]);
+            setCourseForm({ title: '', youtubeLink: '', domain: 'Frontend', instructor: 'Team Curiosity', duration: '', youtubeId: '', thumbnailUrl: '' });
+        } catch (err) { alert('Deployment failed'); }
+    };
+
     if (loading) return <div className="min-h-screen flex items-center justify-center font-mono text-xs">LOADING_MAINFRAME...</div>;
 
     return (
@@ -185,7 +218,7 @@ const AdminDashboard = () => {
 
             {/* Navigation Tabs */}
             <div className="flex gap-1 mb-8 border-b border-gray-200 overflow-x-auto">
-                {['requests', 'projects', 'hackathons', 'team', 'comms'].map(tab => (
+                {['requests', 'projects', 'hackathons', 'courses', 'team', 'comms'].map(tab => (
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
@@ -457,6 +490,73 @@ const AdminDashboard = () => {
                             </form>
                         </Card>
                     </div>
+                )}
+                {/* --- COURSES TAB --- */}
+                {activeTab === 'courses' && (
+                    <>
+                         <div className="lg:col-span-2 space-y-4">
+                            {courses.map(course => (
+                                <Card key={course._id} className="p-4 flex gap-4 items-center group">
+                                    <div className="w-20 h-12 bg-gray-100 rounded overflow-hidden flex-shrink-0 relative">
+                                        <img src={course.thumbnailUrl} className="w-full h-full object-cover" alt="" />
+                                        <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <Play size={10} fill="white" className="text-white"/>
+                                        </div>
+                                    </div>
+                                    <div className="flex-grow">
+                                        <div className="flex items-center gap-2">
+                                            <h3 className="font-bold text-sm truncate max-w-[200px]">{course.title}</h3>
+                                            <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded uppercase ${course.domain === 'Frontend' ? 'bg-cyan-100 text-cyan-800' : 'bg-red-100 text-red-800'}`}>{course.domain}</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 mt-0.5">
+                                            <span className="text-[10px] text-gray-400 font-mono">{course.duration || 'N/A'}</span>
+                                            <a href={course.youtubeLink} target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-black"><ExternalLink size={10}/></a>
+                                        </div>
+                                    </div>
+                                    <button onClick={() => deleteItem('course', course._id)} className="text-gray-300 hover:text-red-500 transition-colors"><Trash2 size={16} /></button>
+                                </Card>
+                            ))}
+                            {courses.length === 0 && (
+                                <div className="text-center py-20 bg-gray-50 border border-dashed rounded text-gray-400 text-[10px] uppercase tracking-widest">
+                                    No Courses Found // All Systems Clear
+                                </div>
+                            )}
+                        </div>
+                        <div className="lg:col-span-1">
+                             <Card className="p-6 sticky top-8">
+                                <h3 className="font-bold mb-4 flex items-center gap-2"><Video size={16}/> Deploy Course</h3>
+                                <form onSubmit={handleCourseSubmit} className="space-y-4">
+                                    <div>
+                                        <label className="text-[10px] uppercase font-bold text-gray-400">YouTube Link</label>
+                                        <input className="w-full border p-2 text-sm mt-1" placeholder="https://youtube.com/..." value={courseForm.youtubeLink} onChange={e => handleYoutubeLinkChange(e.target.value)} required />
+                                    </div>
+                                    {courseForm.thumbnailUrl && (
+                                        <div className="h-20 w-full rounded overflow-hidden border border-gray-100 mb-2">
+                                            <img src={courseForm.thumbnailUrl} className="w-full h-full object-cover" alt="Preview" />
+                                        </div>
+                                    )}
+                                    <div>
+                                        <label className="text-[10px] uppercase font-bold text-gray-400">Title</label>
+                                        <input className="w-full border p-2 text-sm mt-1" placeholder="Enter title" value={courseForm.title} onChange={e => setCourseForm({...courseForm, title: e.target.value})} required />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <div>
+                                             <label className="text-[10px] uppercase font-bold text-gray-400">Domain</label>
+                                             <select className="w-full border p-2 text-sm bg-white mt-1" value={courseForm.domain} onChange={e => setCourseForm({...courseForm, domain: e.target.value})}>
+                                                <option value="Frontend">Frontend</option>
+                                                <option value="Backend">Backend</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                             <label className="text-[10px] uppercase font-bold text-gray-400">Duration</label>
+                                             <input className="w-full border p-2 text-sm mt-1" placeholder="0:00:00" value={courseForm.duration} onChange={e => setCourseForm({...courseForm, duration: e.target.value})} />
+                                        </div>
+                                    </div>
+                                    <Button type="submit" variant="primary" className="w-full text-xs" disabled={!courseForm.youtubeId}>Deploy Protocol</Button>
+                                </form>
+                            </Card>
+                        </div>
+                    </>
                 )}
             </div>
         </div>

@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Card from '../ui/Card';
 import Button from '../ui/Button';
 import api from '../../services/adminApi'; // Use Admin Authenticated API
-import { Shield, Users, Trash2, Lock, Cpu, Activity, Database, Code, Key, UserPlus, Zap, LayoutGrid, Layers, Globe, GitBranch, Server } from 'lucide-react';
+import { Shield, Users, Trash2, Lock, Cpu, Activity, Database, Code, Key, UserPlus, Zap, LayoutGrid, Layers, Globe, GitBranch, Server, Video, ExternalLink, Play } from 'lucide-react';
 
     // --- UI HELPERS ---
     const TabButton = ({ id, label, icon: Icon, activeTab, setActiveTab }) => (
@@ -41,7 +41,7 @@ import { Shield, Users, Trash2, Lock, Cpu, Activity, Database, Code, Key, UserPl
 const SuperAdminDashboard = () => {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
-    const [activeTab, setActiveTab] = useState('requests'); // requests, admins, members, projects, hackathons
+    const [activeTab, setActiveTab] = useState('requests'); // requests, admins, members, projects, hackathons, comms, system, courses
     
     // Forms & State
     const [createAdminForm, setCreateAdminForm] = useState({ name: '', email: '' });
@@ -54,6 +54,7 @@ const SuperAdminDashboard = () => {
     const [hackathonForm, setHackathonForm] = useState({
         name: '', description: '', achievement: '', status: 'upcoming'
     });
+    const [courseForm, setCourseForm] = useState({ title: '', youtubeLink: '', domain: 'Frontend', instructor: 'Team Curiosity', duration: '', youtubeId: '', thumbnailUrl: '' });
 
     // --- QUERIES ---
     const { data: users = [], isLoading: usersLoading, error: usersError } = useQuery({
@@ -81,7 +82,12 @@ const SuperAdminDashboard = () => {
         }
     });
 
-    const isLoading = usersLoading || projectsLoading || hackathonsLoading;
+    const { data: courses = [], isLoading: coursesLoading } = useQuery({
+        queryKey: ['courses'],
+        queryFn: () => api.get('/courses').then(res => res.data)
+    });
+
+    const isLoading = usersLoading || projectsLoading || hackathonsLoading || coursesLoading;
 
     if (usersError?.response?.status === 401) {
         navigate('/admin/login');
@@ -135,10 +141,25 @@ const SuperAdminDashboard = () => {
         onError: () => alert('Operation failed')
     });
 
-    const deleteHackathonMutation = useMutation({
+    const { mutate: deleteHackathon } = useMutation({
         mutationFn: (id) => api.delete(`/hackathons/${id}`),
         onSuccess: () => queryClient.invalidateQueries(['hackathons']),
-        onError: () => alert('Deletion failed')
+        onError: () => alert('Protocol Error: Deletion Failed')
+    });
+
+    const { mutate: createCourse } = useMutation({
+        mutationFn: (data) => api.post('/courses', data),
+        onSuccess: () => {
+            queryClient.invalidateQueries(['courses']);
+            setCourseForm({ title: '', youtubeLink: '', domain: 'Frontend', instructor: 'Team Curiosity', duration: '', youtubeId: '', thumbnailUrl: '' });
+        },
+        onError: (err) => alert(`Deployment Failed: ${err.response?.data?.message || err.message}`)
+    });
+
+    const { mutate: deleteCourse } = useMutation({
+        mutationFn: (id) => api.delete(`/courses/${id}`),
+        onSuccess: () => queryClient.invalidateQueries(['courses']),
+        onError: () => alert('Protocol Error: Deletion Failed')
     });
 
     const approveUserMutation = useMutation({
@@ -246,6 +267,37 @@ const SuperAdminDashboard = () => {
     const adminList = users.filter(u => u.role === 'admin' || u.role === 'superadmin');
     const memberList = users.filter(u => u.role !== 'admin' && u.role !== 'superadmin');
 
+    const handleYoutubeLinkChange = async (url) => {
+        setCourseForm(prev => ({ ...prev, youtubeLink: url }));
+        
+        let videoId = '';
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+        const match = url.match(regExp);
+        if (match && match[2].length === 11) {
+            videoId = match[2];
+        }
+
+        if (videoId) {
+            const thumbUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+            setCourseForm(prev => ({ ...prev, youtubeId: videoId, thumbnailUrl: thumbUrl }));
+            
+            try {
+                const response = await fetch(`https://noembed.com/embed?url=${url}`);
+                const data = await response.json();
+                if (data.title) {
+                    setCourseForm(prev => ({ ...prev, title: data.title }));
+                }
+            } catch (err) {
+                console.error("Meta fetch error", err);
+            }
+        }
+    };
+
+    const handleCourseSubmit = (e) => {
+        e.preventDefault();
+        createCourse(courseForm);
+    };
+
     return (
         <div className="min-h-screen bg-white text-gray-900 font-sans selection:bg-red-100 selection:text-red-900 pt-24 pb-12 px-6">
             
@@ -277,6 +329,7 @@ const SuperAdminDashboard = () => {
                     <TabButton id="members" label="Members" icon={Users} activeTab={activeTab} setActiveTab={setActiveTab} />
                     <TabButton id="projects" label="Projects" icon={Cpu} activeTab={activeTab} setActiveTab={setActiveTab} />
                     <TabButton id="hackathons" label="Hackathons" icon={Zap} activeTab={activeTab} setActiveTab={setActiveTab} />
+                    <TabButton id="courses" label="Courses" icon={Video} activeTab={activeTab} setActiveTab={setActiveTab} />
                     <TabButton id="comms" label="Comms" icon={Activity} activeTab={activeTab} setActiveTab={setActiveTab} />
                     <TabButton id="system" label="System" icon={Database} activeTab={activeTab} setActiveTab={setActiveTab} />
                 </div>
@@ -643,9 +696,120 @@ const SuperAdminDashboard = () => {
                         </LightCard>
                     </div>
                 )}
+                {/* --- COURSES TAB --- */}
+                {activeTab === 'courses' && (
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div className="lg:col-span-2">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {courses.map(course => (
+                                    <LightCard key={course._id} className="relative group overflow-hidden border-gray-100">
+                                        <div className="flex gap-4">
+                                            <div className="w-24 h-16 bg-gray-100 rounded border border-gray-200 overflow-hidden flex-shrink-0 relative">
+                                                <img src={course.thumbnailUrl} className="w-full h-full object-cover" alt="" />
+                                                <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <Play size={12} fill="white" className="text-white"/>
+                                                </div>
+                                            </div>
+                                            <div className="flex-grow">
+                                                <div className="flex justify-between items-start">
+                                                    <Badge color={course.domain === 'Frontend' ? 'blue' : 'red'}>{course.domain}</Badge>
+                                                    <button onClick={() => deleteCourse(course._id)} className="text-gray-300 hover:text-red-600 transition-colors">
+                                                        <Trash2 size={14}/>
+                                                    </button>
+                                                </div>
+                                                <h4 className="font-bold text-sm mt-1 line-clamp-1">{course.title}</h4>
+                                                <div className="flex items-center gap-2 mt-1">
+                                                    <div className="text-[10px] text-gray-400 font-mono uppercase tracking-wider">{course.duration || 'N/A'}</div>
+                                                    <a href={course.youtubeLink} target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-gray-900 transition-colors">
+                                                        <ExternalLink size={10}/>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </LightCard>
+                                ))}
+                            </div>
+                            {courses.length === 0 && (
+                                <div className="p-20 text-center bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                                    <div className="text-gray-300 mb-2 font-mono text-xs uppercase tracking-[0.2em]">No Courses Deployed // Empty Repository</div>
+                                    <p className="text-gray-400 text-[10px] uppercase">Add your first YouTube course using the uplink protocol.</p>
+                                </div>
+                            )}
+                        </div>
+                        <div className="lg:col-span-1">
+                            <LightCard className="sticky top-6">
+                                <h3 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2"><Video size={18} className="text-red-600"/> Deploy Course</h3>
+                                <form onSubmit={handleCourseSubmit} className="space-y-4">
+                                    <div>
+                                        <label className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">YouTube Uplink [URL]</label>
+                                        <input 
+                                            className="w-full bg-white border border-gray-200 p-3 rounded text-sm text-gray-900 focus:border-red-500 outline-none mt-1 shadow-sm" 
+                                            placeholder="https://youtube.com/watch?v=..." 
+                                            value={courseForm.youtubeLink} 
+                                            onChange={e => handleYoutubeLinkChange(e.target.value)} 
+                                            required 
+                                        />
+                                    </div>
+                                    
+                                    {courseForm.thumbnailUrl && (
+                                        <div className="relative h-24 w-full bg-black rounded overflow-hidden border-2 border-gray-100 group">
+                                            <img src={courseForm.thumbnailUrl} className="w-full h-full object-cover opacity-80" alt="Preview"/>
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-2">
+                                                <span className="text-[8px] font-mono text-white/80 line-clamp-1 uppercase tracking-tighter">PREVIEW: {courseForm.title}</span>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <div>
+                                        <label className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Mission Title</label>
+                                        <input 
+                                            className="w-full bg-white border border-gray-200 p-3 rounded text-sm text-gray-900 focus:border-red-500 outline-none mt-1 shadow-sm font-bold" 
+                                            placeholder="Course Title" 
+                                            value={courseForm.title} 
+                                            onChange={e => setCourseForm({...courseForm, title: e.target.value})} 
+                                            required 
+                                        />
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Domain</label>
+                                            <select 
+                                                className="w-full bg-white border border-gray-200 p-3 rounded text-sm text-gray-900 outline-none mt-1 bg-white cursor-pointer"
+                                                value={courseForm.domain}
+                                                onChange={e => setCourseForm({...courseForm, domain: e.target.value})}
+                                            >
+                                                <option value="Frontend">Frontend</option>
+                                                <option value="Backend">Backend</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Duration</label>
+                                            <input 
+                                                className="w-full bg-white border border-gray-200 p-3 rounded text-sm text-gray-900 focus:border-red-500 outline-none mt-1 shadow-sm" 
+                                                placeholder="e.g. 4:20:00" 
+                                                value={courseForm.duration} 
+                                                onChange={e => setCourseForm({...courseForm, duration: e.target.value})} 
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <button 
+                                        type="submit"
+                                        disabled={!courseForm.youtubeId}
+                                        className="w-full bg-black hover:bg-red-600 disabled:bg-gray-200 disabled:cursor-not-allowed text-white font-bold py-3 rounded text-xs uppercase tracking-[0.2em] transition-all shadow-lg hover:shadow-red-200"
+                                    >
+                                        Deploy to Hub
+                                    </button>
+                                </form>
+                            </LightCard>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
 };
+
 
 export default SuperAdminDashboard;
