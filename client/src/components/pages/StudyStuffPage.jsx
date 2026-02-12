@@ -1,5 +1,5 @@
 import React, { useLayoutEffect, useRef, useState, useEffect } from 'react';
-import { Play, BookOpen, Clock, Star, ArrowRight, FileText, ChevronLeft, PlayCircle, Video, Download } from 'lucide-react';
+import { Play, BookOpen, Clock, Star, ArrowRight, FileText, ChevronLeft, PlayCircle, Video, Download, Database } from 'lucide-react';
 import { gsap } from 'gsap';
 import api from '../../services/api';
 
