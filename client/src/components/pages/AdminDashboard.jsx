@@ -392,19 +392,26 @@ const AdminDashboard = () => {
                                             {project.techStack.map(t => <span key={t} className="text-[10px] bg-gray-100 px-2 py-1 rounded">{t}</span>)}
                                         </div>
                                     </div>
-                                    <div className="flex gap-2">
-                                        {project.repoLink && (
-                                            <a href={project.repoLink} target="_blank" rel="noopener noreferrer" className="p-1 px-2 text-gray-300 hover:text-black hover:bg-gray-100 rounded transition-colors flex items-center gap-1 border border-transparent hover:border-gray-200">
-                                                 <Code size={14} /> <span className="text-[10px] uppercase font-bold">Repo</span>
-                                            </a>
-                                        )}
+                                    <div className="flex flex-col items-end gap-2">
+                                        <div className="flex gap-2">
+                                            {project.repoLink && (
+                                                <a href={project.repoLink} target="_blank" rel="noopener noreferrer" className="p-1 px-2 text-gray-300 hover:text-black hover:bg-gray-100 rounded transition-colors flex items-center gap-1 border border-transparent hover:border-gray-200">
+                                                     <Code size={14} /> <span className="text-[10px] uppercase font-bold">Repo</span>
+                                                </a>
+                                            )}
+                                            {project.liveLink && (
+                                                <a href={project.liveLink} target="_blank" rel="noopener noreferrer" className="p-1 px-2 text-gray-300 hover:text-green-600 hover:bg-green-50 rounded transition-colors flex items-center gap-1 border border-transparent hover:border-green-200">
+                                                     <ExternalLink size={14} /> <span className="text-[10px] uppercase font-bold">Live</span>
+                                                </a>
+                                            )}
+                                            <button onClick={() => handleEditClick(project)} className="text-gray-300 hover:text-blue-500 transition-colors"><Code size={18} /></button>
+                                            <button onClick={() => deleteItem('project', project._id)} className="text-gray-300 hover:text-red-500 transition-colors"><Trash2 size={18} /></button>
+                                        </div>
                                         {project.liveLink && (
-                                            <a href={project.liveLink} target="_blank" rel="noopener noreferrer" className="p-1 px-2 text-gray-300 hover:text-green-600 hover:bg-green-50 rounded transition-colors flex items-center gap-1 border border-transparent hover:border-green-200">
-                                                 <ExternalLink size={14} /> <span className="text-[10px] uppercase font-bold">Live</span>
+                                            <a href={project.liveLink} target="_blank" rel="noopener noreferrer" className="text-[10px] text-gray-400 hover:text-green-600 font-mono transition-colors border-b border-transparent hover:border-green-200">
+                                                {project.liveLink.replace('https://', '')}
                                             </a>
                                         )}
-                                        <button onClick={() => handleEditClick(project)} className="text-gray-300 hover:text-blue-500 transition-colors"><Code size={18} /></button>
-                                        <button onClick={() => deleteItem('project', project._id)} className="text-gray-300 hover:text-red-500 transition-colors"><Trash2 size={18} /></button>
                                     </div>
                                 </Card>
                             ))}
@@ -443,9 +450,16 @@ const AdminDashboard = () => {
                                     {editingId ? (
                                         <input placeholder="Live Uplink URL" className="w-full border p-2 text-sm" value={projectForm.liveLink} onChange={e => setProjectForm({...projectForm, liveLink: e.target.value})} />
                                     ) : (
-                                        <div className="w-full border p-2 text-sm bg-gray-50 text-gray-500 flex items-center gap-2 cursor-not-allowed mt-2">
-                                            <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
-                                            <span className="font-mono text-xs uppercase">Auto-Hosting on GitHub Pages [Live Link]</span>
+                                        <div className="w-full border p-2 text-sm bg-gray-50 text-gray-500 flex flex-col gap-1 cursor-not-allowed mt-2">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+                                                <span className="font-mono text-xs uppercase">Auto-Hosting on GitHub Pages</span>
+                                            </div>
+                                            {projectForm.title && (
+                                                <div className="text-[10px] text-gray-400 font-mono pl-4">
+                                                    Target: https://TeamCuriosity-web.github.io/{projectForm.title.trim().replace(/\s+/g, '-').replace(/[^\w-]/g, '')}/
+                                                </div>
+                                            )}
                                         </div>
                                     )}
                                     <div className="flex gap-2">

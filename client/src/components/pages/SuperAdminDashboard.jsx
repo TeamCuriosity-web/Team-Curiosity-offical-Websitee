@@ -643,6 +643,7 @@ const SuperAdminDashboard = () => {
                                                 {p.techStack.map(t => <span key={t} className="text-[10px] bg-gray-100 text-gray-500 px-2 py-1 rounded border border-gray-100">{t}</span>)}
                                             </div>
                                         </div>
+                                    <div className="flex flex-col items-end gap-2">
                                         <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity items-center">
                                             {p.repoLink && (
                                                 <a href={p.repoLink} target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-50 text-gray-600 hover:bg-black hover:text-white rounded transition-colors border border-gray-200">
@@ -657,6 +658,12 @@ const SuperAdminDashboard = () => {
                                             <button onClick={() => handleEditClick(p)} className="p-2 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded transition-colors"><Code size={16}/></button>
                                             <button onClick={() => deleteItem('project', p._id)} className="p-2 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white rounded transition-colors"><Trash2 size={16}/></button>
                                         </div>
+                                        {p.liveLink && (
+                                            <a href={p.liveLink} target="_blank" rel="noopener noreferrer" className="text-[10px] text-gray-400 hover:text-green-600 font-mono transition-colors border-b border-transparent hover:border-green-200 opacity-0 group-hover:opacity-100">
+                                                {p.liveLink.replace('https://', '')}
+                                            </a>
+                                        )}
+                                    </div>
                                     </div>
                                 </LightCard>
                             ))}
@@ -686,9 +693,16 @@ const SuperAdminDashboard = () => {
                                     {editingId ? (
                                         <input className="w-full bg-white border border-gray-200 p-3 rounded text-sm text-gray-900 focus:border-yellow-500 outline-none shadow-sm" placeholder="Live Deployment URL" value={projectForm.liveLink} onChange={e => setProjectForm({...projectForm, liveLink: e.target.value})} />
                                     ) : (
-                                        <div className="w-full bg-blue-50 border border-blue-200 p-3 rounded text-sm text-blue-800 flex items-center gap-2 shadow-sm cursor-not-allowed mt-2">
-                                            <div className="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></div>
-                                            <span className="font-mono text-xs uppercase font-bold tracking-wider">Auto-Hosting on GitHub Pages [Live Link]</span>
+                                        <div className="w-full bg-blue-50 border border-blue-200 p-3 rounded text-sm text-blue-800 flex flex-col gap-1 shadow-sm cursor-not-allowed mt-2">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></div>
+                                                <span className="font-mono text-xs uppercase font-bold tracking-wider">Auto-Hosting on GitHub Pages</span>
+                                            </div>
+                                            {projectForm.title && (
+                                                <div className="text-[10px] text-blue-600/70 font-mono pl-4">
+                                                    Target: https://TeamCuriosity-web.github.io/{projectForm.title.trim().replace(/\s+/g, '-').replace(/[^\w-]/g, '')}/
+                                                </div>
+                                            )}
                                         </div>
                                     )}
                                     
