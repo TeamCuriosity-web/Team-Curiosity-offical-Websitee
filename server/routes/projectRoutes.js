@@ -15,13 +15,59 @@ router.get('/', async (req, res) => {
   }
 });
 
+// @route   GET /api/projects/:id/github-stats
+// @desc    Get GitHub contributors and stats
+// @access  Public
+router.get('/:id/github-stats', async (req, res) => {
+  try {
+    const project = await Project.findById(req.params.id);
+    if (!project || !project.repoLink) {
+        return res.status(404).json({ message: 'Repo not found' });
+    }
+
+    // Extract Owner and Repo Name from URL (e.g. https://github.com/Owner/Repo)
+    const parts = project.repoLink.split('/');
+    const repoName = parts[parts.length - 1];
+    const owner = parts[parts.length - 2];
+
+    const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+    
+    const response = await fetch(`https://api.github.com/repos/${owner}/${repoName}/contributors`, {
+        headers: {
+            'Authorization': GITHUB_TOKEN ? `token ${GITHUB_TOKEN}` : '',
+            'Accept': 'application/vnd.github.v3+json',
+            'User-Agent': 'TeamCuriosity-App'
+        }
+    });
+
+    if (!response.ok) {
+        return res.status(response.status).json({ message: 'GitHub API Error' });
+    }
+
+    const data = await response.json();
+    // Map to essential data
+    const contributors = data.map(c => ({
+        id: c.id,
+        login: c.login,
+        avatar_url: c.avatar_url,
+        html_url: c.html_url,
+        contributions: c.contributions
+    }));
+
+    res.json(contributors);
+  } catch (err) {
+    console.error("GitHub Stats Error:", err);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
 // @route   GET /api/projects/:id
 // @desc    Get single project
 // @access  Public
 router.get('/:id', async (req, res) => {
   try {
     console.log(`Fetching project with ID: ${req.params.id}`);
-    const project = await Project.findById(req.params.id);
+    const project = await Project.findById(req.params.id).populate('teamMembers', 'name profileImage email');
     console.log(`Found project: ${project ? 'YES' : 'NO'}`);
     if (!project) return res.status(404).json({ message: 'Project not found' });
     res.json(project);

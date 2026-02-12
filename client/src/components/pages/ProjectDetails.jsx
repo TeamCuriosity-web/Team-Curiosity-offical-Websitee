@@ -14,11 +14,20 @@ const ProjectDetails = () => {
     // Safe check if teamMembers exists and is array, and if user is in it
     const isMember = project?.teamMembers?.includes(user?._id);
 
+    const [contributors, setContributors] = useState([]);
+
     useEffect(() => {
         const fetchProject = async () => {
             try {
                 const { data } = await api.get(`/projects/${id}`);
                 setProject(data);
+                
+                // Fetch GitHub Stats if repoLink exists
+                if (data.repoLink) {
+                    api.get(`/projects/${id}/github-stats`)
+                       .then(res => setContributors(res.data))
+                       .catch(err => console.error("Stats fetch failed", err));
+                }
             } catch (err) {
                 console.error("Failed to load project details", err);
             } finally {
@@ -84,6 +93,26 @@ const ProjectDetails = () => {
                 
                 {/* Main Content */}
                 <div className="lg:col-span-2 space-y-12">
+                    <section>
+                        <div className="flex justify-between items-end mb-4">
+                             <h2 className="flex items-center gap-2 text-xl font-bold uppercase tracking-tight">
+                                <Activity size={20} /> Mission Progress
+                            </h2>
+                            <span className="font-mono text-2xl font-bold">{project.progress || 0}%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 h-4 rounded-full overflow-hidden mb-2">
+                             <div 
+                                className="h-full bg-green-500 transition-all duration-1000 ease-out relative overflow-hidden" 
+                                style={{ width: `${project.progress || 0}%` }}
+                             >
+                                 <div className="absolute inset-0 bg-white/20 animate-[shimmer_2s_infinite]"></div>
+                             </div>
+                        </div>
+                         <p className="text-secondary font-mono text-xs text-right uppercase">
+                            {project.progress === 100 ? 'Mission Accomplished' : project.progress > 0 ? 'Operation in Progress' : 'Not Started'}
+                        </p>
+                    </section>
+
                      <section>
                         <h2 className="flex items-center gap-2 text-xl font-bold uppercase tracking-tight mb-6">
                             <Shield size={20} /> Mission Briefing
@@ -91,6 +120,58 @@ const ProjectDetails = () => {
                         <div className="prose prose-lg text-gray-800 leading-relaxed whitespace-pre-line">
                             {project.longDescription || "No detailed briefing available for this operation."}
                         </div>
+                     </section>
+
+                     <section>
+                        <h2 className="flex items-center gap-2 text-xl font-bold uppercase tracking-tight mb-6">
+                            <UserPlus size={20} /> Active Operatives
+                        </h2>
+                        {project.teamMembers && project.teamMembers.length > 0 ? (
+                            <div className="flex flex-wrap gap-6">
+                                {project.teamMembers.map(member => (
+                                    <div key={member._id} className="flex items-center gap-3 bg-gray-50 border border-gray-200 p-3 rounded-lg min-w-[200px]">
+                                        <img 
+                                            src={member.profileImage || `https://api.dicebear.com/7.x/notionists/svg?seed=${member.name}`} 
+                                            alt={member.name} 
+                                            className="w-10 h-10 rounded-full bg-gray-200"
+                                        />
+                                        <div>
+                                            <div className="font-bold text-sm">{member.name}</div>
+                                            <div className="text-[10px] text-gray-500 font-mono">OPERATIVE</div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="font-mono text-sm text-gray-400">NO AGENTS ASSIGNED.</p>
+                        )}
+                     </section>
+
+                     <section>
+                        <h2 className="flex items-center gap-2 text-xl font-bold uppercase tracking-tight mb-6">
+                            <GitBranch size={20} /> Code Contributors
+                        </h2>
+                        {contributors.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {contributors.map(contributor => (
+                                    <a 
+                                        key={contributor.id} 
+                                        href={contributor.html_url}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg hover:border-black transition-colors group"
+                                    >
+                                        <img src={contributor.avatar_url} alt={contributor.login} className="w-12 h-12 rounded-full border-2 border-transparent group-hover:border-black transition-colors" />
+                                        <div>
+                                            <div className="font-bold text-lg">{contributor.login}</div>
+                                            <div className="font-mono text-xs text-gray-500">{contributor.contributions} COMMITS</div>
+                                        </div>
+                                    </a>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="font-mono text-sm text-gray-400">AWAITING GITHUB DATA SYNC...</p>
+                        )}
                      </section>
 
                      <section>

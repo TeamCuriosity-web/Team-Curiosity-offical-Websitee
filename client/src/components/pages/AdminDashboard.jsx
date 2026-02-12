@@ -18,7 +18,7 @@ const AdminDashboard = () => {
     const [notes, setNotes] = useState([]);
     
     // Forms State
-    const [projectForm, setProjectForm] = useState({ title: '', description: '', longDescription: '', techStack: '', repoLink: '', liveLink: '', status: 'ongoing', difficulty: 'intermediate' });
+    const [projectForm, setProjectForm] = useState({ title: '', description: '', longDescription: '', techStack: '', repoLink: '', liveLink: '', status: 'ongoing', progress: 0, difficulty: 'intermediate' });
     const [hackathonForm, setHackathonForm] = useState({ name: '', description: '', achievement: '', status: 'upcoming' });
     const [courseForm, setCourseForm] = useState({ title: '', youtubeLink: '', domain: 'Frontend', instructor: 'Team Curiosity', duration: '', youtubeId: '', thumbnailUrl: '' });
     const [noteForm, setNoteForm] = useState({ title: '', description: '', pdfUrl: '', domain: 'Frontend', author: 'Team Curiosity' });
@@ -179,6 +179,7 @@ const AdminDashboard = () => {
             repoLink: project.repoLink || '',
             liveLink: project.liveLink || '',
             status: project.status || 'ongoing',
+            progress: project.progress || 0,
             difficulty: project.difficulty || 'intermediate'
         });
     };
@@ -470,20 +471,30 @@ const AdminDashboard = () => {
                                     <textarea placeholder="Mission Detail (Long Description)" className="w-full border p-2 text-sm h-32" value={projectForm.longDescription} onChange={e => setProjectForm({...projectForm, longDescription: e.target.value})} />
                                     <input placeholder="Tech Stack (React, Node...)" className="w-full border p-2 text-sm" value={projectForm.techStack} onChange={e => setProjectForm({...projectForm, techStack: e.target.value})} required />
                                     
-                                    <div className="grid grid-cols-2 gap-2">
-                                        <select className="w-full border p-2 text-sm bg-white" value={projectForm.status} onChange={e => setProjectForm({...projectForm, status: e.target.value})}>
-                                            <option value="ongoing">Ongoing</option>
-                                            <option value="upcoming">Upcoming</option>
-                                            <option value="completed">Completed</option>
-                                        </select>
-                                        <select className="w-full border p-2 text-sm bg-white" value={projectForm.difficulty} onChange={e => setProjectForm({...projectForm, difficulty: e.target.value})}>
-                                            <option value="beginner">Beginner</option>
-                                            <option value="intermediate">Intermediate</option>
-                                            <option value="advanced">Advanced</option>
-                                            <option value="legendary">Legendary</option>
-                                        </select>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="text-[10px] uppercase font-bold text-gray-400">Status</label>
+                                            <select className="w-full bg-white border border-gray-200 p-2.5 rounded text-sm text-gray-600 outline-none mt-1" value={projectForm.status} onChange={e => setProjectForm({...projectForm, status: e.target.value})}><option value="ongoing">Ongoing</option><option value="upcoming">Upcoming</option><option value="completed">Completed</option></select>
+                                        </div>
+                                        <div>
+                                            <label className="text-[10px] uppercase font-bold text-gray-400">Difficulty</label>
+                                            <select className="w-full bg-white border border-gray-200 p-2.5 rounded text-sm text-gray-600 outline-none mt-1" value={projectForm.difficulty} onChange={e => setProjectForm({...projectForm, difficulty: e.target.value})}><option value="beginner">Beginner</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option><option value="legendary">Legendary</option></select>
+                                        </div>
                                     </div>
-
+                                    <div>
+                                        <label className="text-[10px] uppercase font-bold text-gray-400 flex justify-between">
+                                            <span>Progress</span>
+                                            <span>{projectForm.progress || 0}%</span>
+                                        </label>
+                                        <input 
+                                            type="range" 
+                                            min="0" 
+                                            max="100" 
+                                            className="w-full mt-2 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black" 
+                                            value={projectForm.progress || 0} 
+                                            onChange={e => setProjectForm({...projectForm, progress: parseInt(e.target.value)})} 
+                                        />
+                                    </div>
                                     {editingId ? (
                                         <input placeholder="Repository URL" className="w-full border p-2 text-sm" value={projectForm.repoLink} onChange={e => setProjectForm({...projectForm, repoLink: e.target.value})} />
                                     ) : (

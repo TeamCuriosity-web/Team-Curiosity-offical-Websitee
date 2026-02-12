@@ -6,6 +6,7 @@ const projectSchema = new mongoose.Schema({
   longDescription: { type: String },
   techStack: [{ type: String }],
   status: { type: String, enum: ['upcoming', 'ongoing', 'completed'], default: 'ongoing' },
+  progress: { type: Number, default: 0 },
   difficulty: { type: String, enum: ['beginner', 'intermediate', 'advanced', 'legendary'], default: 'intermediate' },
   teamMembers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   repoLink: { type: String },

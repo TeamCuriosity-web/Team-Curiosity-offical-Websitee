@@ -49,7 +49,7 @@ const SuperAdminDashboard = () => {
     const [inviteLink, setInviteLink] = useState('');
     const [editingId, setEditingId] = useState(null);
     const [projectForm, setProjectForm] = useState({
-        title: '', description: '', longDescription: '', techStack: '', repoLink: '', liveLink: '', status: 'ongoing', difficulty: 'intermediate'
+        title: '', description: '', longDescription: '', techStack: '', repoLink: '', liveLink: '', status: 'ongoing', progress: 0, difficulty: 'intermediate'
     });
     const [hackathonForm, setHackathonForm] = useState({
         name: '', description: '', achievement: '', status: 'upcoming'
@@ -291,6 +291,7 @@ const SuperAdminDashboard = () => {
             repoLink: project.repoLink || '',
             liveLink: project.liveLink || '',
             status: project.status || 'ongoing',
+            progress: project.progress || 0,
             difficulty: project.difficulty || 'intermediate'
         });
         setActiveTab('projects');
@@ -678,9 +679,29 @@ const SuperAdminDashboard = () => {
                                     <input className="w-full bg-white border border-gray-200 p-3 rounded text-sm text-gray-900 focus:border-yellow-500 outline-none shadow-sm" placeholder="Brief Description" value={projectForm.description} onChange={e => setProjectForm({...projectForm, description: e.target.value})} />
                                     <textarea className="w-full bg-white border border-gray-200 p-3 rounded text-sm text-gray-900 focus:border-yellow-500 outline-none h-24 shadow-sm" placeholder="Detailed Specifications" value={projectForm.longDescription} onChange={e => setProjectForm({...projectForm, longDescription: e.target.value})} />
                                     <input className="w-full bg-white border border-gray-200 p-3 rounded text-sm text-gray-900 focus:border-yellow-500 outline-none shadow-sm" placeholder="Tech Stack (comma separated)" value={projectForm.techStack} onChange={e => setProjectForm({...projectForm, techStack: e.target.value})} />
-                                    <div className="grid grid-cols-2 gap-2">
-                                        <select className="bg-white border border-gray-200 p-3 rounded text-sm text-gray-600 outline-none focus:border-yellow-500 shadow-sm" value={projectForm.status} onChange={e => setProjectForm({...projectForm, status: e.target.value})}><option value="ongoing">Ongoing</option><option value="upcoming">Upcoming</option><option value="completed">Completed</option></select>
-                                        <select className="bg-white border border-gray-200 p-3 rounded text-sm text-gray-600 outline-none focus:border-yellow-500 shadow-sm" value={projectForm.difficulty} onChange={e => setProjectForm({...projectForm, difficulty: e.target.value})}><option value="beginner">Beginner</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option><option value="legendary">Legendary</option></select>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="text-[10px] uppercase font-bold text-gray-400">Status</label>
+                                            <select className="w-full bg-white border border-gray-200 p-3 rounded text-sm text-gray-600 outline-none focus:border-yellow-500 shadow-sm" value={projectForm.status} onChange={e => setProjectForm({...projectForm, status: e.target.value})}><option value="ongoing">Ongoing</option><option value="upcoming">Upcoming</option><option value="completed">Completed</option></select>
+                                        </div>
+                                        <div>
+                                            <label className="text-[10px] uppercase font-bold text-gray-400">Difficulty</label>
+                                            <select className="w-full bg-white border border-gray-200 p-3 rounded text-sm text-gray-600 outline-none focus:border-yellow-500 shadow-sm" value={projectForm.difficulty} onChange={e => setProjectForm({...projectForm, difficulty: e.target.value})}><option value="beginner">Beginner</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option><option value="legendary">Legendary</option></select>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="text-[10px] uppercase font-bold text-gray-400 flex justify-between">
+                                            <span>Progress</span>
+                                            <span>{projectForm.progress || 0}%</span>
+                                        </label>
+                                        <input 
+                                            type="range" 
+                                            min="0" 
+                                            max="100" 
+                                            className="w-full mt-2 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-yellow-500" 
+                                            value={projectForm.progress || 0} 
+                                            onChange={e => setProjectForm({...projectForm, progress: parseInt(e.target.value)})} 
+                                        />
                                     </div>
                                     {editingId ? (
                                         <input className="w-full bg-white border border-gray-200 p-3 rounded text-sm text-gray-900 focus:border-yellow-500 outline-none shadow-sm" placeholder="Repository URL" value={projectForm.repoLink} onChange={e => setProjectForm({...projectForm, repoLink: e.target.value})} />
