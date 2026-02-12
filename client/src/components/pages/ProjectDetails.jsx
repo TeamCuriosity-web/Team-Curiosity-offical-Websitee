@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Clock, Shield, Code2, GitBranch, Globe, Cpu, UserPlus, Lock, Activity } from 'lucide-react';
 import api from '../../services/api';
 import Button from '../ui/Button';
+import ForkInstructionsModal from '../ui/ForkInstructionsModal';
 
 const ProjectDetails = () => {
     const { id } = useParams();
@@ -17,60 +18,74 @@ const ProjectDetails = () => {
         (typeof member === 'string' ? member : member._id) === user?._id
     );
 
+    const [isForkModalOpen, setIsForkModalOpen] = useState(false);
     const [contributors, setContributors] = useState([]);
+
+    const [isForkModalOpen, setIsForkModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchProject = async () => {
-            try {
-                const { data } = await api.get(`/projects/${id}`);
-                setProject(data);
-                
-                // Fetch GitHub Stats if repoLink exists
-                if (data.repoLink) {
-                    api.get(`/projects/${id}/github-stats`)
-                       .then(res => setContributors(res.data))
-                       .catch(err => console.error("Stats fetch failed", err));
-                }
-            } catch (err) {
-                console.error("Failed to load project details", err);
-            } finally {
-                setLoading(false);
-            }
+             // ... existing code ...
         };
         fetchProject();
     }, [id]);
 
     const handleJoinProject = async () => {
-        if (!user) return;
-        setJoining(true);
-        try {
-            const { data } = await api.post(`/projects/${id}/join`);
-            setProject(data);
-        } catch (err) {
-            alert(err.response?.data?.message || 'Failed to join project');
-        } finally {
-            setJoining(false);
-        }
+        // ... existing code ...
     };
 
     if (loading) return <div className="min-h-screen flex items-center justify-center font-mono text-xs">DECRYPTING FILE...</div>;
     if (!project) return <div className="min-h-screen flex items-center justify-center font-mono text-xs text-red-500">FILE CORRUPTED OR NOT FOUND</div>;
 
     const getDifficultyColor = (level) => {
-        switch(level) {
-            case 'beginner': return 'text-green-500 border-green-500';
-            case 'intermediate': return 'text-yellow-500 border-yellow-500';
-            case 'advanced': return 'text-orange-500 border-orange-500';
-            case 'legendary': return 'text-purple-500 border-purple-500';
-            default: return 'text-gray-500 border-gray-500';
-        }
+         // ... existing code ...
     };
 
     return (
         <main className="min-h-screen pt-32 pb-20 px-6 container mx-auto animate-fade-in">
+            {/* ... existing header and content ... */}
+            
+            <ForkInstructionsModal 
+                isOpen={isForkModalOpen} 
+                onClose={() => setIsForkModalOpen(false)} 
+                repoLink={project.repoLink} 
+            />
+
             <Link to="/projects" className="inline-flex items-center gap-2 text-sm text-secondary hover:text-black mb-8 transition-colors">
                 <ArrowLeft size={16} /> RETURN TO PROJECTS
             </Link>
+
+            {/* ... rest of the component ... */}
+            
+            {/* Sidebar content where button is located */}
+                        {/* Join / Open Project Button */}
+                        {user ? (
+                            isMember ? (
+                                <div className="space-y-3">
+                                    <div className="w-full bg-green-50 text-green-700 border border-green-200 p-4 rounded text-center font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-2">
+                                        <Shield size={16} /> Active Operative
+                                    </div>
+                                    <Button 
+                                        onClick={() => setIsForkModalOpen(true)}
+                                        variant="outline" 
+                                        className="w-full justify-center gap-2 py-4 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-all"
+                                    >
+                                        <Code2 size={16} /> FORK TO DEVICE (VS CODE)
+                                    </Button>
+                                    <p className="text-[10px] text-center text-gray-400 font-mono">Clones repository to your local workspace</p>
+                                </div>
+                            ) : (
+                                <Button onClick={handleJoinProject} variant="outline" className="w-full justify-center gap-2 py-4 border-black hover:bg-black hover:text-white transition-all">
+                                    <UserPlus size={16} /> REQUEST ASSIGNMENT (JOIN)
+                                </Button>
+                            )
+                        ) : (
+                            <Link to="/login" className="w-full">
+                                <Button variant="outline" className="w-full justify-center gap-2 py-4 opacity-50 hover:opacity-100">
+                                    <Lock size={16} /> LOGIN TO JOIN OPERATION
+                                </Button>
+                            </Link>
+                        )}
 
             {/* Header */}
             <header className="mb-12 border-b border-black pb-8">
@@ -251,11 +266,7 @@ const ProjectDetails = () => {
                                         <Shield size={16} /> Active Operative
                                     </div>
                                     <Button 
-                                        onClick={() => {
-                                            let repoUrl = project.repoLink;
-                                            if (!repoUrl.endsWith('.git')) repoUrl += '.git';
-                                            window.location.href = `vscode://vscode.git/clone?url=${encodeURIComponent(repoUrl)}`;
-                                        }}
+                                        onClick={() => setIsForkModalOpen(true)}
                                         variant="outline" 
                                         className="w-full justify-center gap-2 py-4 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-all"
                                     >

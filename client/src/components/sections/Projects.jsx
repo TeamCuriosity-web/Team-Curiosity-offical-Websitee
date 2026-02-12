@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowUpRight, Server, Activity, Lock, Database, Code2 } from 'lucide-react';
 import api from '../../services/api';
+import ForkInstructionsModal from '../ui/ForkInstructionsModal';
 
 const Projects = () => {
     const [projects, setProjects] = useState([]);
@@ -9,6 +10,7 @@ const Projects = () => {
     const [activeTab, setActiveTab] = useState('Ongoing');
     const [projectFilter, setProjectFilter] = useState('all'); // 'all' | 'joined'
     const [currentUser, setCurrentUser] = useState(null);
+    const [activeForkProject, setActiveForkProject] = useState(null); // Project object or null
     const navigate = useNavigate();
 
     // Filter by Tab (Status) AND by Project Filter (Joined/All)
@@ -53,6 +55,11 @@ const Projects = () => {
 
   return (
     <main className="container mx-auto px-6 pt-32 pb-20 animate-fade-in">
+    <ForkInstructionsModal 
+        isOpen={!!activeForkProject} 
+        onClose={() => setActiveForkProject(null)} 
+        repoLink={activeForkProject?.repoLink} 
+    />
     <section className="py-12">
       <div className="flex flex-col md:flex-row justify-between items-end mb-12 border-b-2 border-black pb-4">
           <div className="space-y-2">
@@ -141,9 +148,7 @@ const Projects = () => {
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     if (project.repoLink) {
-                                        let repoUrl = project.repoLink;
-                                        if (!repoUrl.endsWith('.git')) repoUrl += '.git';
-                                        window.location.href = `vscode://vscode.git/clone?url=${encodeURIComponent(repoUrl)}`;
+                                        setActiveForkProject(project);
                                     } else {
                                         alert("Repository link not available.");
                                     }
