@@ -134,13 +134,22 @@ const StudyStuffPage = () => {
                 </div>
             </div>
 
-            <div className="p-6">
-                <h4 className="mb-2 line-clamp-2 h-10 text-base font-bold text-gray-900 group-hover:text-red-600 transition-colors">
+            <div className="p-8 group-hover:bg-gray-50 transition-colors duration-500">
+                <div className="flex items-center gap-4 mb-4">
+                    <div className="h-6 w-0.5 bg-red-600"></div>
+                    <span className="text-[11px] font-black uppercase tracking-[0.3em] text-gray-400">Archive_Resource</span>
+                </div>
+                <h4 className="mb-6 text-3xl font-black uppercase tracking-tighter text-gray-900 group-hover:text-red-600 transition-colors leading-[1.1]">
                     {title}
                 </h4>
-                <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-gray-400">
-                    <span>{instructor || "Expert Faculty"}</span>
-                    <span className="text-red-600 opacity-0 group-hover:opacity-100 transition-opacity">Watch Now →</span>
+                <div className="flex items-center justify-between border-t border-black/5 pt-6">
+                    <div className="flex items-center gap-3">
+                        <div className="h-8 w-8 rounded-full bg-black flex items-center justify-center text-[10px] text-white font-bold">TC</div>
+                        <span className="text-xs font-bold text-gray-500 tracking-tight">{instructor || "Expert Faculty"}</span>
+                    </div>
+                    <span className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-red-600 opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-2">
+                        Execute_Protocol <ArrowRight size={14} />
+                    </span>
                 </div>
             </div>
         </div>
@@ -247,7 +256,7 @@ const StudyStuffPage = () => {
                                         <p className="font-mono text-[10px] tracking-widest uppercase">Fetching_Repository...</p>
                                     </div>
                                 ) : courses.length > 0 ? (
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                                         {courses.map((course, i) => (
                                             <CourseVideoCard 
                                                 key={course._id || i} 
