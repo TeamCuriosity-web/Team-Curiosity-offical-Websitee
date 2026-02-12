@@ -90,12 +90,17 @@ const SuperAdminDashboard = () => {
         queryFn: () => api.get('/courses').then(res => res.data)
     });
 
-    const { data: systemStatus = { githubConnected: false, status: 'CHECKING...' } } = useQuery({
+    const { data: notes = [], isLoading: notesLoading } = useQuery({
+        queryKey: ['notes'],
+        queryFn: () => api.get('/notes').then(res => res.data)
+    });
+
+    const { data: systemStatus = { githubConnected: false, status: 'CHECKING...' }, isLoading: systemStatusLoading } = useQuery({
         queryKey: ['system-status'],
         queryFn: () => api.get('/admin/system-status').then(res => res.data)
     });
 
-    const isLoading = usersLoading || projectsLoading || hackathonsLoading || coursesLoading || notesLoading;
+    const isLoading = usersLoading || projectsLoading || hackathonsLoading || coursesLoading || notesLoading || systemStatusLoading;
 
     if (usersError?.response?.status === 401) {
         navigate('/admin/login');
