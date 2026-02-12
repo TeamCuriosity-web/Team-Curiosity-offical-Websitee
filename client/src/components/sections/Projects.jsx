@@ -7,23 +7,47 @@ const Projects = () => {
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('Ongoing');
+    const [projectFilter, setProjectFilter] = useState('all'); // 'all' | 'joined'
+    const [currentUser, setCurrentUser] = useState(null);
     const navigate = useNavigate();
 
-    const filteredProjects = projects.filter(p => (p.status || 'ongoing').toLowerCase() === activeTab.toLowerCase());
+    // Filter by Tab (Status) AND by Project Filter (Joined/All)
+    const filteredProjects = projects.filter(p => {
+        const statusMatch = (p.status || 'ongoing').toLowerCase() === activeTab.toLowerCase();
+        const joinMatch = projectFilter === 'all' || (projectFilter === 'joined' && p.teamMembers?.includes(currentUser?._id));
+        return statusMatch && joinMatch;
+    });
 
     useEffect(() => {
-        const fetchProjects = async () => {
+        const fetchData = async () => {
              try {
-                 const { data } = await api.get('/projects');
-                 setProjects(data);
+                 const [projectsRes, userRes] = await Promise.all([
+                     api.get('/projects'),
+                     api.get('/auth/me').catch(() => ({ data: null }))
+                 ]);
+                 setProjects(projectsRes.data);
+                 setCurrentUser(userRes.data);
              } catch (err) {
-                 console.error('Failed to load projects');
+                 console.error('Failed to load data');
              } finally {
                  setLoading(false);
              }
         };
-        fetchProjects();
+        fetchData();
     }, []);
+
+    const handleJoinProject = async (e, projectId) => {
+        e.stopPropagation(); // Prevent card click
+        try {
+            const { data } = await api.post(`/projects/${projectId}/join`);
+            setProjects(projects.map(p => p._id === projectId ? data : p));
+            // Optional: User feedback
+            // alert('Welcome to the team!'); 
+        } catch (err) {
+             console.error("Join Failed", err);
+             alert(err.response?.data?.message || 'Failed to join project');
+        }
+    };
 
   if (loading) return <div className="py-24 text-center font-mono text-xs">SCANNING NETWORK...</div>;
 
@@ -35,12 +59,33 @@ const Projects = () => {
             <h2 className="text-4xl font-bold text-black tracking-tighter uppercase">Active Projects</h2>
             <p className="text-secondary font-mono text-sm">System infrastructure and live services.</p>
           </div>
-          <div className="flex items-center gap-2 font-mono text-xs text-green-600">
-             <span className="relative flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
-            </span>
-            ALL SYSTEMS GREEN
+          
+          <div className="flex flex-col items-end gap-2">
+            <div className="flex bg-gray-100 p-1 rounded-lg">
+                <button 
+                    onClick={() => setProjectFilter('all')}
+                    className={`px-4 py-1 text-xs font-bold uppercase tracking-wider rounded-md transition-all ${
+                        projectFilter === 'all' ? 'bg-black text-white shadow-md' : 'text-gray-500 hover:text-gray-900'
+                    }`}
+                >
+                    All Missions
+                </button>
+                <button 
+                    onClick={() => setProjectFilter('joined')}
+                    className={`px-4 py-1 text-xs font-bold uppercase tracking-wider rounded-md transition-all ${
+                        projectFilter === 'joined' ? 'bg-black text-white shadow-md' : 'text-gray-500 hover:text-gray-900'
+                    }`}
+                >
+                    My Assignments
+                </button>
+            </div>
+            <div className="flex items-center gap-2 font-mono text-xs text-green-600">
+                <span className="relative flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                </span>
+                ALL SYSTEMS GREEN
+            </div>
           </div>
       </div>
 
@@ -89,25 +134,32 @@ const Projects = () => {
                     </div>
                 </div>
 
-                <div className="flex items-center justify-between w-full md:w-1/3 pl-0 md:pl-10 mt-4 md:mt-0">
-                    <div className="text-right">
-                        <p className="text-[10px] uppercase font-bold tracking-widest text-secondary group-hover:text-gray-400">Status</p>
-                        <p className="font-mono text-sm">{project.status}</p>
+                    <div className="flex items-center justify-end gap-4 w-full md:w-1/3 pl-0 md:pl-10 mt-4 md:mt-0">
+                        {/* Join Button */}
+                        {!project.teamMembers?.includes(currentUser?._id) && (
+                            <button
+                                onClick={(e) => handleJoinProject(e, project._id)}
+                                className="px-4 py-2 bg-black text-white text-[10px] font-bold uppercase tracking-widest hover:bg-gray-800 transition-colors border border-black group-hover:bg-white group-hover:text-black"
+                            >
+                                Request Assignment
+                            </button>
+                        )}
+                        
+                        <div className="text-right hidden xl:block">
+                            <p className="text-[10px] uppercase font-bold tracking-widest text-secondary group-hover:text-gray-400">Status</p>
+                            <p className="font-mono text-sm">{project.status}</p>
+                        </div>
+                        
+                        <a 
+                            href={project.repoLink && project.repoLink.length > 4 ? project.repoLink : '#'} 
+                            target="_blank" 
+                            rel="noreferrer"
+                            onClick={(e) => { e.stopPropagation(); if(!project.repoLink || project.repoLink.length <= 4) e.preventDefault(); }}
+                            className="p-2 rounded-full transition-all duration-300 z-10 relative text-secondary hover:bg-gray-100 group-hover:bg-white group-hover:text-black"
+                        >
+                             <ArrowUpRight className="transition-transform duration-300 group-hover:rotate-45" />
+                        </a>
                     </div>
-                    <div className="text-right mx-6">
-                        <p className="text-[10px] uppercase font-bold tracking-widest text-secondary group-hover:text-gray-400">Difficulty</p>
-                        <p className="font-mono text-sm uppercase">{project.difficulty || 'N/A'}</p>
-                    </div>
-                    <a 
-                        href={project.repoLink && project.repoLink.length > 4 ? project.repoLink : '#'} 
-                        target="_blank" 
-                        rel="noreferrer"
-                        onClick={(e) => { e.stopPropagation(); if(!project.repoLink || project.repoLink.length <= 4) e.preventDefault(); }}
-                        className="p-2 rounded-full transition-all duration-300 z-10 relative text-secondary hover:bg-gray-100 group-hover:bg-white group-hover:text-black"
-                    >
-                         <ArrowUpRight className="transition-transform duration-300 group-hover:rotate-45" />
-                    </a>
-                </div>
 
             </div>
         ))}
