@@ -52,81 +52,94 @@ const StudyStuffPage = () => {
     const DomainCard = ({ title, lessons, duration, rating, thumbnailGradient, onClick }) => (
         <div 
             onClick={onClick}
-            className="domain-card group bg-white border-2 border-black overflow-hidden hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 flex flex-col h-full cursor-pointer"
+            className="domain-card group bg-white border-4 border-black overflow-hidden hover:shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] transition-all duration-500 flex flex-col h-full cursor-pointer relative"
         >
-            <div className={`relative h-56 w-full ${thumbnailGradient} flex items-center justify-center overflow-hidden border-b-2 border-black`}>
+            <div className={`relative h-64 w-full ${thumbnailGradient} flex items-center justify-center overflow-hidden border-b-4 border-black`}>
                 <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-300"></div>
-                <div className="p-4 bg-white/20 backdrop-blur-md rounded-full text-white transform group-hover:scale-110 transition-transform duration-500">
+                <div className="p-6 bg-black text-white rounded-full transform group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 shadow-xl border-2 border-white">
                     <Play fill="white" size={32} />
                 </div>
-                <div className="absolute top-4 left-4 bg-black text-white px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-widest">
-                    Study_Domain
+                <div className="absolute top-4 left-4 bg-black text-white px-4 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.2em] border border-white/20">
+                    CORE_PROTOCOL
                 </div>
             </div>
-            <div className="p-8 flex flex-col flex-grow">
-                <h3 className="text-3xl font-black uppercase tracking-tighter mb-4 leading-tight group-hover:text-red-600 transition-colors">
+            <div className="p-10 flex flex-col flex-grow bg-white group-hover:bg-black transition-colors duration-500">
+                <h3 className="text-4xl font-black uppercase tracking-tighter mb-6 leading-none group-hover:text-white transition-colors italic">
                     {title}
                 </h3>
-                <div className="flex items-center justify-between font-mono text-xs text-gray-500 mt-auto">
-                    <span>{lessons} Lessons</span>
-                    <ArrowRight size={18} />
+                <div className="flex items-center justify-between font-mono text-[10px] font-bold uppercase tracking-widest text-gray-400 group-hover:text-red-500 mt-auto">
+                    <span className="flex items-center gap-2">
+                        <Database size={12} /> {lessons} ARCHIVES
+                    </span>
+                    <div className="flex items-center gap-2 group-hover:translate-x-2 transition-transform">
+                        ACCESS_HUB <ArrowRight size={14} />
+                    </div>
                 </div>
             </div>
+            {/* Decorative Scanline */}
+            <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.05)_50%),linear-gradient(90deg,rgba(255,0,0,0.02),rgba(0,255,0,0.01),rgba(0,0,255,0.02))] bg-[length:100%_2px,3px_100%] opacity-20"></div>
         </div>
     );
 
     const CourseVideoCard = ({ title, instructor, duration, rating, color, thumbnailUrl, onClick }) => (
-        <div onClick={onClick} className="hub-content-item group bg-white border-2 border-black overflow-hidden hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 cursor-pointer">
-            <div className={`relative h-44 w-full ${color} flex items-center justify-center border-b-2 border-black overflow-hidden`}>
+        <div onClick={onClick} className="hub-content-item group bg-white border-2 border-black overflow-hidden hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all duration-500 cursor-pointer relative">
+            <div className={`relative h-48 w-full ${color} flex items-center justify-center border-b-2 border-black overflow-hidden`}>
                 {thumbnailUrl ? (
-                    <img src={thumbnailUrl} alt={title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100" />
+                    <img src={thumbnailUrl} alt={title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 grayscale group-hover:grayscale-0" />
                 ) : (
-                    <>
-                        <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors"></div>
-                        <Video size={40} className="text-white group-hover:scale-110 transition-transform" />
-                    </>
+                    <Video size={40} className="text-white opacity-20" />
                 )}
-                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <div className="p-3 bg-white/20 backdrop-blur-md rounded-full text-white">
-                        <Play fill="white" size={24} />
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <div className="p-4 bg-white text-black rounded-full shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] border-2 border-black">
+                        <Play fill="black" size={20} />
                     </div>
                 </div>
-                <div className="absolute bottom-3 right-3 bg-black text-white px-2 py-1 text-[10px] font-mono font-bold z-10">
+                <div className="absolute top-3 left-3 bg-red-600 text-white px-2 py-0.5 text-[8px] font-mono font-black italic tracking-widest uppercase">
+                    LIVE_SPEC
+                </div>
+                <div className="absolute bottom-3 right-3 bg-black text-white px-2 py-1 text-[10px] font-mono font-bold z-10 border border-gray-800">
                     {duration}
                 </div>
             </div>
-            <div className="p-5">
-                <div className="flex items-center gap-2 mb-2">
-                    <Star size={12} fill="currentColor" className="text-yellow-500" />
-                    <span className="text-[10px] font-bold text-gray-400">{rating} Rating</span>
+            <div className="p-6 group-hover:bg-gray-50 transition-colors duration-300">
+                <div className="flex items-center justify-between mb-3 font-mono">
+                    <div className="flex items-center gap-1 bg-yellow-400/10 text-yellow-600 px-2 py-0.5 rounded-full">
+                        <Star size={10} fill="currentColor" />
+                        <span className="text-[9px] font-bold">{rating} RANK</span>
+                    </div>
+                    <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">v01.2</span>
                 </div>
-                <h4 className="text-xl font-black uppercase tracking-tight mb-4 leading-tight group-hover:text-red-600 transition-colors">
+                <h4 className="text-xl font-black uppercase tracking-tight mb-6 leading-none line-clamp-2 h-10 group-hover:text-red-600 transition-colors">
                     {title}
                 </h4>
-                <button className="w-full py-2.5 bg-black text-white font-bold uppercase text-[10px] tracking-widest border-2 border-black hover:bg-white hover:text-black transition-all">
-                    Watch Course
+                <button className="w-full py-3 bg-black text-white font-bold uppercase text-[10px] tracking-[0.3em] transition-all hover:bg-red-600 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-1 active:shadow-none">
+                    Watch_Protocol
                 </button>
             </div>
         </div>
     );
 
     const NoteItem = ({ title, size, type }) => (
-        <div className="hub-content-item flex items-center justify-between p-4 bg-gray-50 border-2 border-transparent hover:border-black transition-all group">
-            <div className="flex items-center gap-4">
-                <div className="p-2 bg-black text-white">
-                    <FileText size={20} />
+        <div className="hub-content-item group flex items-center justify-between p-5 bg-white border-2 border-black hover:bg-black hover:text-white transition-all duration-300 shadow-sm hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.1)] cursor-pointer">
+            <div className="flex items-center gap-6">
+                <div className="p-3 bg-gray-100 border border-black text-black group-hover:bg-white transition-colors">
+                    <Database size={20} />
                 </div>
                 <div>
-                    <h4 className="font-bold uppercase text-sm group-hover:text-red-600 transition-colors">{title}</h4>
-                    <span className="text-[10px] font-mono text-gray-400 uppercase">{type} • {size}</span>
+                    <h5 className="font-black uppercase tracking-tight text-sm group-hover:text-red-600 transition-colors inline-block mr-3">
+                        {title}
+                    </h5>
+                    <span className="font-mono text-[9px] text-gray-400 uppercase tracking-widest group-hover:text-gray-500">
+                        {type} // {size}
+                    </span>
                 </div>
             </div>
-            <button className="p-2 hover:bg-black hover:text-white transition-colors border border-transparent hover:border-black">
-                <Download size={18} />
-            </button>
+            <div className="flex items-center gap-4">
+                <div className="w-10 h-0.5 bg-black transition-all duration-500 origin-left group-hover:w-20 group-hover:bg-red-600"></div>
+                <ArrowRight size={16} className="text-gray-300 group-hover:text-white" />
+            </div>
         </div>
     );
-
 
     return (
         <div ref={containerRef} className="min-h-screen bg-white p-6 pt-32 pb-20 overflow-hidden relative">
