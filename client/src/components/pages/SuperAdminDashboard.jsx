@@ -794,15 +794,26 @@ const SuperAdminDashboard = () => {
                                         </div>
                                     )}
 
-                                    <div>
-                                        <label className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Mission Title</label>
-                                        <input 
-                                            className="w-full bg-white border border-gray-200 p-3 rounded text-sm text-gray-900 focus:border-red-500 outline-none mt-1 shadow-sm font-bold" 
-                                            placeholder="Course Title" 
-                                            value={courseForm.title} 
-                                            onChange={e => setCourseForm({...courseForm, title: e.target.value})} 
-                                            required 
-                                        />
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Mission Title</label>
+                                            <input 
+                                                className="w-full bg-white border border-gray-200 p-3 rounded text-sm text-gray-900 focus:border-red-500 outline-none mt-1 shadow-sm font-bold" 
+                                                placeholder="Course Title" 
+                                                value={courseForm.title} 
+                                                onChange={e => setCourseForm({...courseForm, title: e.target.value})} 
+                                                required 
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Lead Instructor</label>
+                                            <input 
+                                                className="w-full bg-white border border-gray-200 p-3 rounded text-sm text-gray-900 focus:border-red-500 outline-none mt-1 shadow-sm" 
+                                                placeholder="Author Name" 
+                                                value={courseForm.instructor} 
+                                                onChange={e => setCourseForm({...courseForm, instructor: e.target.value})} 
+                                            />
+                                        </div>
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-4">

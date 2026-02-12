@@ -99,59 +99,74 @@ const StudyStuffPage = () => {
     const CourseVideoCard = ({ title, instructor, duration, rating, color, thumbnailUrl, onClick }) => (
         <div 
             onClick={onClick} 
-            className="group relative cursor-pointer overflow-hidden rounded-2xl border border-black/5 bg-white transition-all duration-500 hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.2)]"
+            className="group relative cursor-pointer overflow-hidden rounded-[2.5rem] border border-white/10 bg-[#0a0a0a]/60 backdrop-blur-3xl transition-all duration-700 hover:shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] hover:-translate-y-4"
         >
-            <div className="relative aspect-video overflow-hidden">
+            <div className="relative aspect-[16/10] overflow-hidden">
                 <img 
-                    src={thumbnailUrl || '/api/placeholder/400/225'} 
+                    src={thumbnailUrl || '/api/placeholder/800/500'} 
                     alt={title} 
-                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale-[0.5] group-hover:grayscale-0"
+                    className="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-70 group-hover:opacity-100 grayscale-[0.3] group-hover:grayscale-0"
                 />
                 
-                {/* Information Overlays */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+                {/* Cinematic Gradients */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/20 to-transparent opacity-90 transition-opacity duration-500 group-hover:opacity-40"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-red-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                 
-                <div className="absolute top-3 left-3 flex gap-2">
-                    <div className="rounded bg-red-600 px-2 py-0.5 text-[8px] font-black uppercase tracking-widest text-white shadow-lg">
-                        Premium
+                {/* Floating Tags */}
+                <div className="absolute top-6 left-6 flex items-center gap-3">
+                    <div className="rounded-full bg-red-600 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-white shadow-[0_0_20px_rgba(220,38,38,0.5)] border border-white/20">
+                        Mission_Live
                     </div>
                 </div>
 
-                <div className="absolute top-3 right-3 flex h-7 items-center gap-1 rounded-md bg-black/60 px-2 backdrop-blur-md">
-                    <Star size={10} fill="#facc15" className="text-yellow-400" />
-                    <span className="text-[10px] font-bold text-white">{rating}</span>
+                <div className="absolute top-6 right-6 flex items-center gap-2 rounded-xl bg-black/40 px-3 py-2 border border-white/10 backdrop-blur-xl">
+                    <Star size={12} fill="#ff4d4d" className="text-[#ff4d4d]" />
+                    <span className="font-mono text-xs font-black text-white">{rating}</span>
                 </div>
 
-                <div className="absolute bottom-3 right-3 rounded-md bg-white/20 px-2 py-1 font-mono text-[10px] font-bold text-white backdrop-blur-md">
+                <div className="absolute bottom-6 right-6 rounded-xl bg-white/5 px-4 py-2 font-mono text-xs font-bold text-white/80 border border-white/10 backdrop-blur-md">
                     {duration}
                 </div>
 
-                {/* Play Button Overlay */}
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-all duration-300 group-hover:opacity-100">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-black shadow-2xl transition-transform duration-300 group-hover:scale-110">
-                        <Play fill="black" size={20} className="translate-x-0.5" />
+                {/* Central Play Interaction */}
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-all duration-500 group-hover:opacity-100 scale-75 group-hover:scale-100">
+                    <div className="flex h-24 w-24 items-center justify-center rounded-full bg-white/10 border border-white/20 backdrop-blur-2xl text-white shadow-2xl">
+                        <Play fill="white" size={32} className="translate-x-1" />
                     </div>
                 </div>
             </div>
 
-            <div className="p-8 group-hover:bg-gray-50 transition-colors duration-500">
-                <div className="flex items-center gap-4 mb-4">
-                    <div className="h-6 w-0.5 bg-red-600"></div>
-                    <span className="text-[11px] font-black uppercase tracking-[0.3em] text-gray-400">Archive_Resource</span>
+            <div className="p-10 transition-colors duration-500">
+                <div className="flex items-center gap-3 mb-6">
+                    <div className="h-0.5 w-10 bg-red-600 transition-all duration-700 group-hover:w-20"></div>
+                    <span className="font-mono text-[10px] font-black uppercase tracking-[0.3em] text-white/30 group-hover:text-red-500/50">TC_CORE_RESOURCES</span>
                 </div>
-                <h4 className="mb-6 text-3xl font-black uppercase tracking-tighter text-gray-900 group-hover:text-red-600 transition-colors leading-[1.1]">
+                
+                <h4 className="mb-8 text-4xl font-black italic uppercase leading-[0.95] tracking-tighter text-white transition-all duration-500 group-hover:text-red-500 group-hover:translate-x-2">
                     {title}
                 </h4>
-                <div className="flex items-center justify-between border-t border-black/5 pt-6">
-                    <div className="flex items-center gap-3">
-                        <div className="h-8 w-8 rounded-full bg-black flex items-center justify-center text-[10px] text-white font-bold">TC</div>
-                        <span className="text-xs font-bold text-gray-500 tracking-tight">{instructor || "Expert Faculty"}</span>
+                
+                <div className="flex items-center justify-between border-t border-white/5 pt-8">
+                    <div className="flex items-center gap-5">
+                        <div className="relative h-12 w-12 overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-0.5 transition-transform group-hover:rotate-6">
+                             <div className="flex h-full w-full items-center justify-center bg-black rounded-[0.9rem] text-[10px] font-black text-[#ff4d4d]">
+                                TC
+                             </div>
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-white/30">Lead_Instructor</span>
+                            <span className="text-sm font-bold text-white/90 group-hover:text-white">{instructor || "Team Curiosity"}</span>
+                        </div>
                     </div>
-                    <span className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-red-600 opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-2">
-                        Execute_Protocol <ArrowRight size={14} />
-                    </span>
+                    
+                    <div className="flex items-center gap-2 font-mono text-[10px] font-black uppercase tracking-[0.3em] text-red-600 opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-0 translate-x-4">
+                        Init_Watch <ArrowRight size={16} />
+                    </div>
                 </div>
             </div>
+
+            {/* Sweep Light Effect */}
+            <div className="absolute inset-x-[-100%] top-0 h-full w-[200%] rotate-12 bg-gradient-to-r from-transparent via-white/5 to-transparent transition-all duration-1000 group-hover:translate-x-[50%] pointer-events-none"></div>
         </div>
     );
 

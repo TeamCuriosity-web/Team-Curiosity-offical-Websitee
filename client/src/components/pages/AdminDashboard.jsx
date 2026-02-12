@@ -558,9 +558,15 @@ const AdminDashboard = () => {
                                             <img src={courseForm.thumbnailUrl} className="w-full h-full object-cover" alt="Preview" />
                                         </div>
                                     )}
-                                    <div>
-                                        <label className="text-[10px] uppercase font-bold text-gray-400">Title</label>
-                                        <input className="w-full border p-2 text-sm mt-1" placeholder="Enter title" value={courseForm.title} onChange={e => setCourseForm({...courseForm, title: e.target.value})} required />
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <label className="text-[10px] uppercase font-bold text-gray-400">Title</label>
+                                            <input className="w-full border p-2 text-sm mt-1 font-bold" placeholder="Enter title" value={courseForm.title} onChange={e => setCourseForm({...courseForm, title: e.target.value})} required />
+                                        </div>
+                                        <div>
+                                            <label className="text-[10px] uppercase font-bold text-gray-400">Instructor / Author</label>
+                                            <input className="w-full border p-2 text-sm mt-1" placeholder="Lead Instructor" value={courseForm.instructor} onChange={e => setCourseForm({...courseForm, instructor: e.target.value})} />
+                                        </div>
                                     </div>
                                     <div className="grid grid-cols-2 gap-2">
                                         <div>
