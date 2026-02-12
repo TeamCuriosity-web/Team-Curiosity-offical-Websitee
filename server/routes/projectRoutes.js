@@ -93,11 +93,64 @@ router.post('/', protect, admin, async (req, res) => {
     githubData = await githubResponse.json();
 
     if (!githubResponse.ok) {
-        console.error("GITHUB_API_ERROR:", githubData);
-        return res.status(githubResponse.status).json({
-            message: `GITHUB_DEPLOYMENT_FAILURE: ${githubData.message} (Org & Personal attempts failed)`,
-            errors: githubData.errors
-        });
+        const errorData = await githubData; // already parsed
+        
+        // 🚨 Name Collision Handling (422)
+        if (githubResponse.status === 422) {
+             console.warn(`Repo ${repoName} exists. Attempting with unique suffix...`);
+             const uniqueRepoName = `${repoName}-${Math.floor(Math.random() * 1000)}`;
+             
+             // Retry creation with unique name
+             githubResponse = await fetch(`https://api.github.com/orgs/${GITHUB_ORG}/repos`, { // Try Org First
+                 method: 'POST',
+                 headers: {
+                    'Authorization': `token ${GITHUB_TOKEN}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json',
+                    'User-Agent': 'TeamCuriosity-Official-App'
+                 },
+                 body: JSON.stringify({
+                    name: uniqueRepoName,
+                    description: description || `Repository for ${title}`,
+                    private: false,
+                    has_issues: true,
+                    has_projects: true,
+                    has_wiki: true
+                 })
+             });
+
+             // If Org fails AGAIN (404/403 or 422 again), try Personal with unique name
+             if (!githubResponse.ok) {
+                 githubResponse = await fetch(`https://api.github.com/user/repos`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `token ${GITHUB_TOKEN}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json',
+                        'User-Agent': 'TeamCuriosity-Official-App'
+                    },
+                    body: JSON.stringify({
+                        name: uniqueRepoName,
+                        description: description || `Repository for ${title}`,
+                        private: false,
+                        has_issues: true,
+                        has_projects: true,
+                        has_wiki: true
+                    })
+                 });
+             }
+             
+            githubData = await githubResponse.json(); // Update data for new response
+        }
+        
+        // Check final status after retry
+        if (!githubResponse.ok) {
+            console.error("GITHUB_API_ERROR:", githubData);
+            return res.status(githubResponse.status).json({
+                message: `GITHUB_DEPLOYMENT_FAILURE: ${githubData.message} (All provision attempts failed).`,
+                errors: githubData.errors
+            });
+        }
     }
 
     // 2. Local Database Synchronization
