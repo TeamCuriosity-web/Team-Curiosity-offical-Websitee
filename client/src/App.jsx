@@ -26,7 +26,7 @@ import ManifestoPage from './components/pages/ManifestoPage';
 import StartBuildingPage from './components/pages/StartBuildingPage';
 import ProfilePage from './components/pages/ProfilePage';
 import ChatPage from './components/pages/ChatPage';
-import GuidePage from './components/pages/GuidePage';
+import StudyStuffPage from './components/pages/StudyStuffPage';
 import InvitePage from './components/pages/InvitePage';
 import ReflectiveTypePage from './components/pages/ReflectiveTypePage';
 
@@ -165,7 +165,7 @@ const AppContent = () => {
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route path="/super-admin" element={<SuperAdminDashboard />} />
-          <Route path="/guide" element={<GuidePage />} />
+          <Route path="/study-stuff" element={<StudyStuffPage />} />
           <Route path="/invite" element={<InvitePage />} />
           <Route path="/reflective" element={<ReflectiveTypePage />} />
         </Routes>
