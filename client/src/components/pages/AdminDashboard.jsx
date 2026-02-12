@@ -27,6 +27,7 @@ const AdminDashboard = () => {
     const [editingCourseId, setEditingCourseId] = useState(null);
     const [editingNoteId, setEditingNoteId] = useState(null);
     const [currentUser, setCurrentUser] = useState(null);
+    const [projectFilter, setProjectFilter] = useState('all'); // 'all' or 'joined'
     const [systemStatus, setSystemStatus] = useState({ githubConnected: false, status: 'CHECKING...' });
 
     useEffect(() => {
@@ -124,6 +125,18 @@ const AdminDashboard = () => {
         } catch (err) { 
             console.error(`${type.toUpperCase()}_DELETION_FAILURE:`, err);
             alert(`Protocol Error: Deletion Failed [${err.response?.status || 'UNKNOWN'}] - ${err.response?.data?.message || err.message}`);
+        }
+    };
+
+    const handleJoinProject = async (projectId) => {
+        try {
+            const { data } = await api.post(`/projects/${projectId}/join`);
+            // Update local state to reflect membership
+            setProjects(projects.map(p => p._id === projectId ? data : p));
+            alert('Welcome to the team! Access granted.');
+        } catch (err) {
+            console.error("JOIN_PROTOCOL_ERROR:", err);
+            alert(err.response?.data?.message || 'Join Request Failed');
         }
     };
 
@@ -376,7 +389,29 @@ const AdminDashboard = () => {
                 {activeTab === 'projects' && (
                     <>
                         <div className="lg:col-span-2 space-y-6">
-                            {projects.map(project => (
+                            {/* Sub-Tabs for Projects */}
+                            <div className="flex items-center gap-4 mb-4 pb-2 border-b border-gray-100">
+                                <button 
+                                    onClick={() => setProjectFilter('all')}
+                                    className={`text-xs font-bold uppercase tracking-wider px-3 py-1 rounded transition-colors ${
+                                        projectFilter === 'all' ? 'bg-black text-white' : 'text-gray-400 hover:text-gray-600'
+                                    }`}
+                                >
+                                    All Projects
+                                </button>
+                                <button 
+                                    onClick={() => setProjectFilter('joined')}
+                                    className={`text-xs font-bold uppercase tracking-wider px-3 py-1 rounded transition-colors ${
+                                        projectFilter === 'joined' ? 'bg-black text-white' : 'text-gray-400 hover:text-gray-600'
+                                    }`}
+                                >
+                                    Joined Projects
+                                </button>
+                            </div>
+
+                            {projects
+                                .filter(p => projectFilter === 'all' || (projectFilter === 'joined' && p.teamMembers?.includes(currentUser?._id)))
+                                .map(project => (
                                 <Card key={project._id} className="p-6 flex justify-between items-start group">
                                     <div>
                                         <div className="flex items-center gap-2 mb-1">
@@ -407,11 +442,21 @@ const AdminDashboard = () => {
                                             <button onClick={() => handleEditClick(project)} className="text-gray-300 hover:text-blue-500 transition-colors"><Code size={18} /></button>
                                             <button onClick={() => deleteItem('project', project._id)} className="text-gray-300 hover:text-red-500 transition-colors"><Trash2 size={18} /></button>
                                         </div>
-                                        {project.liveLink && (
-                                            <a href={project.liveLink} target="_blank" rel="noopener noreferrer" className="text-[10px] text-gray-400 hover:text-green-600 font-mono transition-colors border-b border-transparent hover:border-green-200">
-                                                {project.liveLink.replace('https://', '')}
-                                            </a>
-                                        )}
+                                        <div className="flex flex-col items-end gap-1">
+                                            {!project.teamMembers?.includes(currentUser?._id) && (
+                                                <button 
+                                                    onClick={() => handleJoinProject(project._id)}
+                                                    className="text-[10px] bg-black text-white px-2 py-1 rounded hover:bg-gray-800 transition-colors font-bold uppercase tracking-wider"
+                                                >
+                                                    Request Assignment
+                                                </button>
+                                            )}
+                                            {project.liveLink && (
+                                                <a href={project.liveLink} target="_blank" rel="noopener noreferrer" className="text-[10px] text-gray-400 hover:text-green-600 font-mono transition-colors border-b border-transparent hover:border-green-200">
+                                                    {project.liveLink.replace('https://', '')}
+                                                </a>
+                                            )}
+                                        </div>
                                     </div>
                                 </Card>
                             ))}
