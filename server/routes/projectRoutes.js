@@ -111,7 +111,7 @@ router.post('/', protect, admin, async (req, res) => {
     res.json(project);
   } catch (err) {
     console.error("PROJECT_DEPLOYMENT_ERROR:", err);
-    res.status(500).json({ message: 'INTERNAL_SYSTEM_ERROR: Deployment protocol interrupted.' });
+    res.status(500).json({ message: `INTERNAL_SYSTEM_ERROR: Deployment protocol interrupted. Details: ${err.message}` });
   }
 });
 
