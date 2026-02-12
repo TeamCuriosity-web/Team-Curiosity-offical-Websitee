@@ -90,9 +90,9 @@ const SuperAdminDashboard = () => {
         queryFn: () => api.get('/courses').then(res => res.data)
     });
 
-    const { data: notes = [], isLoading: notesLoading } = useQuery({
-        queryKey: ['notes'],
-        queryFn: () => api.get('/notes').then(res => res.data)
+    const { data: systemStatus = { githubConnected: false, status: 'CHECKING...' } } = useQuery({
+        queryKey: ['system-status'],
+        queryFn: () => api.get('/admin/system-status').then(res => res.data)
     });
 
     const isLoading = usersLoading || projectsLoading || hackathonsLoading || coursesLoading || notesLoading;
@@ -131,7 +131,17 @@ const SuperAdminDashboard = () => {
             setProjectForm({ title: '', description: '', longDescription: '', techStack: '', repoLink: '', liveLink: '', status: 'ongoing', difficulty: 'intermediate' });
             setEditingId(null);
         },
-        onError: (err) => alert(`Operation failed: ${err.message}`)
+        onError: (err) => {
+            console.error("PROJECT_DEPLOYMENT_FAILURE:", err);
+            const errMsg = err.response?.data?.message || err.message;
+            if (errMsg.includes('GITHUB_DEPLOYMENT_FAILURE')) {
+                alert(`GitHub Deployment Blocked:\n\n${errMsg}\n\nPlease check your system configuration or GITHUB_TOKEN.`);
+            } else if (errMsg.includes('GITHUB_PROVISION_FAILURE')) {
+                alert(`Security Protocol Error:\n\n${errMsg}`);
+            } else {
+                alert(`Operation failed: ${errMsg}`);
+            }
+        }
     });
 
     const deleteProjectMutation = useMutation({
@@ -346,13 +356,21 @@ const SuperAdminDashboard = () => {
             setCourseForm(prev => ({ ...prev, youtubeId: videoId, thumbnailUrl: thumbUrl }));
             
             try {
-                const response = await fetch(`https://noembed.com/embed?url=${url}`);
-                const data = await response.json();
-                if (data.title) {
-                    setCourseForm(prev => ({ ...prev, title: data.title }));
-                }
+                const { data } = await api.get(`/courses/yt-metadata/${videoId}`);
+                setCourseForm(prev => ({ 
+                    ...prev, 
+                    title: data.title || prev.title, 
+                    duration: data.duration || prev.duration 
+                }));
             } catch (err) {
                 console.error("Meta fetch error", err);
+                try {
+                    const response = await fetch(`https://noembed.com/embed?url=${url}`);
+                    const data = await response.json();
+                    if (data.title) {
+                        setCourseForm(prev => ({ ...prev, title: data.title }));
+                    }
+                } catch (e) { console.error(e); }
             }
         }
     };
@@ -395,8 +413,13 @@ const SuperAdminDashboard = () => {
                              <span className="text-xs font-bold tracking-[0.2em] text-red-600 uppercase">Super Admin Console</span>
                         </div>
                         <h1 className="text-3xl font-bold text-gray-900 tracking-tight">System Control</h1>
-                        <p className="text-gray-500 font-mono text-xs uppercase mt-2 tracking-widest">
+                        <p className="text-gray-500 font-mono text-xs uppercase mt-2 tracking-widest flex items-center gap-2">
                             Welcome, <span className="text-red-600 font-bold">Naseer Pasha</span>
+                            <span className="mx-2 opacity-20">|</span>
+                            <span className={`inline-flex items-center gap-1.5 ${systemStatus.githubConnected ? 'text-green-600 font-bold' : 'text-red-500 font-bold'}`}>
+                                <span className={`w-1.5 h-1.5 rounded-full ${systemStatus.githubConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></span>
+                                Deployment Node: {systemStatus.status} {systemStatus.maskedToken && `[${systemStatus.maskedToken}]`}
+                            </span>
                         </p>
                     </div>
                     <button onClick={() => { localStorage.removeItem('adminToken'); localStorage.removeItem('adminUser'); navigate('/admin/login'); }} className="text-xs font-bold text-gray-500 hover:text-red-600 transition-colors uppercase tracking-widest border border-gray-200 hover:border-red-200 hover:bg-red-50 px-4 py-2 rounded flex items-center gap-2">
@@ -926,10 +949,13 @@ const SuperAdminDashboard = () => {
                         <div className="lg:col-span-2">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {notes.map(note => (
-                                    <LightCard key={note._id} className="relative group overflow-hidden border-gray-100">
+                                    <LightCard key={note._id} className="relative group overflow-hidden border-gray-100 hover:border-red-200 transition-all">
                                         <div className="flex gap-4">
-                                            <div className="w-12 h-12 bg-red-50 text-red-600 rounded flex items-center justify-center flex-shrink-0">
-                                                <Database size={20}/>
+                                            <div className="w-24 h-16 bg-red-50 text-red-600 rounded-lg flex items-center justify-center flex-shrink-0 relative group-hover:bg-red-100 transition-all overflow-hidden border border-red-100/50">
+                                                <Database size={24}/>
+                                                <div className="absolute inset-0 flex items-center justify-center bg-red-600/10 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <FileText size={12} className="text-red-600"/>
+                                                </div>
                                             </div>
                                             <div className="flex-grow">
                                                 <div className="flex justify-between items-start">
@@ -944,9 +970,8 @@ const SuperAdminDashboard = () => {
                                                     </div>
                                                 </div>
                                                 <h4 className="font-bold text-sm mt-1 line-clamp-1">{note.title}</h4>
-                                                <p className="text-[10px] text-gray-400 mt-0.5 truncate">{note.description || 'No legacy metadata provided'}</p>
-                                                <div className="mt-2 text-[10px] text-gray-400 font-mono uppercase tracking-widest flex items-center gap-2">
-                                                    BY: {note.author}
+                                                <div className="flex items-center gap-2 mt-1">
+                                                    <p className="text-[10px] text-gray-400 truncate max-w-[150px]">{note.description || 'No archive summary'}</p>
                                                     <a href={note.pdfUrl} target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-red-600 transition-colors">
                                                         <ExternalLink size={10}/>
                                                     </a>

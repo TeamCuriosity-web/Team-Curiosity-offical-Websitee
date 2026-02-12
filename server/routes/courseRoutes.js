@@ -3,6 +3,50 @@ const router = express.Router();
 const Course = require('../models/Course');
 const { protect, admin } = require('../middleware/authMiddleware');
 
+// @desc    Get YouTube Metadata (Proxy to avoid CORS for duration)
+// @route   GET /api/courses/yt-metadata/:videoId
+// @access  Private/Admin
+router.get('/yt-metadata/:videoId', protect, admin, async (req, res) => {
+  try {
+    const { videoId } = req.params;
+    const response = await fetch(`https://www.youtube.com/watch?v=${videoId}`, {
+      headers: { 'User-Agent': 'Mozilla/5.0' }
+    });
+    
+    if (!response.ok) {
+      return res.status(400).json({ message: 'Failed to reach YouTube' });
+    }
+
+    const html = await response.text();
+    
+    // Extract duration (lengthSeconds)
+    const durationMatch = html.match(/"lengthSeconds":"(\d+)"/);
+    let duration = '';
+    if (durationMatch) {
+      const totalSeconds = parseInt(durationMatch[1]);
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+      
+      if (hours > 0) {
+        duration = `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      } else {
+        duration = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+      }
+    }
+
+    // Extract title as backup
+    const titleMatch = html.match(/<title>(.*?) - YouTube<\/title>/);
+    const title = titleMatch ? titleMatch[1] : '';
+
+    res.json({ title, duration });
+  } catch (error) {
+    console.error("YT_METADATA_PROXY_ERROR:", error);
+    res.status(500).json({ message: 'Metadata Fetch Protocol Failure' });
+  }
+});
+
+
 // @desc    Get all courses (with optional domain filter)
 // @route   GET /api/courses
 // @access  Public

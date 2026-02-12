@@ -139,6 +139,29 @@ router.post('/invite', protect, admin, async (req, res) => {
             token,
             expiresAt: expires
         });
+// @desc    Get System Status (GitHub Token Connectivity)
+// @route   GET /api/admin/system-status
+// @access  Private/Admin
+router.get('/system-status', protect, admin, async (req, res) => {
+    try {
+        const token = process.env.GITHUB_TOKEN;
+        if (!token) {
+            return res.json({ 
+                githubConnected: false, 
+                status: 'OFFLINE',
+                message: 'GITHUB_TOKEN not found in system environment.' 
+            });
+        }
+
+        // Mask token for security: ghp_...abcd
+        const maskedToken = `${token.substring(0, 4)}...${token.substring(token.length - 4)}`;
+        
+        res.json({
+            githubConnected: true,
+            status: 'ACTIVE',
+            maskedToken: maskedToken,
+            org: "TeamCuriosity-web"
+        });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

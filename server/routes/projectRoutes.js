@@ -31,15 +31,64 @@ router.get('/:id', async (req, res) => {
 });
 
 // @route   POST /api/projects
-// @desc    Create a project
+// @desc    Create a project (With GitHub Auto-Repo Creation)
 // @access  Private/Admin
 router.post('/', protect, admin, async (req, res) => {
   try {
-    const newProject = new Project(req.body);
+    const { title, description } = req.body;
+    
+    // 1. GitHub Repository Provisioning Protocol
+    const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+    const GITHUB_ORG = "TeamCuriosity-web"; // Target Organization
+    
+    if (!GITHUB_TOKEN) {
+      return res.status(500).json({ 
+        message: 'GITHUB_PROVISION_FAILURE: GITHUB_TOKEN not configured in system architecture.' 
+      });
+    }
+
+    const repoName = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    
+    const githubResponse = await fetch(`https://api.github.com/orgs/${GITHUB_ORG}/repos`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `token ${GITHUB_TOKEN}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json',
+        'User-Agent': 'TeamCuriosity-Official-App'
+      },
+      body: JSON.stringify({
+        name: repoName,
+        description: description || `Repository for ${title}`,
+        private: false,
+        has_issues: true,
+        has_projects: true,
+        has_wiki: true
+      })
+    });
+
+    const githubData = await githubResponse.json();
+
+    if (!githubResponse.ok) {
+        console.error("GITHUB_API_ERROR:", githubData);
+        return res.status(githubResponse.status).json({
+            message: `GITHUB_DEPLOYMENT_FAILURE: ${githubData.message}`,
+            errors: githubData.errors
+        });
+    }
+
+    // 2. Local Database Synchronization
+    const projectData = {
+        ...req.body,
+        repoLink: githubData.html_url
+    };
+
+    const newProject = new Project(projectData);
     const project = await newProject.save();
     res.json(project);
   } catch (err) {
-    res.status(500).json({ message: 'Server Error' });
+    console.error("PROJECT_DEPLOYMENT_ERROR:", err);
+    res.status(500).json({ message: 'INTERNAL_SYSTEM_ERROR: Deployment protocol interrupted.' });
   }
 });
 

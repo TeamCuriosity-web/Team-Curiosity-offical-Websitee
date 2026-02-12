@@ -27,6 +27,7 @@ const AdminDashboard = () => {
     const [editingCourseId, setEditingCourseId] = useState(null);
     const [editingNoteId, setEditingNoteId] = useState(null);
     const [currentUser, setCurrentUser] = useState(null);
+    const [systemStatus, setSystemStatus] = useState({ githubConnected: false, status: 'CHECKING...' });
 
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem('adminUser')); // Check Admin User
@@ -50,13 +51,15 @@ const AdminDashboard = () => {
                 api.get('/projects'), // Public read is fine
                 api.get('/hackathons'),
                 api.get('/courses'),
-                api.get('/notes')
+                api.get('/notes'),
+                api.get('/admin/system-status')
             ]);
             setUsers(usersRes.data);
             setProjects(projectsRes.data);
             setHackathons(hackathonsRes.data);
             setCourses(coursesRes.data);
             setNotes(notesRes.data);
+            setSystemStatus(statusRes.data);
         } catch (err) {
             console.error(err);
             if (err.response?.status === 401) navigate('/admin/login');
@@ -141,8 +144,15 @@ const AdminDashboard = () => {
             }
             setProjectForm({ title: '', description: '', longDescription: '', techStack: '', repoLink: '', liveLink: '', status: 'ongoing', difficulty: 'intermediate' });
         } catch (err) { 
-            console.error(err);
-            alert(`Failed to deploy: ${err.response?.data?.message || err.message}`);
+            console.error("PROJECT_SUBMIT_ERROR:", err);
+            const errMsg = err.response?.data?.message || err.message;
+            if (errMsg.includes('GITHUB_DEPLOYMENT_FAILURE')) {
+                alert(`GitHub Deployment Blocked:\n\n${errMsg}\n\nPlease check your system configuration or GITHUB_TOKEN.`);
+            } else if (errMsg.includes('GITHUB_PROVISION_FAILURE')) {
+                alert(`Security Protocol Error:\n\n${errMsg}`);
+            } else {
+                alert(`Failed to deploy: ${errMsg}`);
+            }
         }
     };
 
@@ -189,10 +199,21 @@ const AdminDashboard = () => {
             const thumbUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
             setCourseForm(prev => ({ ...prev, youtubeId: videoId, thumbnailUrl: thumbUrl }));
             try {
-                const response = await fetch(`https://noembed.com/embed?url=${url}`);
-                const data = await response.json();
-                if (data.title) setCourseForm(prev => ({ ...prev, title: data.title }));
-            } catch (err) { console.error(err); }
+                const { data } = await api.get(`/courses/yt-metadata/${videoId}`);
+                setCourseForm(prev => ({ 
+                    ...prev, 
+                    title: data.title || prev.title, 
+                    duration: data.duration || prev.duration 
+                }));
+            } catch (err) { 
+                console.error("METADATA_FETCH_PROTOCOL_ERROR:", err);
+                // Fallback to noembed for title only if legacy proxy fails
+                try {
+                    const resp = await fetch(`https://noembed.com/embed?url=${url}`);
+                    const data = await resp.json();
+                    if (data.title) setCourseForm(prev => ({ ...prev, title: data.title }));
+                } catch (e) { console.error(e); }
+            }
         }
     };
 
@@ -263,7 +284,12 @@ const AdminDashboard = () => {
                     <div>
                         <h1 className="text-2xl font-bold text-black tracking-tight">Command Center</h1>
                         <p className="text-secondary font-mono text-xs uppercase flex items-center gap-2">
-                            Welcome, {currentUser?.name}. 
+                            Welcome, {currentUser?.name}.
+                            <span className="mx-2 opacity-20">|</span>
+                            <span className={`inline-flex items-center gap-1.5 ${systemStatus.githubConnected ? 'text-green-600' : 'text-red-500'}`}>
+                                <span className={`w-1.5 h-1.5 rounded-full ${systemStatus.githubConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></span>
+                                Deployment Node: {systemStatus.status} {systemStatus.maskedToken && `(${systemStatus.maskedToken})`}
+                            </span>
                         </p>
                     </div>
                 </div>
@@ -652,18 +678,25 @@ const AdminDashboard = () => {
                          <div className="lg:col-span-2 space-y-4">
                             {notes.map(note => (
                                 <Card key={note._id} className="p-4 flex gap-4 items-center group">
-                                    <div className="w-12 h-12 bg-red-50 text-red-600 rounded flex items-center justify-center flex-shrink-0">
+                                    <div className="w-20 h-12 bg-red-50 text-red-600 rounded overflow-hidden flex-shrink-0 flex items-center justify-center relative transition-all group-hover:bg-red-100">
                                         <Database size={20}/>
+                                        <div className="absolute inset-0 flex items-center justify-center bg-red-600/10 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <FileText size={10} className="text-red-600"/>
+                                        </div>
                                     </div>
                                     <div className="flex-grow">
                                         <div className="flex items-center gap-2">
                                             <h3 className="font-bold text-sm truncate max-w-[200px]">{note.title}</h3>
                                             <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded uppercase ${note.domain === 'Frontend' ? 'bg-cyan-100 text-cyan-800' : 'bg-red-100 text-red-800'}`}>{note.domain}</span>
                                         </div>
-                                        <p className="text-[10px] text-gray-400 mt-0.5 truncate">{note.description || 'No description provided'}</p>
+                                        <div className="flex items-center gap-2 mt-0.5">
+                                            <p className="text-[10px] text-gray-400 truncate max-w-[250px]">{note.description || 'No description provided'}</p>
+                                            <a href={note.pdfUrl} target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-red-600 transition-colors">
+                                                <ExternalLink size={10}/>
+                                            </a>
+                                        </div>
                                     </div>
                                     <div className="flex gap-2">
-                                        <a href={note.pdfUrl} target="_blank" rel="noopener noreferrer" className="p-2 text-gray-300 hover:text-black transition-colors"><ExternalLink size={16} /></a>
                                         <button onClick={() => handleEditNote(note)} className="text-gray-300 hover:text-blue-500 transition-colors"><Code size={16} /></button>
                                         <button onClick={() => deleteItem('note', note._id)} className="text-gray-300 hover:text-red-500 transition-colors"><Trash2 size={16} /></button>
                                     </div>
