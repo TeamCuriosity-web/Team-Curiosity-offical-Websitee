@@ -398,6 +398,11 @@ const AdminDashboard = () => {
                                                  <Code size={14} /> <span className="text-[10px] uppercase font-bold">Repo</span>
                                             </a>
                                         )}
+                                        {project.liveLink && (
+                                            <a href={project.liveLink} target="_blank" rel="noopener noreferrer" className="p-1 px-2 text-gray-300 hover:text-green-600 hover:bg-green-50 rounded transition-colors flex items-center gap-1 border border-transparent hover:border-green-200">
+                                                 <ExternalLink size={14} /> <span className="text-[10px] uppercase font-bold">Live</span>
+                                            </a>
+                                        )}
                                         <button onClick={() => handleEditClick(project)} className="text-gray-300 hover:text-blue-500 transition-colors"><Code size={18} /></button>
                                         <button onClick={() => deleteItem('project', project._id)} className="text-gray-300 hover:text-red-500 transition-colors"><Trash2 size={18} /></button>
                                     </div>
@@ -435,7 +440,14 @@ const AdminDashboard = () => {
                                             <span className="font-mono text-xs uppercase">Auto-Provisioning GitHub Repo [TeamCuriosity-web]</span>
                                         </div>
                                     )}
-                                    <input placeholder="Live Uplink URL" className="w-full border p-2 text-sm" value={projectForm.liveLink} onChange={e => setProjectForm({...projectForm, liveLink: e.target.value})} />
+                                    {editingId ? (
+                                        <input placeholder="Live Uplink URL" className="w-full border p-2 text-sm" value={projectForm.liveLink} onChange={e => setProjectForm({...projectForm, liveLink: e.target.value})} />
+                                    ) : (
+                                        <div className="w-full border p-2 text-sm bg-gray-50 text-gray-500 flex items-center gap-2 cursor-not-allowed mt-2">
+                                            <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+                                            <span className="font-mono text-xs uppercase">Auto-Hosting on GitHub Pages [Live Link]</span>
+                                        </div>
+                                    )}
                                     <div className="flex gap-2">
                                         {editingId && <Button type="button" onClick={() => { setEditingId(null); setProjectForm({ title: '', description: '', longDescription: '', techStack: '', repoLink: '', liveLink: '', status: 'ongoing', difficulty: 'intermediate' }); }} variant="secondary" className="flex-1 text-xs">Cancel</Button>}
                                         <Button type="submit" variant="primary" className="flex-1 text-xs">{editingId ? 'Update System' : 'Initialize Deployment'}</Button>

@@ -649,6 +649,11 @@ const SuperAdminDashboard = () => {
                                                      <Code size={16} />
                                                 </a>
                                             )}
+                                            {p.liveLink && (
+                                                <a href={p.liveLink} target="_blank" rel="noopener noreferrer" className="p-2 bg-green-50 text-green-600 hover:bg-green-600 hover:text-white rounded transition-colors border border-green-200">
+                                                     <ExternalLink size={16} />
+                                                </a>
+                                            )}
                                             <button onClick={() => handleEditClick(p)} className="p-2 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded transition-colors"><Code size={16}/></button>
                                             <button onClick={() => deleteItem('project', p._id)} className="p-2 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white rounded transition-colors"><Trash2 size={16}/></button>
                                         </div>
@@ -678,7 +683,14 @@ const SuperAdminDashboard = () => {
                                             <span className="font-mono text-xs uppercase font-bold tracking-wider">Auto-Provisioning GitHub Repo</span>
                                         </div>
                                     )}
-                                    <input className="w-full bg-white border border-gray-200 p-3 rounded text-sm text-gray-900 focus:border-yellow-500 outline-none shadow-sm" placeholder="Live Deployment URL" value={projectForm.liveLink} onChange={e => setProjectForm({...projectForm, liveLink: e.target.value})} />
+                                    {editingId ? (
+                                        <input className="w-full bg-white border border-gray-200 p-3 rounded text-sm text-gray-900 focus:border-yellow-500 outline-none shadow-sm" placeholder="Live Deployment URL" value={projectForm.liveLink} onChange={e => setProjectForm({...projectForm, liveLink: e.target.value})} />
+                                    ) : (
+                                        <div className="w-full bg-blue-50 border border-blue-200 p-3 rounded text-sm text-blue-800 flex items-center gap-2 shadow-sm cursor-not-allowed mt-2">
+                                            <div className="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></div>
+                                            <span className="font-mono text-xs uppercase font-bold tracking-wider">Auto-Hosting on GitHub Pages [Live Link]</span>
+                                        </div>
+                                    )}
                                     
                                     <button className="w-full bg-yellow-500 hover:bg-yellow-600 text-white shadow-md font-bold py-3 rounded text-xs uppercase tracking-widest transition-all">
                                         {editingId ? 'Commit Update' : 'Initialize Project'}
