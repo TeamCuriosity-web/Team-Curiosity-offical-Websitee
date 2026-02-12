@@ -237,7 +237,7 @@ const SuperAdminDashboard = () => {
         } catch (err) { console.error(err); }
     };
 
-    if (loading) return (
+    if (isLoading) return (
         <div className="min-h-screen bg-white flex items-center justify-center font-sans text-xs text-red-600 tracking-[0.2em] font-bold">
             VERIFYING CREDENTIALS...
         </div>
