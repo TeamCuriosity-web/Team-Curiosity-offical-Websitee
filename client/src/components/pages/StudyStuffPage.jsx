@@ -75,12 +75,23 @@ const StudyStuffPage = () => {
         </div>
     );
 
-    const CourseVideoCard = ({ title, instructor, duration, rating, color, onClick }) => (
+    const CourseVideoCard = ({ title, instructor, duration, rating, color, thumbnailUrl, onClick }) => (
         <div onClick={onClick} className="hub-content-item group bg-white border-2 border-black overflow-hidden hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 cursor-pointer">
-            <div className={`relative h-44 w-full ${color} flex items-center justify-center border-b-2 border-black`}>
-                <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors"></div>
-                <Video size={40} className="text-white group-hover:scale-110 transition-transform" />
-                <div className="absolute bottom-3 right-3 bg-black text-white px-2 py-1 text-[10px] font-mono font-bold">
+            <div className={`relative h-44 w-full ${color} flex items-center justify-center border-b-2 border-black overflow-hidden`}>
+                {thumbnailUrl ? (
+                    <img src={thumbnailUrl} alt={title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100" />
+                ) : (
+                    <>
+                        <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors"></div>
+                        <Video size={40} className="text-white group-hover:scale-110 transition-transform" />
+                    </>
+                )}
+                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <div className="p-3 bg-white/20 backdrop-blur-md rounded-full text-white">
+                        <Play fill="white" size={24} />
+                    </div>
+                </div>
+                <div className="absolute bottom-3 right-3 bg-black text-white px-2 py-1 text-[10px] font-mono font-bold z-10">
                     {duration}
                 </div>
             </div>
@@ -198,6 +209,7 @@ const StudyStuffPage = () => {
                                                 title={course.title}
                                                 duration={course.duration}
                                                 rating={course.rating}
+                                                thumbnailUrl={course.thumbnailUrl}
                                                 color={selectedDomain === 'Frontend' ? 'bg-cyan-500' : 'bg-red-600'}
                                                 onClick={() => window.open(course.youtubeLink, '_blank')}
                                             />
