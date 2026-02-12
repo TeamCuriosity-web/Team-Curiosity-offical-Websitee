@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Clock, Shield, Code2, GitBranch, Globe, Cpu, UserPlus, Lock } from 'lucide-react';
+import { ArrowLeft, Clock, Shield, Code2, GitBranch, Globe, Cpu, UserPlus, Lock, Activity } from 'lucide-react';
 import api from '../../services/api';
 import Button from '../ui/Button';
 
