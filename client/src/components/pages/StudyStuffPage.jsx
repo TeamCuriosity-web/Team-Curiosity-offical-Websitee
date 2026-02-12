@@ -11,18 +11,16 @@ const StudyStuffPage = () => {
         const ctx = gsap.context(() => {
             if (!selectedDomain) {
                 gsap.from(".domain-card", {
-                    opacity: 0,
                     y: 50,
                     duration: 1,
-                    stagger: 0.2,
+                    stagger: 0.1,
                     ease: "power3.out"
                 });
             } else {
                 gsap.from(".hub-content-item", {
-                    opacity: 0,
                     y: 20,
-                    duration: 0.8,
-                    stagger: 0.1,
+                    duration: 0.6,
+                    stagger: 0.05,
                     ease: "power3.out"
                 });
             }
