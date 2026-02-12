@@ -56,6 +56,8 @@ const SuperAdminDashboard = () => {
     });
     const [courseForm, setCourseForm] = useState({ title: '', youtubeLink: '', domain: 'Frontend', instructor: 'Team Curiosity', duration: '', youtubeId: '', thumbnailUrl: '' });
     const [editingCourseId, setEditingCourseId] = useState(null);
+    const [noteForm, setNoteForm] = useState({ title: '', description: '', pdfUrl: '', domain: 'Frontend', author: 'Team Curiosity' });
+    const [editingNoteId, setEditingNoteId] = useState(null);
 
     // --- QUERIES ---
     const { data: users = [], isLoading: usersLoading, error: usersError } = useQuery({
@@ -88,7 +90,12 @@ const SuperAdminDashboard = () => {
         queryFn: () => api.get('/courses').then(res => res.data)
     });
 
-    const isLoading = usersLoading || projectsLoading || hackathonsLoading || coursesLoading;
+    const { data: notes = [], isLoading: notesLoading } = useQuery({
+        queryKey: ['notes'],
+        queryFn: () => api.get('/notes').then(res => res.data)
+    });
+
+    const isLoading = usersLoading || projectsLoading || hackathonsLoading || coursesLoading || notesLoading;
 
     if (usersError?.response?.status === 401) {
         navigate('/admin/login');
@@ -179,6 +186,28 @@ const SuperAdminDashboard = () => {
         }
     });
 
+    const noteMutation = useMutation({
+        mutationFn: (variables) => {
+            if (variables.editingId) {
+                return api.put(`/notes/${variables.editingId}`, variables.payload);
+            } else {
+                return api.post('/notes', variables.payload);
+            }
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries(['notes']);
+            setNoteForm({ title: '', description: '', pdfUrl: '', domain: 'Frontend', author: 'Team Curiosity' });
+            setEditingNoteId(null);
+        },
+        onError: (err) => alert(`Operation Failed: ${err.response?.data?.message || err.message}`)
+    });
+
+    const deleteNote = useMutation({
+        mutationFn: (id) => api.delete(`/notes/${id}`),
+        onSuccess: () => queryClient.invalidateQueries(['notes']),
+        onError: (err) => alert(`Deletion failed: ${err.response?.data?.message || err.message}`)
+    });
+
     const approveUserMutation = useMutation({
         mutationFn: (id) => api.put(`/admin/users/${id}/approve`),
         onSuccess: () => queryClient.invalidateQueries(['admin-users']),
@@ -214,6 +243,23 @@ const SuperAdminDashboard = () => {
         if (type === 'project') deleteProjectMutation.mutate(id);
         else if (type === 'hackathon') deleteHackathon(id);
         else if (type === 'course') deleteCourse(id);
+        else if (type === 'note') deleteNote.mutate(id);
+    };
+
+    const handleNoteSubmit = (e) => {
+        e.preventDefault();
+        noteMutation.mutate({ editingId: editingNoteId, payload: noteForm });
+    };
+
+    const handleEditNote = (note) => {
+        setEditingNoteId(note._id);
+        setNoteForm({
+            title: note.title,
+            description: note.description || '',
+            pdfUrl: note.pdfUrl,
+            domain: note.domain || 'Frontend',
+            author: note.author || 'Team Curiosity'
+        });
     };
 
     const handleApproveUser = (id) => {
@@ -366,6 +412,7 @@ const SuperAdminDashboard = () => {
                     <TabButton id="projects" label="Projects" icon={Cpu} activeTab={activeTab} setActiveTab={setActiveTab} />
                     <TabButton id="hackathons" label="Hackathons" icon={Zap} activeTab={activeTab} setActiveTab={setActiveTab} />
                     <TabButton id="courses" label="Courses" icon={Video} activeTab={activeTab} setActiveTab={setActiveTab} />
+                    <TabButton id="notes" label="Notes" icon={Database} activeTab={activeTab} setActiveTab={setActiveTab} />
                     <TabButton id="comms" label="Comms" icon={Activity} activeTab={activeTab} setActiveTab={setActiveTab} />
                     <TabButton id="system" label="System" icon={Database} activeTab={activeTab} setActiveTab={setActiveTab} />
                 </div>
@@ -865,6 +912,124 @@ const SuperAdminDashboard = () => {
                                             className="grow-[2] bg-black hover:bg-red-600 disabled:bg-gray-200 disabled:cursor-not-allowed text-white font-bold py-3 rounded text-xs uppercase tracking-[0.2em] transition-all shadow-lg hover:shadow-red-200"
                                         >
                                             {editingCourseId ? 'Update Course' : 'Deploy to Hub'}
+                                        </button>
+                                    </div>
+                                </form>
+                            </LightCard>
+                        </div>
+                    </div>
+                )}
+
+                {/* --- NOTES TAB --- */}
+                {activeTab === 'notes' && (
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div className="lg:col-span-2">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {notes.map(note => (
+                                    <LightCard key={note._id} className="relative group overflow-hidden border-gray-100">
+                                        <div className="flex gap-4">
+                                            <div className="w-12 h-12 bg-red-50 text-red-600 rounded flex items-center justify-center flex-shrink-0">
+                                                <Database size={20}/>
+                                            </div>
+                                            <div className="flex-grow">
+                                                <div className="flex justify-between items-start">
+                                                    <Badge color={note.domain === 'Frontend' ? 'blue' : 'red'}>{note.domain}</Badge>
+                                                    <div className="flex gap-2">
+                                                        <button onClick={() => handleEditNote(note)} className="text-gray-300 hover:text-blue-600 transition-colors">
+                                                            <Code size={14}/>
+                                                        </button>
+                                                        <button onClick={() => deleteItem('note', note._id)} className="text-gray-300 hover:text-red-600 transition-colors">
+                                                            <Trash2 size={14}/>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <h4 className="font-bold text-sm mt-1 line-clamp-1">{note.title}</h4>
+                                                <p className="text-[10px] text-gray-400 mt-0.5 truncate">{note.description || 'No legacy metadata provided'}</p>
+                                                <div className="mt-2 text-[10px] text-gray-400 font-mono uppercase tracking-widest flex items-center gap-2">
+                                                    BY: {note.author}
+                                                    <a href={note.pdfUrl} target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-red-600 transition-colors">
+                                                        <ExternalLink size={10}/>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </LightCard>
+                                ))}
+                            </div>
+                            {notes.length === 0 && (
+                                <div className="p-20 text-center bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                                    <div className="text-gray-300 mb-2 font-mono text-xs uppercase tracking-[0.2em]">No Academic Archives // Empty Repository</div>
+                                    <p className="text-gray-400 text-[10px] uppercase">Upload your first PDF resource to the central archive.</p>
+                                </div>
+                            )}
+                        </div>
+                        <div className="lg:col-span-1">
+                            <LightCard className="sticky top-6">
+                                <h3 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2"><Database size={18} className="text-red-600"/> Archive Note</h3>
+                                <form onSubmit={handleNoteSubmit} className="space-y-4">
+                                    <div>
+                                        <label className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">PDF Source Uplink</label>
+                                        <input 
+                                            className="w-full bg-white border border-gray-200 p-3 rounded text-sm text-gray-900 focus:border-red-500 outline-none mt-1 shadow-sm" 
+                                            placeholder="https://..." 
+                                            value={noteForm.pdfUrl} 
+                                            onChange={e => setNoteForm({...noteForm, pdfUrl: e.target.value})} 
+                                            required 
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Title</label>
+                                        <input 
+                                            className="w-full bg-white border border-gray-200 p-3 rounded text-sm text-gray-900 focus:border-red-500 outline-none mt-1 shadow-sm font-bold" 
+                                            placeholder="E.g. React Patterns" 
+                                            value={noteForm.title} 
+                                            onChange={e => setNoteForm({...noteForm, title: e.target.value})} 
+                                            required 
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Description</label>
+                                        <textarea 
+                                            className="w-full bg-white border border-gray-200 p-3 rounded text-sm text-gray-900 focus:border-red-500 outline-none h-24 mt-1 shadow-sm" 
+                                            placeholder="Archive summary..." 
+                                            value={noteForm.description} 
+                                            onChange={e => setNoteForm({...noteForm, description: e.target.value})} 
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Domain</label>
+                                            <select 
+                                                className="w-full bg-white border border-gray-200 p-3 rounded text-sm text-gray-900 outline-none mt-1"
+                                                value={noteForm.domain}
+                                                onChange={e => setNoteForm({...noteForm, domain: e.target.value})}
+                                            >
+                                                <option value="Frontend">Frontend</option>
+                                                <option value="Backend">Backend</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Author</label>
+                                            <input 
+                                                className="w-full bg-white border border-gray-200 p-3 rounded text-sm text-gray-900 focus:border-red-500 outline-none mt-1 shadow-sm" 
+                                                value={noteForm.author} 
+                                                onChange={e => setNoteForm({...noteForm, author: e.target.value})} 
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        {editingNoteId && (
+                                            <button 
+                                                type="button"
+                                                onClick={() => { setEditingNoteId(null); setNoteForm({ title: '', description: '', pdfUrl: '', domain: 'Frontend', author: 'Team Curiosity' }); }}
+                                                className="flex-1 bg-gray-100 font-bold py-3 rounded text-xs uppercase tracking-widest"
+                                            >
+                                                Cancel
+                                            </button>
+                                        )}
+                                        <button type="submit" className="grow-[2] bg-black hover:bg-red-600 text-white font-bold py-3 rounded text-xs uppercase tracking-widest transition-colors">
+                                            {editingNoteId ? 'Commit Update' : 'Initialize Archival'}
                                         </button>
                                     </div>
                                 </form>

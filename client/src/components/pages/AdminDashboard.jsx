@@ -15,14 +15,17 @@ const AdminDashboard = () => {
     const [projects, setProjects] = useState([]);
     const [hackathons, setHackathons] = useState([]);
     const [courses, setCourses] = useState([]);
+    const [notes, setNotes] = useState([]);
     
     // Forms State
     const [projectForm, setProjectForm] = useState({ title: '', description: '', longDescription: '', techStack: '', repoLink: '', liveLink: '', status: 'ongoing', difficulty: 'intermediate' });
     const [hackathonForm, setHackathonForm] = useState({ name: '', description: '', achievement: '', status: 'upcoming' });
     const [courseForm, setCourseForm] = useState({ title: '', youtubeLink: '', domain: 'Frontend', instructor: 'Team Curiosity', duration: '', youtubeId: '', thumbnailUrl: '' });
+    const [noteForm, setNoteForm] = useState({ title: '', description: '', pdfUrl: '', domain: 'Frontend', author: 'Team Curiosity' });
     const [inviteLink, setInviteLink] = useState('');
     const [editingId, setEditingId] = useState(null);
     const [editingCourseId, setEditingCourseId] = useState(null);
+    const [editingNoteId, setEditingNoteId] = useState(null);
     const [currentUser, setCurrentUser] = useState(null);
 
     useEffect(() => {
@@ -42,16 +45,18 @@ const AdminDashboard = () => {
 
     const fetchData = async () => {
         try {
-            const [usersRes, projectsRes, hackathonsRes, coursesRes] = await Promise.all([
+            const [usersRes, projectsRes, hackathonsRes, coursesRes, notesRes] = await Promise.all([
                 api.get('/admin/users'),
                 api.get('/projects'), // Public read is fine
                 api.get('/hackathons'),
-                api.get('/courses')
+                api.get('/courses'),
+                api.get('/notes')
             ]);
             setUsers(usersRes.data);
             setProjects(projectsRes.data);
             setHackathons(hackathonsRes.data);
             setCourses(coursesRes.data);
+            setNotes(notesRes.data);
         } catch (err) {
             console.error(err);
             if (err.response?.status === 401) navigate('/admin/login');
@@ -105,6 +110,9 @@ const AdminDashboard = () => {
             } else if (type === 'course') {
                 await api.delete(`/courses/${id}`);
                 setCourses(courses.filter(c => c._id !== id));
+            } else if (type === 'note') {
+                await api.delete(`/notes/${id}`);
+                setNotes(notes.filter(n => n._id !== id));
             } else if (type === 'user') {
                 // For requests tab
                 await api.delete(`/admin/users/${id}`);
@@ -216,6 +224,32 @@ const AdminDashboard = () => {
         });
     };
 
+    const handleNoteSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            if (editingNoteId) {
+                const { data } = await api.put(`/notes/${editingNoteId}`, noteForm);
+                setNotes(notes.map(n => n._id === editingNoteId ? data : n));
+                setEditingNoteId(null);
+            } else {
+                const { data } = await api.post('/notes', noteForm);
+                setNotes([data, ...notes]);
+            }
+            setNoteForm({ title: '', description: '', pdfUrl: '', domain: 'Frontend', author: 'Team Curiosity' });
+        } catch (err) { alert('Operation failed'); }
+    };
+
+    const handleEditNote = (note) => {
+        setEditingNoteId(note._id);
+        setNoteForm({
+            title: note.title,
+            description: note.description || '',
+            pdfUrl: note.pdfUrl,
+            domain: note.domain || 'Frontend',
+            author: note.author || 'Team Curiosity'
+        });
+    };
+
     if (loading) return <div className="min-h-screen flex items-center justify-center font-mono text-xs">LOADING_MAINFRAME...</div>;
 
     return (
@@ -245,7 +279,7 @@ const AdminDashboard = () => {
 
             {/* Navigation Tabs */}
             <div className="flex gap-1 mb-8 border-b border-gray-200 overflow-x-auto">
-                {['requests', 'projects', 'hackathons', 'courses', 'team', 'comms'].map(tab => (
+                {['requests', 'projects', 'hackathons', 'courses', 'notes', 'team', 'comms'].map(tab => (
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
@@ -604,6 +638,79 @@ const AdminDashboard = () => {
                                         )}
                                         <Button type="submit" variant="primary" className="flex-1 text-xs" disabled={!courseForm.youtubeId}>
                                             {editingCourseId ? 'Update Protocol' : 'Deploy Protocol'}
+                                        </Button>
+                                    </div>
+                                </form>
+                            </Card>
+                        </div>
+                    </>
+                )}
+
+                {/* --- NOTES TAB --- */}
+                {activeTab === 'notes' && (
+                    <>
+                         <div className="lg:col-span-2 space-y-4">
+                            {notes.map(note => (
+                                <Card key={note._id} className="p-4 flex gap-4 items-center group">
+                                    <div className="w-12 h-12 bg-red-50 text-red-600 rounded flex items-center justify-center flex-shrink-0">
+                                        <Database size={20}/>
+                                    </div>
+                                    <div className="flex-grow">
+                                        <div className="flex items-center gap-2">
+                                            <h3 className="font-bold text-sm truncate max-w-[200px]">{note.title}</h3>
+                                            <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded uppercase ${note.domain === 'Frontend' ? 'bg-cyan-100 text-cyan-800' : 'bg-red-100 text-red-800'}`}>{note.domain}</span>
+                                        </div>
+                                        <p className="text-[10px] text-gray-400 mt-0.5 truncate">{note.description || 'No description provided'}</p>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <a href={note.pdfUrl} target="_blank" rel="noopener noreferrer" className="p-2 text-gray-300 hover:text-black transition-colors"><ExternalLink size={16} /></a>
+                                        <button onClick={() => handleEditNote(note)} className="text-gray-300 hover:text-blue-500 transition-colors"><Code size={16} /></button>
+                                        <button onClick={() => deleteItem('note', note._id)} className="text-gray-300 hover:text-red-500 transition-colors"><Trash2 size={16} /></button>
+                                    </div>
+                                </Card>
+                            ))}
+                            {notes.length === 0 && (
+                                <div className="text-center py-20 bg-gray-50 border border-dashed rounded text-gray-400 text-[10px] uppercase tracking-widest">
+                                    No Academic Notes // Repository Empty
+                                </div>
+                            )}
+                        </div>
+                        <div className="lg:col-span-1">
+                             <Card className="p-6 sticky top-8">
+                                <h3 className="font-bold mb-4 flex items-center gap-2"><Plus size={16}/> {editingNoteId ? 'Update Note' : 'Archive Note'}</h3>
+                                <form onSubmit={handleNoteSubmit} className="space-y-4">
+                                    <div>
+                                        <label className="text-[10px] uppercase font-bold text-gray-400">PDF Uplink [Link]</label>
+                                        <input className="w-full border p-2 text-sm mt-1" placeholder="https://..." value={noteForm.pdfUrl} onChange={e => setNoteForm({...noteForm, pdfUrl: e.target.value})} required />
+                                    </div>
+                                    <div>
+                                        <label className="text-[10px] uppercase font-bold text-gray-400">Title</label>
+                                        <input className="w-full border p-2 text-sm mt-1 font-bold" placeholder="E.g. JavaScript Advanced" value={noteForm.title} onChange={e => setNoteForm({...noteForm, title: e.target.value})} required />
+                                    </div>
+                                    <div>
+                                        <label className="text-[10px] uppercase font-bold text-gray-400">Description</label>
+                                        <textarea className="w-full border p-2 text-sm mt-1 h-20" placeholder="Brief summary..." value={noteForm.description} onChange={e => setNoteForm({...noteForm, description: e.target.value})} />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <div>
+                                             <label className="text-[10px] uppercase font-bold text-gray-400">Domain</label>
+                                             <select className="w-full border p-2 text-sm bg-white mt-1" value={noteForm.domain} onChange={e => setNoteForm({...noteForm, domain: e.target.value})}>
+                                                <option value="Frontend">Frontend</option>
+                                                <option value="Backend">Backend</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                             <label className="text-[10px] uppercase font-bold text-gray-400">Author</label>
+                                             <input className="w-full border p-2 text-sm mt-1" value={noteForm.author} onChange={e => setNoteForm({...noteForm, author: e.target.value})} />
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        {editingNoteId && (
+                                            <Button type="button" onClick={() => { setEditingNoteId(null); setNoteForm({ title: '', description: '', pdfUrl: '', domain: 'Frontend', author: 'Team Curiosity' }); }} variant="secondary" className="flex-1 text-xs">Cancel</Button>
+                                        )}
+                                        <Button type="submit" variant="primary" className="flex-1 text-xs">
+                                            {editingNoteId ? 'Commit Update' : 'Initialize Archival'}
                                         </Button>
                                     </div>
                                 </form>

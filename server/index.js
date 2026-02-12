@@ -34,6 +34,7 @@ app.use('/api/team', require('./routes/teamRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
 app.use('/api/chat', require('./routes/chatRoutes')); // Chat HTTP routes
 app.use('/api/courses', require('./routes/courseRoutes'));
+app.use('/api/notes', require('./routes/noteRoutes'));
 
 // Socket.io Logic
 io.on('connection', (socket) => {
