@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowUpRight, Server, Activity, Lock, Database } from 'lucide-react';
+import { ArrowUpRight, Server, Activity, Lock, Database, Code2 } from 'lucide-react';
 import api from '../../services/api';
 
 const Projects = () => {
@@ -146,9 +146,9 @@ const Projects = () => {
                                         alert("Repository link not available.");
                                     }
                                 }}
-                                className="px-4 py-2 bg-blue-600 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-blue-700 transition-colors border border-blue-600 shadow-sm"
+                                className="px-4 py-2 bg-blue-600 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-blue-700 transition-colors border border-blue-600 shadow-sm flex items-center gap-2"
                             >
-                                Open in VS Code
+                                <Code2 size={14} /> FORK TO DEVICE
                             </button>
                         ) : (
                             <button

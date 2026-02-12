@@ -252,8 +252,9 @@ const ProjectDetails = () => {
                                         variant="outline" 
                                         className="w-full justify-center gap-2 py-4 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-all"
                                     >
-                                        <Code2 size={16} /> INITIALIZE IN VS CODE
+                                        <Code2 size={16} /> FORK TO DEVICE (VS CODE)
                                     </Button>
+                                    <p className="text-[10px] text-center text-gray-400 font-mono">Clones repository to your local workspace</p>
                                 </div>
                             ) : (
                                 <Button onClick={handleJoinProject} variant="outline" className="w-full justify-center gap-2 py-4 border-black hover:bg-black hover:text-white transition-all">
