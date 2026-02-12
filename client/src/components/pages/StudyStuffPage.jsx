@@ -49,94 +49,126 @@ const StudyStuffPage = () => {
         return () => ctx.revert();
     }, [selectedDomain, activeTab]);
 
-    const DomainCard = ({ title, lessons, duration, rating, thumbnailGradient, onClick }) => (
+    const DomainCard = ({ title, lessons, thumbnailGradient, onClick }) => (
         <div 
             onClick={onClick}
-            className="domain-card group bg-white border-4 border-black overflow-hidden hover:shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] transition-all duration-500 flex flex-col h-full cursor-pointer relative"
+            className="group relative h-[450px] cursor-pointer overflow-hidden rounded-3xl border border-white/10 bg-black/40 backdrop-blur-3xl transition-all duration-700 hover:-translate-y-4 hover:shadow-[0_45px_100px_rgba(0,0,0,0.5)]"
         >
-            <div className={`relative h-64 w-full ${thumbnailGradient} flex items-center justify-center overflow-hidden border-b-4 border-black`}>
-                <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-300"></div>
-                <div className="p-6 bg-black text-white rounded-full transform group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 shadow-xl border-2 border-white">
-                    <Play fill="white" size={32} />
-                </div>
-                <div className="absolute top-4 left-4 bg-black text-white px-4 py-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.2em] border border-white/20">
-                    CORE_PROTOCOL
-                </div>
+            {/* Animated Mesh Gradient Background */}
+            <div className={`absolute inset-0 opacity-40 transition-opacity duration-700 group-hover:opacity-60 ${thumbnailGradient}`}>
+                <div className="absolute inset-0 bg-[#000]/20 mix-blend-overlay"></div>
+                <div className="absolute -inset-[100%] animate-[spin_20s_linear_infinite] bg-[radial-gradient(circle,rgba(255,255,255,0.1)_0%,transparent_70%)] opacity-30"></div>
             </div>
-            <div className="p-10 flex flex-col flex-grow bg-white group-hover:bg-black transition-colors duration-500">
-                <h3 className="text-4xl font-black uppercase tracking-tighter mb-6 leading-none group-hover:text-white transition-colors italic">
+
+            {/* Content Container */}
+            <div className="relative z-10 flex h-full flex-col justify-end p-10 pb-12">
+                <div className="mb-6 flex w-fit items-center gap-2 rounded-full border border-white/20 bg-white/5 py-1.5 px-4 backdrop-blur-md">
+                    <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-red-500"></div>
+                    <span className="font-mono text-[10px] font-black uppercase tracking-[0.2em] text-white/70">
+                        System_Protocol
+                    </span>
+                </div>
+                
+                <h3 className="mb-4 text-5xl font-black italic uppercase leading-[0.9] tracking-tighter text-white transition-transform duration-500 group-hover:scale-105">
                     {title}
                 </h3>
-                <div className="flex items-center justify-between font-mono text-[10px] font-bold uppercase tracking-widest text-gray-400 group-hover:text-red-500 mt-auto">
-                    <span className="flex items-center gap-2">
-                        <Database size={12} /> {lessons} ARCHIVES
-                    </span>
-                    <div className="flex items-center gap-2 group-hover:translate-x-2 transition-transform">
-                        ACCESS_HUB <ArrowRight size={14} />
+                
+                <div className="flex items-center justify-between border-t border-white/10 pt-6">
+                    <div className="flex items-center gap-4">
+                        <div className="flex flex-col">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Status</span>
+                            <span className="font-mono text-xs text-red-500">DECRYPTED</span>
+                        </div>
+                        <div className="flex flex-col border-l border-white/10 pl-4">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Archives</span>
+                            <span className="font-mono text-xs text-white">{lessons} UNITS</span>
+                        </div>
+                    </div>
+                    <div className="rounded-full border border-white/20 bg-white/10 p-4 text-white transition-all duration-500 group-hover:bg-red-600 group-hover:shadow-[0_0_20px_rgba(220,38,38,0.5)]">
+                        <ArrowRight size={20} />
                     </div>
                 </div>
             </div>
-            {/* Decorative Scanline */}
-            <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.05)_50%),linear-gradient(90deg,rgba(255,0,0,0.02),rgba(0,255,0,0.01),rgba(0,0,255,0.02))] bg-[length:100%_2px,3px_100%] opacity-20"></div>
+
+            {/* Glass Overlays */}
+            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black to-transparent opacity-80"></div>
+            <div className="absolute inset-0 border border-white/20 rounded-3xl pointer-events-none group-hover:border-red-500/50 transition-colors duration-500"></div>
         </div>
     );
 
     const CourseVideoCard = ({ title, instructor, duration, rating, color, thumbnailUrl, onClick }) => (
-        <div onClick={onClick} className="hub-content-item group bg-white border-2 border-black overflow-hidden hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all duration-500 cursor-pointer relative">
-            <div className={`relative h-48 w-full ${color} flex items-center justify-center border-b-2 border-black overflow-hidden`}>
-                {thumbnailUrl ? (
-                    <img src={thumbnailUrl} alt={title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 grayscale group-hover:grayscale-0" />
-                ) : (
-                    <Video size={40} className="text-white opacity-20" />
-                )}
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <div className="p-4 bg-white text-black rounded-full shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] border-2 border-black">
-                        <Play fill="black" size={20} />
+        <div 
+            onClick={onClick} 
+            className="group relative cursor-pointer overflow-hidden rounded-2xl border border-black/5 bg-white transition-all duration-500 hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.2)]"
+        >
+            <div className="relative aspect-video overflow-hidden">
+                <img 
+                    src={thumbnailUrl || '/api/placeholder/400/225'} 
+                    alt={title} 
+                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale-[0.5] group-hover:grayscale-0"
+                />
+                
+                {/* Information Overlays */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+                
+                <div className="absolute top-3 left-3 flex gap-2">
+                    <div className="rounded bg-red-600 px-2 py-0.5 text-[8px] font-black uppercase tracking-widest text-white shadow-lg">
+                        Premium
                     </div>
                 </div>
-                <div className="absolute top-3 left-3 bg-red-600 text-white px-2 py-0.5 text-[8px] font-mono font-black italic tracking-widest uppercase">
-                    LIVE_SPEC
+
+                <div className="absolute top-3 right-3 flex h-7 items-center gap-1 rounded-md bg-black/60 px-2 backdrop-blur-md">
+                    <Star size={10} fill="#facc15" className="text-yellow-400" />
+                    <span className="text-[10px] font-bold text-white">{rating}</span>
                 </div>
-                <div className="absolute bottom-3 right-3 bg-black text-white px-2 py-1 text-[10px] font-mono font-bold z-10 border border-gray-800">
+
+                <div className="absolute bottom-3 right-3 rounded-md bg-white/20 px-2 py-1 font-mono text-[10px] font-bold text-white backdrop-blur-md">
                     {duration}
                 </div>
-            </div>
-            <div className="p-6 group-hover:bg-gray-50 transition-colors duration-300">
-                <div className="flex items-center justify-between mb-3 font-mono">
-                    <div className="flex items-center gap-1 bg-yellow-400/10 text-yellow-600 px-2 py-0.5 rounded-full">
-                        <Star size={10} fill="currentColor" />
-                        <span className="text-[9px] font-bold">{rating} RANK</span>
+
+                {/* Play Button Overlay */}
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-all duration-300 group-hover:opacity-100">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-black shadow-2xl transition-transform duration-300 group-hover:scale-110">
+                        <Play fill="black" size={20} className="translate-x-0.5" />
                     </div>
-                    <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">v01.2</span>
                 </div>
-                <h4 className="text-xl font-black uppercase tracking-tight mb-6 leading-none line-clamp-2 h-10 group-hover:text-red-600 transition-colors">
+            </div>
+
+            <div className="p-6">
+                <h4 className="mb-2 line-clamp-2 h-10 text-base font-bold text-gray-900 group-hover:text-red-600 transition-colors">
                     {title}
                 </h4>
-                <button className="w-full py-3 bg-black text-white font-bold uppercase text-[10px] tracking-[0.3em] transition-all hover:bg-red-600 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-1 active:shadow-none">
-                    Watch_Protocol
-                </button>
+                <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                    <span>{instructor || "Expert Faculty"}</span>
+                    <span className="text-red-600 opacity-0 group-hover:opacity-100 transition-opacity">Watch Now →</span>
+                </div>
             </div>
         </div>
     );
 
     const NoteItem = ({ title, size, type }) => (
-        <div className="hub-content-item group flex items-center justify-between p-5 bg-white border-2 border-black hover:bg-black hover:text-white transition-all duration-300 shadow-sm hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.1)] cursor-pointer">
+        <div className="group relative flex items-center justify-between gap-4 rounded-xl border border-black/5 bg-white p-6 transition-all duration-300 hover:bg-black hover:shadow-[0_20px_40px_rgba(0,0,0,0.1)]">
             <div className="flex items-center gap-6">
-                <div className="p-3 bg-gray-100 border border-black text-black group-hover:bg-white transition-colors">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-50 text-black shadow-sm group-hover:bg-red-600 group-hover:text-white transition-all">
                     <Database size={20} />
                 </div>
                 <div>
-                    <h5 className="font-black uppercase tracking-tight text-sm group-hover:text-red-600 transition-colors inline-block mr-3">
+                    <h5 className="mb-1 text-sm font-bold uppercase tracking-tight group-hover:text-white transition-colors">
                         {title}
                     </h5>
-                    <span className="font-mono text-[9px] text-gray-400 uppercase tracking-widest group-hover:text-gray-500">
-                        {type} // {size}
-                    </span>
+                    <div className="flex items-center gap-3">
+                        <div className="flex h-4 items-center gap-1.5 rounded-full bg-red-600/10 px-2 text-[9px] font-black uppercase text-red-600 group-hover:bg-white/10 group-hover:text-red-500">
+                            <span className="h-1 w-1 rounded-full bg-current"></span>
+                            {type}
+                        </div>
+                        <span className="font-mono text-[10px] text-gray-400 uppercase tracking-widest group-hover:text-gray-500">
+                            SPEC_ID: {size}
+                        </span>
+                    </div>
                 </div>
             </div>
-            <div className="flex items-center gap-4">
-                <div className="w-10 h-0.5 bg-black transition-all duration-500 origin-left group-hover:w-20 group-hover:bg-red-600"></div>
-                <ArrowRight size={16} className="text-gray-300 group-hover:text-white" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-full border border-black/5 bg-gray-50 text-gray-400 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100 group-hover:text-white group-hover:bg-red-600 translate-x-4">
+                <Download size={18} />
             </div>
         </div>
     );
