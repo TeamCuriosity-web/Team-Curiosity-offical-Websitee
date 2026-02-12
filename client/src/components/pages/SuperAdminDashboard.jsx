@@ -145,7 +145,10 @@ const SuperAdminDashboard = () => {
     const { mutate: deleteHackathon } = useMutation({
         mutationFn: (id) => api.delete(`/hackathons/${id}`),
         onSuccess: () => queryClient.invalidateQueries(['hackathons']),
-        onError: () => alert('Protocol Error: Deletion Failed')
+        onError: (err) => {
+            console.error("HACKATHON_DELETION_PROTOCOL_FAILURE:", err);
+            alert(`Protocol Error: Deletion Failed [${err.response?.status || 'UNKNOWN'}] - ${err.response?.data?.message || err.message}`);
+        }
     });
 
     const courseMutation = useMutation({
@@ -170,7 +173,10 @@ const SuperAdminDashboard = () => {
     const { mutate: deleteCourse } = useMutation({
         mutationFn: (id) => api.delete(`/courses/${id}`),
         onSuccess: () => queryClient.invalidateQueries(['courses']),
-        onError: () => alert('Protocol Error: Deletion Failed')
+        onError: (err) => {
+            console.error("COURSE_DELETION_PROTOCOL_FAILURE:", err);
+            alert(`Protocol Error: Deletion Failed [${err.response?.status || 'UNKNOWN'}] - ${err.response?.data?.message || err.message}`);
+        }
     });
 
     const approveUserMutation = useMutation({
@@ -204,9 +210,10 @@ const SuperAdminDashboard = () => {
     };
 
     const deleteItem = (type, id) => {
-        if (!window.confirm('Confirm deletion?')) return;
+        if (!window.confirm(`WARNING: Confirm ${type} deletion protocol?`)) return;
         if (type === 'project') deleteProjectMutation.mutate(id);
-        else if (type === 'hackathon') deleteHackathonMutation.mutate(id);
+        else if (type === 'hackathon') deleteHackathon(id);
+        else if (type === 'course') deleteCourse(id);
     };
 
     const handleApproveUser = (id) => {
@@ -746,7 +753,7 @@ const SuperAdminDashboard = () => {
                                                         <button onClick={() => handleEditCourse(course)} className="text-gray-300 hover:text-blue-600 transition-colors">
                                                             <Code size={14}/>
                                                         </button>
-                                                        <button onClick={() => deleteCourse(course._id)} className="text-gray-300 hover:text-red-600 transition-colors">
+                                                        <button onClick={() => deleteItem('course', course._id)} className="text-gray-300 hover:text-red-600 transition-colors">
                                                             <Trash2 size={14}/>
                                                         </button>
                                                     </div>

@@ -94,7 +94,7 @@ const AdminDashboard = () => {
     // ... deleteItem and other actions ...
 
     const deleteItem = async (type, id) => {
-        if (!window.confirm('Confirm deletion protocol?')) return;
+        if (!window.confirm(`WARNING: Confirm ${type} deletion protocol?`)) return;
         try {
             if (type === 'project') {
                 await api.delete(`/projects/${id}`);
@@ -105,8 +105,15 @@ const AdminDashboard = () => {
             } else if (type === 'course') {
                 await api.delete(`/courses/${id}`);
                 setCourses(courses.filter(c => c._id !== id));
+            } else if (type === 'user') {
+                // For requests tab
+                await api.delete(`/admin/users/${id}`);
+                setUsers(users.filter(u => u._id !== id));
             }
-        } catch (err) { alert('Deletion failed'); }
+        } catch (err) { 
+            console.error(`${type.toUpperCase()}_DELETION_FAILURE:`, err);
+            alert(`Protocol Error: Deletion Failed [${err.response?.status || 'UNKNOWN'}] - ${err.response?.data?.message || err.message}`);
+        }
     };
 
     // ... (rest of actions) ...
