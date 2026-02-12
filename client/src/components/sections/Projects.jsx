@@ -135,8 +135,22 @@ const Projects = () => {
                 </div>
 
                     <div className="flex items-center justify-end gap-4 w-full md:w-1/3 pl-0 md:pl-10 mt-4 md:mt-0">
-                        {/* Join Button */}
-                        {!project.teamMembers?.includes(currentUser?._id) && (
+                        {/* Join / Open in VS Code Button */}
+                        {project.teamMembers?.includes(currentUser?._id) ? (
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (project.repoLink) {
+                                        window.location.href = `vscode://vscode.git/clone?url=${project.repoLink}`;
+                                    } else {
+                                        alert("Repository link not available.");
+                                    }
+                                }}
+                                className="px-4 py-2 bg-blue-600 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-blue-700 transition-colors border border-blue-600 shadow-sm"
+                            >
+                                Open in VS Code
+                            </button>
+                        ) : (
                             <button
                                 onClick={(e) => handleJoinProject(e, project._id)}
                                 className="px-4 py-2 bg-black text-white text-[10px] font-bold uppercase tracking-widest hover:bg-gray-800 transition-colors border border-black group-hover:bg-white group-hover:text-black"

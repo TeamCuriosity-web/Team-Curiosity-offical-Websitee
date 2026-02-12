@@ -240,11 +240,20 @@ const ProjectDetails = () => {
                             </a>
                         )}
 
-                        {/* Join Project Button */}
+                        {/* Join / Open Project Button */}
                         {user ? (
                             isMember ? (
-                                <div className="w-full bg-green-50 text-green-700 border border-green-200 p-4 rounded text-center font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-2">
-                                    <Shield size={16} /> Active Operative
+                                <div className="space-y-3">
+                                    <div className="w-full bg-green-50 text-green-700 border border-green-200 p-4 rounded text-center font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-2">
+                                        <Shield size={16} /> Active Operative
+                                    </div>
+                                    <Button 
+                                        onClick={() => window.location.href = `vscode://vscode.git/clone?url=${project.repoLink}`}
+                                        variant="outline" 
+                                        className="w-full justify-center gap-2 py-4 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-all"
+                                    >
+                                        <Code2 size={16} /> INITIALIZE IN VS CODE
+                                    </Button>
                                 </div>
                             ) : (
                                 <Button onClick={handleJoinProject} variant="outline" className="w-full justify-center gap-2 py-4 border-black hover:bg-black hover:text-white transition-all">
