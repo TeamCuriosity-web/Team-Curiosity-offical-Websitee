@@ -251,7 +251,11 @@ const ProjectDetails = () => {
                                         <Shield size={16} /> Active Operative
                                     </div>
                                     <Button 
-                                        onClick={() => window.location.href = `vscode://vscode.git/clone?url=${encodeURIComponent(project.repoLink)}`}
+                                        onClick={() => {
+                                            let repoUrl = project.repoLink;
+                                            if (!repoUrl.endsWith('.git')) repoUrl += '.git';
+                                            window.location.href = `vscode://vscode.git/clone?url=${encodeURIComponent(repoUrl)}`;
+                                        }}
                                         variant="outline" 
                                         className="w-full justify-center gap-2 py-4 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-all"
                                     >
