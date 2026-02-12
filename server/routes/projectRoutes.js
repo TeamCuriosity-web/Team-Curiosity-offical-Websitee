@@ -64,7 +64,8 @@ router.post('/', protect, admin, async (req, res) => {
         private: false,
         has_issues: true,
         has_projects: true,
-        has_wiki: true
+        has_wiki: true,
+        auto_init: true // Required for GitHub Pages source branch
       })
     });
 
@@ -110,12 +111,13 @@ router.post('/', protect, admin, async (req, res) => {
                     'User-Agent': 'TeamCuriosity-Official-App'
                  },
                  body: JSON.stringify({
-                    name: uniqueRepoName,
+                     name: uniqueRepoName,
                     description: description || `Repository for ${title}`,
                     private: false,
                     has_issues: true,
                     has_projects: true,
-                    has_wiki: true
+                    has_wiki: true,
+                    auto_init: true // Ensure 'main' branch exists for Pages
                  })
              });
 
@@ -135,7 +137,8 @@ router.post('/', protect, admin, async (req, res) => {
                         private: false,
                         has_issues: true,
                         has_projects: true,
-                        has_wiki: true
+                        has_wiki: true,
+                        auto_init: true
                     })
                  });
              }
@@ -153,10 +156,48 @@ router.post('/', protect, admin, async (req, res) => {
         }
     }
 
+    // --- 3. Auto-Host on GitHub Pages ---
+    let liveDeploymentLink = '';
+    try {
+        const repoOwner = githubData.owner.login;
+        const finalRepoName = githubData.name;
+
+        // Enable GitHub Pages (Source: main branch, root folder)
+        const pagesResponse = await fetch(`https://api.github.com/repos/${repoOwner}/${finalRepoName}/pages`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `token ${GITHUB_TOKEN}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json',
+                'User-Agent': 'TeamCuriosity-Official-App'
+            },
+            body: JSON.stringify({
+                source: {
+                    branch: "main",
+                    path: "/"
+                }
+            })
+        });
+
+        if (pagesResponse.ok) {
+            const pagesData = await pagesResponse.json();
+            liveDeploymentLink = pagesData.html_url; // e.g., https://org.github.io/repo/
+        } else {
+            // Fallback Construction if API calls fail or take time (common with Pages)
+            liveDeploymentLink = `https://${repoOwner}.github.io/${finalRepoName}/`;
+            console.warn("GitHub Pages API pending/failed. Using constructed link:", liveDeploymentLink);
+        }
+
+    } catch (pagesErr) {
+        console.error("PAGES_DEPLOYMENT_WARNING:", pagesErr);
+        // Do not fail the whole request; just log it.
+    }
+
     // 2. Local Database Synchronization
     const projectData = {
         ...req.body,
-        repoLink: githubData.html_url
+        repoLink: githubData.html_url,
+        liveLink: liveDeploymentLink || req.body.liveLink // Prefer auto-generated, fallback to manual input logic (though manual is hidden now)
     };
 
     const newProject = new Project(projectData);
