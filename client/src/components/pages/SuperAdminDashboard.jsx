@@ -643,7 +643,12 @@ const SuperAdminDashboard = () => {
                                                 {p.techStack.map(t => <span key={t} className="text-[10px] bg-gray-100 text-gray-500 px-2 py-1 rounded border border-gray-100">{t}</span>)}
                                             </div>
                                         </div>
-                                        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity items-center">
+                                            {p.repoLink && (
+                                                <a href={p.repoLink} target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-50 text-gray-600 hover:bg-black hover:text-white rounded transition-colors border border-gray-200">
+                                                     <Code size={16} />
+                                                </a>
+                                            )}
                                             <button onClick={() => handleEditClick(p)} className="p-2 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded transition-colors"><Code size={16}/></button>
                                             <button onClick={() => deleteItem('project', p._id)} className="p-2 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white rounded transition-colors"><Trash2 size={16}/></button>
                                         </div>
@@ -665,7 +670,14 @@ const SuperAdminDashboard = () => {
                                         <select className="bg-white border border-gray-200 p-3 rounded text-sm text-gray-600 outline-none focus:border-yellow-500 shadow-sm" value={projectForm.status} onChange={e => setProjectForm({...projectForm, status: e.target.value})}><option value="ongoing">Ongoing</option><option value="upcoming">Upcoming</option><option value="completed">Completed</option></select>
                                         <select className="bg-white border border-gray-200 p-3 rounded text-sm text-gray-600 outline-none focus:border-yellow-500 shadow-sm" value={projectForm.difficulty} onChange={e => setProjectForm({...projectForm, difficulty: e.target.value})}><option value="beginner">Beginner</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option><option value="legendary">Legendary</option></select>
                                     </div>
-                                    <input className="w-full bg-white border border-gray-200 p-3 rounded text-sm text-gray-900 focus:border-yellow-500 outline-none shadow-sm" placeholder="Repository URL" value={projectForm.repoLink} onChange={e => setProjectForm({...projectForm, repoLink: e.target.value})} />
+                                    {editingId ? (
+                                        <input className="w-full bg-white border border-gray-200 p-3 rounded text-sm text-gray-900 focus:border-yellow-500 outline-none shadow-sm" placeholder="Repository URL" value={projectForm.repoLink} onChange={e => setProjectForm({...projectForm, repoLink: e.target.value})} />
+                                    ) : (
+                                        <div className="w-full bg-yellow-50 border border-yellow-200 p-3 rounded text-sm text-yellow-800 flex items-center gap-2 shadow-sm cursor-not-allowed">
+                                            <div className="w-2 h-2 rounded-full bg-yellow-600 animate-pulse"></div>
+                                            <span className="font-mono text-xs uppercase font-bold tracking-wider">Auto-Provisioning GitHub Repo</span>
+                                        </div>
+                                    )}
                                     <input className="w-full bg-white border border-gray-200 p-3 rounded text-sm text-gray-900 focus:border-yellow-500 outline-none shadow-sm" placeholder="Live Deployment URL" value={projectForm.liveLink} onChange={e => setProjectForm({...projectForm, liveLink: e.target.value})} />
                                     
                                     <button className="w-full bg-yellow-500 hover:bg-yellow-600 text-white shadow-md font-bold py-3 rounded text-xs uppercase tracking-widest transition-all">
