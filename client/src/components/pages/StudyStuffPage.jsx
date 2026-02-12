@@ -96,72 +96,63 @@ const StudyStuffPage = () => {
         </div>
     );
 
-    const CourseVideoCard = ({ title, instructor, duration, rating, color, thumbnailUrl, onClick }) => (
+    const CourseVideoCard = ({ title, instructor, duration, rating, thumbnailUrl, onClick }) => (
         <div 
             onClick={onClick} 
-            className="group relative cursor-pointer overflow-hidden rounded-[2.5rem] border border-white/10 bg-[#0a0a0a]/60 backdrop-blur-3xl transition-all duration-700 hover:shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] hover:-translate-y-4"
+            className="group relative flex flex-col md:flex-row items-center gap-8 cursor-pointer p-4 md:p-6 rounded-[2rem] md:rounded-[100px] border border-white/10 bg-black/40 backdrop-blur-3xl transition-all duration-700 hover:bg-black/60 hover:shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] hover:-translate-y-2 overflow-hidden mx-auto w-full"
         >
-            <div className="relative aspect-[16/10] overflow-hidden">
+            {/* Fluid Background Animation */}
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-1000 bg-[radial-gradient(circle_at_50%_50%,#ff4d4d,transparent_70%)]"></div>
+
+            {/* Circular Thumbnail Container */}
+            <div className="relative flex-shrink-0 w-32 h-32 md:w-36 md:h-36 rounded-full overflow-hidden border-4 border-white/10 shadow-2xl transition-transform duration-700 group-hover:scale-110 group-hover:rotate-6">
                 <img 
-                    src={thumbnailUrl || '/api/placeholder/800/500'} 
+                    src={thumbnailUrl || '/api/placeholder/400/400'} 
                     alt={title} 
-                    className="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-70 group-hover:opacity-100 grayscale-[0.3] group-hover:grayscale-0"
+                    className="h-full w-full object-cover grayscale-[0.2] group-hover:grayscale-0"
                 />
+                <div className="absolute inset-0 bg-gradient-to-tr from-black/40 to-transparent"></div>
                 
-                {/* Cinematic Gradients */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/20 to-transparent opacity-90 transition-opacity duration-500 group-hover:opacity-40"></div>
-                <div className="absolute inset-0 bg-gradient-to-br from-red-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-                
-                {/* Floating Tags */}
-                <div className="absolute top-6 left-6 flex items-center gap-3">
-                    <div className="rounded-full bg-red-600 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-white shadow-[0_0_20px_rgba(220,38,38,0.5)] border border-white/20">
-                        Mission_Live
-                    </div>
-                </div>
-
-                <div className="absolute top-6 right-6 flex items-center gap-2 rounded-xl bg-black/40 px-3 py-2 border border-white/10 backdrop-blur-xl">
-                    <Star size={12} fill="#ff4d4d" className="text-[#ff4d4d]" />
-                    <span className="font-mono text-xs font-black text-white">{rating}</span>
-                </div>
-
-                <div className="absolute bottom-6 right-6 rounded-xl bg-white/5 px-4 py-2 font-mono text-xs font-bold text-white/80 border border-white/10 backdrop-blur-md">
-                    {duration}
-                </div>
-
-                {/* Central Play Interaction */}
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-all duration-500 group-hover:opacity-100 scale-75 group-hover:scale-100">
-                    <div className="flex h-24 w-24 items-center justify-center rounded-full bg-white/10 border border-white/20 backdrop-blur-2xl text-white shadow-2xl">
-                        <Play fill="white" size={32} className="translate-x-1" />
-                    </div>
+                {/* Play Icon Reveal */}
+                <div className="absolute inset-0 flex items-center justify-center bg-red-600/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                    <Play fill="white" size={24} className="text-white translate-x-0.5" />
                 </div>
             </div>
 
-            <div className="p-10 transition-colors duration-500">
-                <div className="flex items-center gap-3 mb-6">
-                    <div className="h-0.5 w-10 bg-red-600 transition-all duration-700 group-hover:w-20"></div>
-                    <span className="font-mono text-[10px] font-black uppercase tracking-[0.3em] text-white/30 group-hover:text-red-500/50">TC_CORE_RESOURCES</span>
+            {/* Content Section */}
+            <div className="flex-grow text-center md:text-left">
+                <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mb-3">
+                    <div className="flex items-center gap-1.5 rounded-full bg-red-600/20 px-3 py-1 border border-red-500/20">
+                        <div className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse"></div>
+                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-red-500">Active_Res</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-white/40 font-mono text-[10px] uppercase tracking-widest">
+                        <Clock size={12} /> {duration}
+                    </div>
+                    <div className="flex items-center gap-1.5 text-yellow-500/80 font-mono text-[10px] uppercase tracking-widest bg-yellow-500/5 px-2 py-0.5 rounded-lg border border-yellow-500/10">
+                        <Star size={10} fill="currentColor" /> {rating}
+                    </div>
                 </div>
-                
-                <h4 className="mb-8 text-4xl font-black italic uppercase leading-[0.95] tracking-tighter text-white transition-all duration-500 group-hover:text-red-500 group-hover:translate-x-2">
+
+                <h4 className="text-2xl md:text-3xl font-black italic uppercase leading-none tracking-tighter text-white mb-4 group-hover:text-red-500 transition-colors">
                     {title}
                 </h4>
-                
-                <div className="flex items-center justify-between border-t border-white/5 pt-8">
-                    <div className="flex items-center gap-5">
-                        <div className="relative h-12 w-12 overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-0.5 transition-transform group-hover:rotate-6">
-                             <div className="flex h-full w-full items-center justify-center bg-black rounded-[0.9rem] text-[10px] font-black text-[#ff4d4d]">
-                                TC
-                             </div>
-                        </div>
-                        <div className="flex flex-col">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-white/30">Lead_Instructor</span>
-                            <span className="text-sm font-bold text-white/90 group-hover:text-white">{instructor || "Team Curiosity"}</span>
-                        </div>
+
+                <div className="flex items-center justify-center md:justify-start gap-3">
+                    <div className="flex -space-x-2">
+                        <div className="h-6 w-6 rounded-full border border-white/20 bg-black flex items-center justify-center text-[7px] font-black text-white">TC</div>
                     </div>
-                    
-                    <div className="flex items-center gap-2 font-mono text-[10px] font-black uppercase tracking-[0.3em] text-red-600 opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-0 translate-x-4">
-                        Init_Watch <ArrowRight size={16} />
-                    </div>
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">
+                        Source: <span className="text-white/60">{instructor || "Team Curiosity"}</span>
+                    </span>
+                </div>
+            </div>
+
+            {/* Final Action Button (Pill Styled) */}
+            <div className="hidden lg:flex flex-shrink-0 mr-4">
+                <div className="h-14 w-40 flex items-center justify-center rounded-full border-2 border-white/5 bg-white/5 text-white font-black uppercase text-[10px] tracking-[0.3em] overflow-hidden relative group/btn transition-all duration-500 hover:border-red-600 hover:bg-red-600 hover:shadow-[0_0_30px_rgba(220,38,38,0.4)]">
+                    <span className="relative z-10">Access_Hub</span>
+                    <div className="absolute inset-0 -translate-x-full group-hover/btn:translate-x-0 bg-gradient-to-r from-red-600 to-red-400 transition-transform duration-500"></div>
                 </div>
             </div>
 
@@ -271,7 +262,7 @@ const StudyStuffPage = () => {
                                         <p className="font-mono text-[10px] tracking-widest uppercase">Fetching_Repository...</p>
                                     </div>
                                 ) : courses.length > 0 ? (
-                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                                    <div className="grid grid-cols-1 gap-10">
                                         {courses.map((course, i) => (
                                             <CourseVideoCard 
                                                 key={course._id || i} 
