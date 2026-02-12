@@ -49,7 +49,8 @@ router.post('/', protect, admin, async (req, res) => {
 
     const repoName = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
     
-    const githubResponse = await fetch(`https://api.github.com/orgs/${GITHUB_ORG}/repos`, {
+    let githubData;
+    let githubResponse = await fetch(`https://api.github.com/orgs/${GITHUB_ORG}/repos`, {
       method: 'POST',
       headers: {
         'Authorization': `token ${GITHUB_TOKEN}`,
@@ -67,12 +68,34 @@ router.post('/', protect, admin, async (req, res) => {
       })
     });
 
-    const githubData = await githubResponse.json();
+    if (githubResponse.status === 404 || githubResponse.status === 403) {
+        console.warn(`Org ${GITHUB_ORG} not found or accessible. Attempting personal repo creation...`);
+        // Fallback: Create in User Account
+        githubResponse = await fetch(`https://api.github.com/user/repos`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `token ${GITHUB_TOKEN}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json',
+                'User-Agent': 'TeamCuriosity-Official-App'
+            },
+            body: JSON.stringify({
+                name: repoName,
+                description: description || `Repository for ${title}`,
+                private: false,
+                has_issues: true,
+                has_projects: true,
+                has_wiki: true
+            })
+        });
+    }
+
+    githubData = await githubResponse.json();
 
     if (!githubResponse.ok) {
         console.error("GITHUB_API_ERROR:", githubData);
         return res.status(githubResponse.status).json({
-            message: `GITHUB_DEPLOYMENT_FAILURE: ${githubData.message}`,
+            message: `GITHUB_DEPLOYMENT_FAILURE: ${githubData.message} (Org & Personal attempts failed)`,
             errors: githubData.errors
         });
     }
