@@ -1,148 +1,95 @@
 import React, { useLayoutEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
-import { Layout, Server, Cpu, Globe, Terminal, Box, Database, Zap, Code, MessageSquare, Shield, ArrowRight } from 'lucide-react';
+import { Play, BookOpen, Clock, Star, ArrowRight } from 'lucide-react';
 import { gsap } from 'gsap';
 
 const StudyStuffPage = () => {
     const containerRef = useRef(null);
-    const box1Ref = useRef(null);
-    const box2Ref = useRef(null);
 
     useLayoutEffect(() => {
         const ctx = gsap.context(() => {
-            const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-
-            tl.from(".study-header-item", {
+            gsap.from(".course-card", {
                 opacity: 0,
-                y: 30,
+                y: 50,
                 duration: 1,
-                stagger: 0.2
-            })
-            .from([box1Ref.current, box2Ref.current], {
-                opacity: 0,
-                scale: 0.95,
-                y: 40,
-                duration: 1,
-                stagger: 0.3
-            }, "-=0.5");
-
+                stagger: 0.2,
+                ease: "power3.out"
+            });
         }, containerRef);
         return () => ctx.revert();
     }, []);
 
-    const ResourceBox = ({ title, icon: Icon, description, items, color, refProp }) => (
-        <div 
-            ref={refProp}
-            className="group relative overflow-hidden bg-white border-4 border-black p-10 transition-all duration-500 hover:-translate-y-2 hover:shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] flex flex-col h-full min-h-[500px]"
-        >
-            {/* Background Accent */}
-            <div className={`absolute top-0 right-0 w-32 h-32 ${color} opacity-10 group-hover:opacity-20 transition-opacity blur-3xl rounded-full -mr-16 -mt-16`} />
-            
-            <div className="relative z-10 flex flex-col h-full">
-                <div className="flex items-center gap-4 mb-8">
-                    <div className="p-4 bg-black text-white rounded-xl group-hover:rotate-12 transition-transform duration-500">
-                        <Icon size={32} />
-                    </div>
-                    <h2 className="text-4xl font-black uppercase tracking-tighter italic">{title}</h2>
+    const CourseCard = ({ title, instructor, duration, lessons, students, rating, thumbnailGradient }) => (
+        <div className="course-card group bg-white border-2 border-black overflow-hidden hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 flex flex-col h-full">
+            {/* Thumbnail / Video Placeholder */}
+            <div className={`relative h-48 w-full ${thumbnailGradient} flex items-center justify-center overflow-hidden border-b-2 border-black`}>
+                <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-300"></div>
+                <div className="p-4 bg-white/20 backdrop-blur-md rounded-full text-white transform group-hover:scale-110 transition-transform duration-500">
+                    <Play fill="white" size={32} />
                 </div>
-
-                <p className="text-xl text-gray-600 font-mono mb-10 leading-relaxed border-l-4 border-black pl-6 py-2">
-                    {description}
-                </p>
-
-                <div className="grid grid-cols-2 gap-4 mt-auto">
-                    {items.map((item, idx) => (
-                        <div key={idx} className="flex flex-col gap-1 p-4 bg-gray-50 border-2 border-transparent group-hover:border-black transition-colors duration-300">
-                           <span className="font-black uppercase text-xs tracking-widest text-black">{item.name}</span>
-                           <span className="text-[10px] text-gray-400 font-mono uppercase">{item.role}</span>
-                        </div>
-                    ))}
-                </div>
-
-                <div className="mt-12 flex items-center justify-between pt-6 border-t border-black/10">
-                    <span className="text-xs font-bold font-mono text-gray-400 tracking-widest">ACCESS_LEVEL: OMEGA</span>
-                    <div className="flex items-center gap-2 group/btn cursor-pointer">
-                        <span className="text-xs font-black uppercase tracking-widest text-black group-hover/btn:mr-2 transition-all">Explore Docs</span>
-                        <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                    </div>
+                {/* Badge */}
+                <div className="absolute top-4 left-4 bg-black text-white px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-widest">
+                    Course_Available
                 </div>
             </div>
-            
-            {/* Decorative Glitch Line */}
-            <div className="absolute bottom-0 left-0 w-full h-1 bg-black transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-left" />
+
+            {/* Content */}
+            <div className="p-6 flex flex-col flex-grow">
+                <div className="flex items-center justify-between mb-3">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Education_Protocol</span>
+                    <div className="flex items-center gap-1 text-yellow-500 font-bold text-xs">
+                        <Star size={12} fill="currentColor" /> {rating}
+                    </div>
+                </div>
+
+                <h3 className="text-2xl font-black uppercase tracking-tighter mb-4 leading-tight group-hover:text-red-600 transition-colors">
+                    {title}
+                </h3>
+
+                <div className="space-y-4 mb-8">
+                    <div className="flex items-center justify-between font-mono text-xs text-gray-500 border-b border-gray-100 pb-2">
+                        <div className="flex items-center gap-2"><BookOpen size={14}/> Lessons:</div>
+                        <span className="font-bold text-black">{lessons}</span>
+                    </div>
+                    <div className="flex items-center justify-between font-mono text-xs text-gray-500 border-b border-gray-100 pb-2">
+                        <div className="flex items-center gap-2"><Clock size={14}/> Duration:</div>
+                        <span className="font-bold text-black">{duration}</span>
+                    </div>
+                </div>
+
+                <button className="mt-auto w-full py-3 bg-black text-white font-bold uppercase text-xs tracking-[0.2em] border-2 border-black hover:bg-white hover:text-black transition-all flex items-center justify-center gap-2">
+                    Start Learning <ArrowRight size={14} />
+                </button>
+            </div>
         </div>
     );
 
     return (
-        <div ref={containerRef} className="min-h-screen bg-white pt-24 pb-20 overflow-hidden">
-            {/* Background Grid */}
-            <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:6rem_6rem]"></div>
+        <div ref={containerRef} className="min-h-screen bg-white flex items-center justify-center p-6 pt-24 pb-12">
+            {/* Minimalist Grid Background */}
+            <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,#f5f5f5_1px,transparent_1px),linear-gradient(to_bottom,#f5f5f5_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
 
-            <div className="container mx-auto px-6 max-w-7xl">
-                
-                {/* Header */}
-                <div className="mb-24 flex flex-col items-center text-center">
-                    <div className="study-header-item inline-flex items-center gap-2 border-2 border-black px-4 py-1.5 mb-8 bg-black text-white font-mono text-xs uppercase tracking-[0.3em] font-bold">
-                        <Terminal size={14} /> Repository_v2.0
-                    </div>
-                    <h1 className="study-header-item text-7xl md:text-9xl font-black tracking-tighter mb-8 uppercase leading-[0.8] text-black">
-                        STUDY STUFF.
-                    </h1>
-                    <p className="study-header-item text-xl text-gray-500 max-w-2xl font-mono">
-                        // SELECT DOMAIN FOR TACTICAL DEPLOYMENT INTEL. <br/>
-                        Master the protocols that power the Curiosity Network.
-                    </p>
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 relative">
-                    {/* Center Connector Text */}
-                    <div className="hidden lg:flex absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 items-center justify-center pointer-events-none">
-                        <div className="bg-black text-white px-6 py-2 rounded-full font-black uppercase text-xs tracking-[0.5em] rotate-90 whitespace-nowrap">
-                            SYSTEM_CORE
-                        </div>
-                    </div>
-
-                    <ResourceBox 
-                        refProp={box1Ref}
-                        title="Frontend"
-                        icon={Layout}
-                        color="bg-cyan-500"
-                        description="Crafting high-fidelity, interactive experiences that bridge the gap between human and machine."
-                        items={[
-                            { name: "React 19", role: "UI Skeleton" },
-                            { name: "GSAP 3", role: "Physics & Motion" },
-                            { name: "Three.js", role: "3D Rendering" },
-                            { name: "Tailwind", role: "System Styling" }
-                        ]}
+            <div className="container mx-auto max-w-5xl">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    
+                    <CourseCard 
+                        title="Advanced Frontend Engineering"
+                        instructor="Naseer Pasha"
+                        lessons="18 Chapters"
+                        duration="12.5 Hours"
+                        rating="4.9"
+                        thumbnailGradient="bg-gradient-to-br from-cyan-400 to-blue-600"
                     />
 
-                    <ResourceBox 
-                        refProp={box2Ref}
-                        title="Backend"
-                        icon={Server}
-                        color="bg-red-500"
-                        description="Architecting resilient, scalable infrastructure for seamless data flow and global synchronization."
-                        items={[
-                            { name: "Node.js", role: "Engine Core" },
-                            { name: "MongoDB", role: "Data Vault" },
-                            { name: "Express", role: "API Bridge" },
-                            { name: "Socket.IO", role: "Real-time Sync" }
-                        ]}
+                    <CourseCard 
+                        title="Backend Architecture & Scalability"
+                        instructor="Naseer Pasha"
+                        lessons="14 Chapters"
+                        duration="10.8 Hours"
+                        rating="4.8"
+                        thumbnailGradient="bg-gradient-to-br from-red-400 to-purple-600"
                     />
-                </div>
 
-                {/* Footer Uplink */}
-                <div className="study-header-item mt-32 flex flex-col items-center">
-                    <div className="w-1 h-20 bg-black mb-8" />
-                    <Link to="/">
-                        <button className="group relative px-12 py-5 bg-black text-white font-bold uppercase tracking-[0.3em] text-sm overflow-hidden border-2 border-black hover:bg-white hover:text-black transition-colors duration-500">
-                            <span className="relative z-10 flex items-center gap-4">
-                                Return to Command <ArrowRight className="group-hover:translate-x-2 transition-transform" />
-                            </span>
-                        </button>
-                    </Link>
                 </div>
-
             </div>
         </div>
     );
