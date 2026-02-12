@@ -55,6 +55,7 @@ const SuperAdminDashboard = () => {
         name: '', description: '', achievement: '', status: 'upcoming'
     });
     const [courseForm, setCourseForm] = useState({ title: '', youtubeLink: '', domain: 'Frontend', instructor: 'Team Curiosity', duration: '', youtubeId: '', thumbnailUrl: '' });
+    const [editingCourseId, setEditingCourseId] = useState(null);
 
     // --- QUERIES ---
     const { data: users = [], isLoading: usersLoading, error: usersError } = useQuery({
@@ -147,14 +148,24 @@ const SuperAdminDashboard = () => {
         onError: () => alert('Protocol Error: Deletion Failed')
     });
 
-    const { mutate: createCourse } = useMutation({
-        mutationFn: (data) => api.post('/courses', data),
+    const courseMutation = useMutation({
+        mutationFn: (variables) => {
+            if (variables.editingId) {
+                return api.put(`/courses/${variables.editingId}`, variables.payload);
+            } else {
+                return api.post('/courses', variables.payload);
+            }
+        },
         onSuccess: () => {
             queryClient.invalidateQueries(['courses']);
             setCourseForm({ title: '', youtubeLink: '', domain: 'Frontend', instructor: 'Team Curiosity', duration: '', youtubeId: '', thumbnailUrl: '' });
+            setEditingCourseId(null);
         },
-        onError: (err) => alert(`Deployment Failed: ${err.response?.data?.message || err.message}`)
+        onError: (err) => alert(`Operation Failed: ${err.response?.data?.message || err.message}`)
     });
+
+    const createCourse = (data) => courseMutation.mutate({ payload: data });
+    const updateCourse = (id, data) => courseMutation.mutate({ editingId: id, payload: data });
 
     const { mutate: deleteCourse } = useMutation({
         mutationFn: (id) => api.delete(`/courses/${id}`),
@@ -295,7 +306,25 @@ const SuperAdminDashboard = () => {
 
     const handleCourseSubmit = (e) => {
         e.preventDefault();
-        createCourse(courseForm);
+        if (editingCourseId) {
+            updateCourse(editingCourseId, courseForm);
+        } else {
+            createCourse(courseForm);
+        }
+    };
+
+    const handleEditCourse = (course) => {
+        setEditingCourseId(course._id);
+        setCourseForm({
+            title: course.title,
+            youtubeLink: course.youtubeLink,
+            domain: course.domain,
+            instructor: course.instructor || 'Team Curiosity',
+            duration: course.duration || '',
+            youtubeId: course.youtubeId,
+            thumbnailUrl: course.thumbnailUrl
+        });
+        setActiveTab('courses'); // Ensure we are on the right tab
     };
 
     return (
@@ -713,9 +742,14 @@ const SuperAdminDashboard = () => {
                                             <div className="flex-grow">
                                                 <div className="flex justify-between items-start">
                                                     <Badge color={course.domain === 'Frontend' ? 'blue' : 'red'}>{course.domain}</Badge>
-                                                    <button onClick={() => deleteCourse(course._id)} className="text-gray-300 hover:text-red-600 transition-colors">
-                                                        <Trash2 size={14}/>
-                                                    </button>
+                                                    <div className="flex gap-2">
+                                                        <button onClick={() => handleEditCourse(course)} className="text-gray-300 hover:text-blue-600 transition-colors">
+                                                            <Code size={14}/>
+                                                        </button>
+                                                        <button onClick={() => deleteCourse(course._id)} className="text-gray-300 hover:text-red-600 transition-colors">
+                                                            <Trash2 size={14}/>
+                                                        </button>
+                                                    </div>
                                                 </div>
                                                 <h4 className="font-bold text-sm mt-1 line-clamp-1">{course.title}</h4>
                                                 <div className="flex items-center gap-2 mt-1">
@@ -794,13 +828,27 @@ const SuperAdminDashboard = () => {
                                         </div>
                                     </div>
 
-                                    <button 
-                                        type="submit"
-                                        disabled={!courseForm.youtubeId}
-                                        className="w-full bg-black hover:bg-red-600 disabled:bg-gray-200 disabled:cursor-not-allowed text-white font-bold py-3 rounded text-xs uppercase tracking-[0.2em] transition-all shadow-lg hover:shadow-red-200"
-                                    >
-                                        Deploy to Hub
-                                    </button>
+                                    <div className="flex gap-2">
+                                        {editingCourseId && (
+                                            <button 
+                                                type="button"
+                                                onClick={() => {
+                                                    setEditingCourseId(null);
+                                                    setCourseForm({ title: '', youtubeLink: '', domain: 'Frontend', instructor: 'Team Curiosity', duration: '', youtubeId: '', thumbnailUrl: '' });
+                                                }}
+                                                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3 rounded text-xs uppercase tracking-[0.2em] transition-all"
+                                            >
+                                                Cancel
+                                            </button>
+                                        )}
+                                        <button 
+                                            type="submit"
+                                            disabled={!courseForm.youtubeId}
+                                            className="grow-[2] bg-black hover:bg-red-600 disabled:bg-gray-200 disabled:cursor-not-allowed text-white font-bold py-3 rounded text-xs uppercase tracking-[0.2em] transition-all shadow-lg hover:shadow-red-200"
+                                        >
+                                            {editingCourseId ? 'Update Course' : 'Deploy to Hub'}
+                                        </button>
+                                    </div>
                                 </form>
                             </LightCard>
                         </div>

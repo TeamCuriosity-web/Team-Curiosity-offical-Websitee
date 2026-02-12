@@ -49,6 +49,34 @@ router.post('/', protect, admin, async (req, res) => {
   }
 });
 
+// @desc    Update a course
+// @route   PUT /api/courses/:id
+// @access  Private/Admin
+router.put('/:id', protect, admin, async (req, res) => {
+  try {
+    const { title, youtubeLink, youtubeId, thumbnailUrl, domain, instructor, duration, rating } = req.body;
+    const course = await Course.findById(req.params.id);
+
+    if (course) {
+      course.title = title || course.title;
+      course.youtubeLink = youtubeLink || course.youtubeLink;
+      course.youtubeId = youtubeId || course.youtubeId;
+      course.thumbnailUrl = thumbnailUrl || course.thumbnailUrl;
+      course.domain = domain || course.domain;
+      course.instructor = instructor || course.instructor;
+      course.duration = duration || course.duration;
+      course.rating = rating || course.rating;
+
+      const updatedCourse = await course.save();
+      res.json(updatedCourse);
+    } else {
+      res.status(404).json({ message: 'Course not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // @desc    Delete a course
 // @route   DELETE /api/courses/:id
 // @access  Private/Admin

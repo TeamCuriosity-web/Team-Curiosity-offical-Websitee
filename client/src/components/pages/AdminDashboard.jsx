@@ -22,6 +22,7 @@ const AdminDashboard = () => {
     const [courseForm, setCourseForm] = useState({ title: '', youtubeLink: '', domain: 'Frontend', instructor: 'Team Curiosity', duration: '', youtubeId: '', thumbnailUrl: '' });
     const [inviteLink, setInviteLink] = useState('');
     const [editingId, setEditingId] = useState(null);
+    const [editingCourseId, setEditingCourseId] = useState(null);
     const [currentUser, setCurrentUser] = useState(null);
 
     useEffect(() => {
@@ -183,10 +184,29 @@ const AdminDashboard = () => {
     const handleCourseSubmit = async (e) => {
         e.preventDefault();
         try {
-            const { data } = await api.post('/courses', courseForm);
-            setCourses([data, ...courses]);
+            if (editingCourseId) {
+                const { data } = await api.put(`/courses/${editingCourseId}`, courseForm);
+                setCourses(courses.map(c => c._id === editingCourseId ? data : c));
+                setEditingCourseId(null);
+            } else {
+                const { data } = await api.post('/courses', courseForm);
+                setCourses([data, ...courses]);
+            }
             setCourseForm({ title: '', youtubeLink: '', domain: 'Frontend', instructor: 'Team Curiosity', duration: '', youtubeId: '', thumbnailUrl: '' });
         } catch (err) { alert('Deployment failed'); }
+    };
+
+    const handleEditCourse = (course) => {
+        setEditingCourseId(course._id);
+        setCourseForm({
+            title: course.title,
+            youtubeLink: course.youtubeLink,
+            domain: course.domain,
+            instructor: course.instructor || 'Team Curiosity',
+            duration: course.duration || '',
+            youtubeId: course.youtubeId,
+            thumbnailUrl: course.thumbnailUrl
+        });
     };
 
     if (loading) return <div className="min-h-screen flex items-center justify-center font-mono text-xs">LOADING_MAINFRAME...</div>;
@@ -513,7 +533,10 @@ const AdminDashboard = () => {
                                             <a href={course.youtubeLink} target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-black"><ExternalLink size={10}/></a>
                                         </div>
                                     </div>
-                                    <button onClick={() => deleteItem('course', course._id)} className="text-gray-300 hover:text-red-500 transition-colors"><Trash2 size={16} /></button>
+                                    <div className="flex gap-2">
+                                        <button onClick={() => handleEditCourse(course)} className="text-gray-300 hover:text-blue-500 transition-colors"><Code size={16} /></button>
+                                        <button onClick={() => deleteItem('course', course._id)} className="text-gray-300 hover:text-red-500 transition-colors"><Trash2 size={16} /></button>
+                                    </div>
                                 </Card>
                             ))}
                             {courses.length === 0 && (
@@ -552,7 +575,24 @@ const AdminDashboard = () => {
                                              <input className="w-full border p-2 text-sm mt-1" placeholder="0:00:00" value={courseForm.duration} onChange={e => setCourseForm({...courseForm, duration: e.target.value})} />
                                         </div>
                                     </div>
-                                    <Button type="submit" variant="primary" className="w-full text-xs" disabled={!courseForm.youtubeId}>Deploy Protocol</Button>
+                                    <div className="flex gap-2">
+                                        {editingCourseId && (
+                                            <Button 
+                                                type="button" 
+                                                onClick={() => {
+                                                    setEditingCourseId(null);
+                                                    setCourseForm({ title: '', youtubeLink: '', domain: 'Frontend', instructor: 'Team Curiosity', duration: '', youtubeId: '', thumbnailUrl: '' });
+                                                }} 
+                                                variant="secondary" 
+                                                className="flex-1 text-xs"
+                                            >
+                                                Cancel
+                                            </Button>
+                                        )}
+                                        <Button type="submit" variant="primary" className="flex-1 text-xs" disabled={!courseForm.youtubeId}>
+                                            {editingCourseId ? 'Update Protocol' : 'Deploy Protocol'}
+                                        </Button>
+                                    </div>
                                 </form>
                             </Card>
                         </div>
