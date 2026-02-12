@@ -47,7 +47,8 @@ router.post('/', protect, admin, async (req, res) => {
       });
     }
 
-    const repoName = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    // Allow upper/lowercase, numbers, and hyphens. Replace spaces with hyphens.
+    const repoName = title.trim().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
     
     let githubData;
     let githubResponse = await fetch(`https://api.github.com/orgs/${GITHUB_ORG}/repos`, {
@@ -65,7 +66,7 @@ router.post('/', protect, admin, async (req, res) => {
         has_issues: true,
         has_projects: true,
         has_wiki: true,
-        auto_init: true // Required for GitHub Pages source branch
+        auto_init: true // Creates 'main' or 'master' depending on org settings
       })
     });
 
@@ -86,7 +87,8 @@ router.post('/', protect, admin, async (req, res) => {
                 private: false,
                 has_issues: true,
                 has_projects: true,
-                has_wiki: true
+                has_wiki: true,
+                auto_init: true
             })
         });
     }
@@ -94,10 +96,12 @@ router.post('/', protect, admin, async (req, res) => {
     githubData = await githubResponse.json();
 
     if (!githubResponse.ok) {
-        const errorData = await githubData; // already parsed
-        
-        // 🚨 Name Collision Handling (422)
-        if (githubResponse.status === 422) {
+        // ... (existing error handling for name collision) ...
+        const errorData = await githubData; // already parsed in memory if we awaited it? 
+        // actually githubData IS the json object now.
+
+         // 🚨 Name Collision Handling (422)
+         if (githubResponse.status === 422) {
              console.warn(`Repo ${repoName} exists. Attempting with unique suffix...`);
              const uniqueRepoName = `${repoName}-${Math.floor(Math.random() * 1000)}`;
              
@@ -117,7 +121,7 @@ router.post('/', protect, admin, async (req, res) => {
                     has_issues: true,
                     has_projects: true,
                     has_wiki: true,
-                    auto_init: true // Ensure 'main' branch exists for Pages
+                    auto_init: true 
                  })
              });
 
@@ -161,8 +165,9 @@ router.post('/', protect, admin, async (req, res) => {
     try {
         const repoOwner = githubData.owner.login;
         const finalRepoName = githubData.name;
+        const defaultBranch = githubData.default_branch || 'main'; // Use actual default branch
 
-        // Enable GitHub Pages (Source: main branch, root folder)
+        // Enable GitHub Pages (Source: default branch, root folder)
         const pagesResponse = await fetch(`https://api.github.com/repos/${repoOwner}/${finalRepoName}/pages`, {
             method: 'POST',
             headers: {
@@ -173,7 +178,7 @@ router.post('/', protect, admin, async (req, res) => {
             },
             body: JSON.stringify({
                 source: {
-                    branch: "main",
+                    branch: defaultBranch,
                     path: "/"
                 }
             })
