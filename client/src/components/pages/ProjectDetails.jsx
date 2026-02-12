@@ -12,7 +12,10 @@ const ProjectDetails = () => {
     
     const user = JSON.parse(localStorage.getItem('user'));
     // Safe check if teamMembers exists and is array, and if user is in it
-    const isMember = project?.teamMembers?.includes(user?._id);
+    // Safe check: teamMembers is array of objects (populated) or strings (if not populated)
+    const isMember = project?.teamMembers?.some(member => 
+        (typeof member === 'string' ? member : member._id) === user?._id
+    );
 
     const [contributors, setContributors] = useState([]);
 
