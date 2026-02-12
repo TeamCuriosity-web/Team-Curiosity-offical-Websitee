@@ -139,6 +139,11 @@ router.post('/invite', protect, admin, async (req, res) => {
             token,
             expiresAt: expires
         });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 // @desc    Get System Status (GitHub Token Connectivity)
 // @route   GET /api/admin/system-status
 // @access  Private/Admin
