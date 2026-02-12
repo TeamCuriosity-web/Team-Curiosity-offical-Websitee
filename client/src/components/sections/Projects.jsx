@@ -141,7 +141,7 @@ const Projects = () => {
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     if (project.repoLink) {
-                                        window.location.href = `vscode://vscode.git/clone?url=${project.repoLink}`;
+                                        window.location.href = `vscode://vscode.git/clone?url=${encodeURIComponent(project.repoLink)}`;
                                     } else {
                                         alert("Repository link not available.");
                                     }
