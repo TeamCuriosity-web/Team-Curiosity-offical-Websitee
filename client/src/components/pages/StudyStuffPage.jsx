@@ -52,112 +52,103 @@ const StudyStuffPage = () => {
     const DomainCard = ({ title, lessons, thumbnailGradient, onClick }) => (
         <div 
             onClick={onClick}
-            className="group relative h-[450px] cursor-pointer overflow-hidden rounded-3xl border border-white/10 bg-black/40 backdrop-blur-3xl transition-all duration-700 hover:-translate-y-4 hover:shadow-[0_45px_100px_rgba(0,0,0,0.5)]"
+            className="group relative h-[450px] cursor-pointer overflow-hidden rounded-[2.5rem] border-2 border-black/5 bg-white transition-all duration-700 hover:-translate-y-4 hover:shadow-[0_45px_100px_-20px_rgba(0,0,0,0.1)]"
         >
-            {/* Animated Mesh Gradient Background */}
-            <div className={`absolute inset-0 opacity-40 transition-opacity duration-700 group-hover:opacity-60 ${thumbnailGradient}`}>
-                <div className="absolute inset-0 bg-[#000]/20 mix-blend-overlay"></div>
-                <div className="absolute -inset-[100%] animate-[spin_20s_linear_infinite] bg-[radial-gradient(circle,rgba(255,255,255,0.1)_0%,transparent_70%)] opacity-30"></div>
+            {/* Mesh Gradient Header */}
+            <div className={`absolute top-0 inset-x-0 h-2/3 ${thumbnailGradient} opacity-80 transition-opacity duration-700 group-hover:opacity-100 overflow-hidden`}>
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.2),transparent_70%)]"></div>
+                <div className="absolute top-8 left-8 bg-black text-white px-4 py-1.5 font-mono text-[10px] font-black uppercase tracking-[0.2em] rounded-full border border-white/20">
+                    Control_Protocol
+                </div>
             </div>
 
             {/* Content Container */}
-            <div className="relative z-10 flex h-full flex-col justify-end p-10 pb-12">
-                <div className="mb-6 flex w-fit items-center gap-2 rounded-full border border-white/20 bg-white/5 py-1.5 px-4 backdrop-blur-md">
-                    <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-red-500"></div>
-                    <span className="font-mono text-[10px] font-black uppercase tracking-[0.2em] text-white/70">
-                        System_Protocol
-                    </span>
-                </div>
-                
-                <h3 className="mb-4 text-5xl font-black italic uppercase leading-[0.9] tracking-tighter text-white transition-transform duration-500 group-hover:scale-105">
+            <div className="absolute bottom-0 inset-x-0 bg-white p-10 pt-12 rounded-t-[2.5rem] border-t-2 border-black/5 transition-transform duration-700 group-hover:translate-y-[-10px]">
+                <h3 className="mb-6 text-5xl font-black uppercase leading-none tracking-tighter text-gray-900 transition-colors group-hover:text-red-600">
                     {title}
                 </h3>
                 
-                <div className="flex items-center justify-between border-t border-white/10 pt-6">
-                    <div className="flex items-center gap-4">
+                <div className="flex items-center justify-between border-t border-black/5 pt-8">
+                    <div className="flex items-center gap-6">
                         <div className="flex flex-col">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Status</span>
-                            <span className="font-mono text-xs text-red-500">DECRYPTED</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Database</span>
+                            <span className="font-mono text-xs font-bold text-gray-900">{lessons} ARCHIVES</span>
                         </div>
-                        <div className="flex flex-col border-l border-white/10 pl-4">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Archives</span>
-                            <span className="font-mono text-xs text-white">{lessons} UNITS</span>
+                        <div className="flex flex-col border-l border-black/10 pl-6">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Security</span>
+                            <span className="font-mono text-xs font-bold text-red-600">ENCRYPTED</span>
                         </div>
                     </div>
-                    <div className="rounded-full border border-white/20 bg-white/10 p-4 text-white transition-all duration-500 group-hover:bg-red-600 group-hover:shadow-[0_0_20px_rgba(220,38,38,0.5)]">
-                        <ArrowRight size={20} />
+                    <div className="rounded-full bg-black p-5 text-white transition-all duration-500 group-hover:bg-red-600 group-hover:rotate-12 group-hover:shadow-[0_10px_30px_rgba(220,38,38,0.4)]">
+                        <ArrowRight size={24} />
                     </div>
                 </div>
             </div>
-
-            {/* Glass Overlays */}
-            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black to-transparent opacity-80"></div>
-            <div className="absolute inset-0 border border-white/20 rounded-3xl pointer-events-none group-hover:border-red-500/50 transition-colors duration-500"></div>
         </div>
     );
 
     const CourseVideoCard = ({ title, instructor, duration, rating, thumbnailUrl, onClick }) => (
         <div 
             onClick={onClick} 
-            className="group relative flex flex-col md:flex-row items-center gap-8 cursor-pointer p-4 md:p-6 rounded-[2rem] md:rounded-[100px] border border-white/10 bg-black/40 backdrop-blur-3xl transition-all duration-700 hover:bg-black/60 hover:shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] hover:-translate-y-2 overflow-hidden mx-auto w-full"
+            className="group relative cursor-pointer overflow-hidden rounded-3xl border-2 border-black/5 bg-white transition-all duration-500 hover:shadow-[0_45px_100px_-20px_rgba(0,0,0,0.15)] hover:-translate-y-3"
         >
-            {/* Fluid Background Animation */}
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-1000 bg-[radial-gradient(circle_at_50%_50%,#ff4d4d,transparent_70%)]"></div>
-
-            {/* Circular Thumbnail Container */}
-            <div className="relative flex-shrink-0 w-32 h-32 md:w-36 md:h-36 rounded-full overflow-hidden border-4 border-white/10 shadow-2xl transition-transform duration-700 group-hover:scale-110 group-hover:rotate-6">
+            <div className="relative aspect-video overflow-hidden">
                 <img 
-                    src={thumbnailUrl || '/api/placeholder/400/400'} 
+                    src={thumbnailUrl || '/api/placeholder/800/450'} 
                     alt={title} 
-                    className="h-full w-full object-cover grayscale-[0.2] group-hover:grayscale-0"
+                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale-[0.4] group-hover:grayscale-0"
                 />
-                <div className="absolute inset-0 bg-gradient-to-tr from-black/40 to-transparent"></div>
                 
-                {/* Play Icon Reveal */}
-                <div className="absolute inset-0 flex items-center justify-center bg-red-600/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                    <Play fill="white" size={24} className="text-white translate-x-0.5" />
+                {/* Cinematic Overlays */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                
+                <div className="absolute top-4 left-4 flex gap-2">
+                    <div className="rounded-full bg-red-600 px-3 py-1 text-[9px] font-black uppercase tracking-widest text-white shadow-lg">
+                        Premium_Spec
+                    </div>
+                </div>
+
+                <div className="absolute top-4 right-4 flex h-8 items-center gap-1.5 rounded-xl bg-black/60 px-3 backdrop-blur-md">
+                    <Star size={12} fill="#facc15" className="text-yellow-400" />
+                    <span className="text-xs font-bold text-white">{rating}</span>
+                </div>
+
+                <div className="absolute bottom-4 right-4 rounded-xl bg-white/20 px-3 py-1.5 font-mono text-xs font-bold text-white backdrop-blur-md">
+                    {duration}
+                </div>
+
+                {/* Play Interaction */}
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white text-black shadow-2xl transition-transform duration-300 group-hover:scale-110">
+                        <Play fill="black" size={24} className="translate-x-0.5" />
+                    </div>
                 </div>
             </div>
 
-            {/* Content Section */}
-            <div className="flex-grow text-center md:text-left">
-                <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mb-3">
-                    <div className="flex items-center gap-1.5 rounded-full bg-red-600/20 px-3 py-1 border border-red-500/20">
-                        <div className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse"></div>
-                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-red-500">Active_Res</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-white/40 font-mono text-[10px] uppercase tracking-widest">
-                        <Clock size={12} /> {duration}
-                    </div>
-                    <div className="flex items-center gap-1.5 text-yellow-500/80 font-mono text-[10px] uppercase tracking-widest bg-yellow-500/5 px-2 py-0.5 rounded-lg border border-yellow-500/10">
-                        <Star size={10} fill="currentColor" /> {rating}
-                    </div>
+            <div className="p-10">
+                <div className="flex items-center gap-3 mb-4">
+                    <div className="h-6 w-1 bg-red-600"></div>
+                    <span className="text-[11px] font-black uppercase tracking-[0.3em] text-gray-400">Hub_Resource</span>
                 </div>
-
-                <h4 className="text-2xl md:text-3xl font-black italic uppercase leading-none tracking-tighter text-white mb-4 group-hover:text-red-500 transition-colors">
+                
+                <h4 className="mb-8 text-3xl font-black uppercase tracking-tighter text-gray-900 group-hover:text-red-600 transition-colors leading-[1.05]">
                     {title}
                 </h4>
-
-                <div className="flex items-center justify-center md:justify-start gap-3">
-                    <div className="flex -space-x-2">
-                        <div className="h-6 w-6 rounded-full border border-white/20 bg-black flex items-center justify-center text-[7px] font-black text-white">TC</div>
+                
+                <div className="flex items-center justify-between border-t border-black/5 pt-8">
+                    <div className="flex items-center gap-4">
+                        <div className="h-10 w-10 rounded-full bg-black flex items-center justify-center text-[10px] text-white font-bold">TC</div>
+                        <div className="flex flex-col">
+                            <span className="text-[9px] font-black uppercase tracking-widest text-gray-400">Instructor</span>
+                            <span className="text-xs font-bold text-gray-700">{instructor || "Team Curiosity"}</span>
+                        </div>
                     </div>
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">
-                        Source: <span className="text-white/60">{instructor || "Team Curiosity"}</span>
-                    </span>
+                    
+                    <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-red-600 opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-2">
+                        Execute_Watch <ArrowRight size={16} />
+                    </div>
                 </div>
             </div>
-
-            {/* Final Action Button (Pill Styled) */}
-            <div className="hidden lg:flex flex-shrink-0 mr-4">
-                <div className="h-14 w-40 flex items-center justify-center rounded-full border-2 border-white/5 bg-white/5 text-white font-black uppercase text-[10px] tracking-[0.3em] overflow-hidden relative group/btn transition-all duration-500 hover:border-red-600 hover:bg-red-600 hover:shadow-[0_0_30px_rgba(220,38,38,0.4)]">
-                    <span className="relative z-10">Access_Hub</span>
-                    <div className="absolute inset-0 -translate-x-full group-hover/btn:translate-x-0 bg-gradient-to-r from-red-600 to-red-400 transition-transform duration-500"></div>
-                </div>
-            </div>
-
-            {/* Sweep Light Effect */}
-            <div className="absolute inset-x-[-100%] top-0 h-full w-[200%] rotate-12 bg-gradient-to-r from-transparent via-white/5 to-transparent transition-all duration-1000 group-hover:translate-x-[50%] pointer-events-none"></div>
         </div>
     );
 
@@ -262,7 +253,7 @@ const StudyStuffPage = () => {
                                         <p className="font-mono text-[10px] tracking-widest uppercase">Fetching_Repository...</p>
                                     </div>
                                 ) : courses.length > 0 ? (
-                                    <div className="grid grid-cols-1 gap-10">
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                                         {courses.map((course, i) => (
                                             <CourseVideoCard 
                                                 key={course._id || i} 
