@@ -21,11 +21,25 @@ const ProjectDetails = () => {
     const [isForkModalOpen, setIsForkModalOpen] = useState(false);
     const [contributors, setContributors] = useState([]);
 
-    const [isForkModalOpen, setIsForkModalOpen] = useState(false);
+
 
     useEffect(() => {
         const fetchProject = async () => {
-             // ... existing code ...
+            try {
+                const { data } = await api.get(`/projects/${id}`);
+                setProject(data);
+                
+                // Fetch GitHub Stats if repoLink exists
+                if (data.repoLink) {
+                    api.get(`/projects/${id}/github-stats`)
+                       .then(res => setContributors(res.data))
+                       .catch(err => console.error("Stats fetch failed", err));
+                }
+            } catch (err) {
+                console.error("Failed to load project details", err);
+            } finally {
+                setLoading(false);
+            }
         };
         fetchProject();
     }, [id]);
@@ -57,35 +71,7 @@ const ProjectDetails = () => {
 
             {/* ... rest of the component ... */}
             
-            {/* Sidebar content where button is located */}
-                        {/* Join / Open Project Button */}
-                        {user ? (
-                            isMember ? (
-                                <div className="space-y-3">
-                                    <div className="w-full bg-green-50 text-green-700 border border-green-200 p-4 rounded text-center font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-2">
-                                        <Shield size={16} /> Active Operative
-                                    </div>
-                                    <Button 
-                                        onClick={() => setIsForkModalOpen(true)}
-                                        variant="outline" 
-                                        className="w-full justify-center gap-2 py-4 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-all"
-                                    >
-                                        <Code2 size={16} /> FORK TO DEVICE (VS CODE)
-                                    </Button>
-                                    <p className="text-[10px] text-center text-gray-400 font-mono">Clones repository to your local workspace</p>
-                                </div>
-                            ) : (
-                                <Button onClick={handleJoinProject} variant="outline" className="w-full justify-center gap-2 py-4 border-black hover:bg-black hover:text-white transition-all">
-                                    <UserPlus size={16} /> REQUEST ASSIGNMENT (JOIN)
-                                </Button>
-                            )
-                        ) : (
-                            <Link to="/login" className="w-full">
-                                <Button variant="outline" className="w-full justify-center gap-2 py-4 opacity-50 hover:opacity-100">
-                                    <Lock size={16} /> LOGIN TO JOIN OPERATION
-                                </Button>
-                            </Link>
-                        )}
+
 
             {/* Header */}
             <header className="mb-12 border-b border-black pb-8">
