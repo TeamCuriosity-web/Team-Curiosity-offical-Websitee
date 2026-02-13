@@ -176,7 +176,7 @@ const JoinPage = () => {
                         type="email"
                         required
                         className={`w-full bg-gray-50 border ${validationErrors.email ? 'border-red-500' : 'border-gray-200'} rounded p-3 text-sm focus:border-black focus:ring-0 outline-none transition-all font-mono`}
-                        placeholder="user@example.com"
+                        placeholder="Naseer@gmail.com"
                         value={formData.email}
                         onChange={(e) => setFormData({...formData, email: e.target.value})}
                         />

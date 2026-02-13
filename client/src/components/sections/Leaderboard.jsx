@@ -11,9 +11,11 @@ const Leaderboard = () => {
             try {
                 const { data: teamMembers } = await api.get('/team');
                 
-                // Show ALL members, even without GitHub
+                // Show ALL members, filtered by role (No Admins)
                 // Sort: Commits (desc), then hasGitHub (yes first), then Name (asc)
-                const sorted = teamMembers.sort((a, b) => {
+                const filteredMembers = teamMembers.filter(m => m.role !== 'admin' && m.role !== 'superadmin');
+                
+                const sorted = filteredMembers.sort((a, b) => {
                     const commitDiff = (b.commitCount || 0) - (a.commitCount || 0);
                     if (commitDiff !== 0) return commitDiff;
                     

@@ -63,7 +63,7 @@ const LoginPage = () => {
               type="email"
               required
               className="w-full bg-white border-2 border-gray-200 rounded-none px-4 py-3 text-black font-mono text-sm focus:outline-none focus:border-black transition-colors"
-              placeholder="operative@legendary.com"
+              placeholder="Naseer@gmail.com"
               value={formData.email}
               onChange={(e) => setFormData({...formData, email: e.target.value})}
             />

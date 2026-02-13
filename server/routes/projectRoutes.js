@@ -67,7 +67,7 @@ router.get('/:id/github-stats', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     console.log(`Fetching project with ID: ${req.params.id}`);
-    const project = await Project.findById(req.params.id).populate('teamMembers', 'name profileImage email');
+    const project = await Project.findById(req.params.id).populate('teamMembers', 'name profileImage email role');
     console.log(`Found project: ${project ? 'YES' : 'NO'}`);
     if (!project) return res.status(404).json({ message: 'Project not found' });
     res.json(project);

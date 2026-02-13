@@ -131,9 +131,9 @@ const ProjectDetails = () => {
                             <UserPlus size={20} /> Active Operatives
                         </h2>
                         {project.teamMembers && project.teamMembers.length > 0 ? (
-                            <div className="flex flex-wrap gap-6">
-                                {project.teamMembers.map(member => (
-                                    <div key={member._id} className="flex items-center gap-3 bg-gray-50 border border-gray-200 p-3 rounded-lg min-w-[200px]">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {project.teamMembers?.filter(m => m.role !== 'admin' && m.role !== 'superadmin').map(member => (
+                                <div key={member._id} className="flex items-center gap-3 p-3 bg-gray-50 border border-gray-100 rounded-lg min-w-[200px]">
                                         <img 
                                             src={member.profileImage || `https://api.dicebear.com/7.x/notionists/svg?seed=${member.name}`} 
                                             alt={member.name} 

@@ -174,9 +174,12 @@ const AppContent = () => {
   );
 };
 
+import UserGuide from './components/ui/UserGuide';
+
 function App() {
   return (
     <Router basename="/Team-Curiosity-offical-Websitee">
+      <UserGuide />
       <AppContent />
     </Router>
   );
