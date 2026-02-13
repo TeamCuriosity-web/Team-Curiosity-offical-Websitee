@@ -5,8 +5,8 @@ import api from '../../services/api';
 
 const StudyStuffPage = () => {
     const containerRef = useRef(null);
-    const [selectedDomain, setSelectedDomain] = useState(null); // 'Frontend' | 'Backend' | null
-    const [activeTab, setActiveTab] = useState('Courses'); // 'Courses' | 'Notes'
+    const [selectedDomain, setSelectedDomain] = useState(null); 
+    const [activeTab, setActiveTab] = useState('Courses'); 
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(false);
 
@@ -54,7 +54,7 @@ const StudyStuffPage = () => {
             onClick={onClick}
             className="group relative h-[450px] cursor-pointer overflow-hidden rounded-[2.5rem] border-2 border-black/5 bg-white transition-all duration-700 hover:-translate-y-4 hover:shadow-[0_45px_100px_-20px_rgba(0,0,0,0.1)]"
         >
-            {/* Mesh Gradient Header */}
+            {}
             <div className={`absolute top-0 inset-x-0 h-2/3 ${thumbnailGradient} opacity-80 transition-opacity duration-700 group-hover:opacity-100 overflow-hidden`}>
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.2),transparent_70%)]"></div>
                 <div className="absolute top-8 left-8 bg-black text-white px-4 py-1.5 font-mono text-[10px] font-black uppercase tracking-[0.2em] rounded-full border border-white/20">
@@ -62,7 +62,7 @@ const StudyStuffPage = () => {
                 </div>
             </div>
 
-            {/* Content Container */}
+            {}
             <div className="absolute bottom-0 inset-x-0 bg-white p-10 pt-12 rounded-t-[2.5rem] border-t-2 border-black/5 transition-transform duration-700 group-hover:translate-y-[-10px]">
                 <h3 className="mb-6 text-5xl font-black uppercase leading-none tracking-tighter text-gray-900 transition-colors group-hover:text-red-600">
                     {title}
@@ -100,7 +100,7 @@ const StudyStuffPage = () => {
                     className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale-[0.2] group-hover:grayscale-0"
                 />
                 
-                {/* Information Overlays */}
+                {}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 
                 <div className="absolute top-3 left-3 flex gap-2">
@@ -118,7 +118,7 @@ const StudyStuffPage = () => {
                     {duration}
                 </div>
 
-                {/* Play Button Overlay */}
+                {}
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                     <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-black shadow-xl transition-transform duration-300 group-hover:scale-110">
                         <Play fill="black" size={20} className="translate-x-0.5" />
@@ -186,11 +186,11 @@ const StudyStuffPage = () => {
 
             <div className="container mx-auto max-w-6xl">
                 {!selectedDomain ? (
-                    /* Step 1: Selection */
+                    
                     <div className="max-w-4xl mx-auto">
                         <div className="text-center mb-16">
                             <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter mb-4">Study Vault</h2>
-                            <p className="font-mono text-gray-500">// SELECT YOUR SPECIALIZATION</p>
+                            <p className="font-mono text-gray-500">
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                             <DomainCard 
@@ -208,9 +208,9 @@ const StudyStuffPage = () => {
                         </div>
                     </div>
                 ) : (
-                    /* Step 2: Hub with Sub-Nav */
+                    
                     <div className="space-y-8 animate-fade-in">
-                        {/* Header & Back */}
+                        {}
                         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                             <div>
                                 <button 
@@ -225,7 +225,7 @@ const StudyStuffPage = () => {
                             </div>
                         </div>
 
-                        {/* Sub-Nav Bar (The core request) */}
+                        {}
                         <div className="flex border-b-4 border-black overflow-x-auto">
                             {['Courses', 'Notes'].map((tab) => (
                                 <button
@@ -245,7 +245,7 @@ const StudyStuffPage = () => {
                             ))}
                         </div>
 
-                        {/* Content Area */}
+                        {}
                         <div className="pt-8 min-h-[400px]">
                             {activeTab === 'Courses' ? (
                                 loading ? (

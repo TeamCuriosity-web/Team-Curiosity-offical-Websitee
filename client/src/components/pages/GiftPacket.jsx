@@ -6,18 +6,18 @@ const GiftPacket = ({ onOpen }) => {
     const leftFlapRef = useRef(null);
     const rightFlapRef = useRef(null);
     
-    // Ribbon Refs
+    
     const vRibbonRef = useRef(null);
     const hRibbonLeftRef = useRef(null);
     const hRibbonRightRef = useRef(null);
     const bowRef = useRef(null);
     
-    // Function Ref
+    
     const onRibbonUntieRef = useRef(null);
 
     useEffect(() => {
         const ctx = gsap.context(() => {
-            // Initial Entrance: Assembly from particles
+            
             gsap.set(packetRef.current, { scale: 0, opacity: 0, rotate: -10 });
             gsap.to(packetRef.current, {
                 scale: 1,
@@ -27,11 +27,11 @@ const GiftPacket = ({ onOpen }) => {
                 ease: "elastic.out(1, 0.75)"
             });
 
-            // Ribbon Logic
+            
             const untie = () => {
                 const tl = gsap.timeline({
                     onComplete: () => {
-                        // Animate Flaps Opening (Existing logic)
+                        
                         const flapTl = gsap.timeline({ onComplete: () => { if(onOpen) onOpen(); } });
                         flapTl.to([leftFlapRef.current, rightFlapRef.current], {
                             x: (i) => i === 0 ? -150 : 150, 
@@ -48,8 +48,8 @@ const GiftPacket = ({ onOpen }) => {
                     }
                 });
 
-                // Untie Animation
-                // 1. Bow shake and scale down
+                
+                
                 tl.to(bowRef.current, {
                     rotation: 15,
                     duration: 0.1,
@@ -63,14 +63,14 @@ const GiftPacket = ({ onOpen }) => {
                     duration: 0.5,
                     ease: "back.in(1.7)"
                 })
-                // 2. Vertical Ribbon splits/fades
+                
                 .to(vRibbonRef.current, {
                     scaleY: 0,
                     opacity: 0,
                     duration: 0.5,
                     ease: "power2.in"
                 }, "-=0.3")
-                // 3. Horizontal Ribbon splits/fades
+                
                 .to([hRibbonLeftRef.current, hRibbonRightRef.current], {
                     scaleX: 0,
                     opacity: 0,
@@ -96,7 +96,7 @@ const GiftPacket = ({ onOpen }) => {
                 className="relative transition-transform"
                 style={{ width: '300px', height: '400px' }}
             >
-                {/* --- LEFT FLAP --- */}
+                {}
                 <div 
                     ref={leftFlapRef}
                     className="absolute inset-y-0 left-0 w-1/2 rounded-l-lg bg-white shadow-xl overflow-hidden origin-right"
@@ -108,11 +108,11 @@ const GiftPacket = ({ onOpen }) => {
                     }}
                 >
                      <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, black 1px, transparent 0)', backgroundSize: '20px 20px' }} />
-                     {/* Horizontal Ribbon Segment Left */}
+                     {}
                      <div ref={hRibbonLeftRef} className="absolute top-1/2 left-0 right-0 h-8 bg-red-600 shadow-sm origin-left" style={{ marginTop: '-16px' }} />
                 </div>
 
-                {/* --- RIGHT FLAP --- */}
+                {}
                 <div 
                     ref={rightFlapRef}
                     className="absolute inset-y-0 right-0 w-1/2 rounded-r-lg bg-white shadow-xl overflow-hidden origin-left"
@@ -124,25 +124,25 @@ const GiftPacket = ({ onOpen }) => {
                     }}
                 >
                      <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, black 1px, transparent 0)', backgroundSize: '20px 20px' }} />
-                     {/* Horizontal Ribbon Segment Right */}
+                     {}
                      <div ref={hRibbonRightRef} className="absolute top-1/2 left-0 right-0 h-8 bg-red-600 shadow-sm origin-right" style={{ marginTop: '-16px' }} />
                 </div>
                 
-                {/* --- VERTICAL RIBBON (Center) --- */}
+                {}
                 <div 
                     ref={vRibbonRef}
                     className="absolute top-0 bottom-0 left-1/2 w-8 bg-red-600 shadow-lg origin-center z-10" 
                     style={{ marginLeft: '-16px' }}
                 />
 
-                {/* --- BOW (Interactive) --- */}
+                {}
                 <div 
                     ref={bowRef}
                     onClick={() => onRibbonUntieRef.current && onRibbonUntieRef.current()}
                     className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 cursor-pointer hover:scale-110 transition-transform"
                 >
-                    {/* SVG Bow */}
-                    <svg width="120" height="120" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    {}
+                    <svg width="120" height="120" viewBox="0 0 100 100" fill="none" xmlns="http:
                         <path d="M50 50 C30 20 0 20 0 50 C0 80 30 80 50 50" fill="#EF4444" stroke="#B91C1C" strokeWidth="2"/>
                         <path d="M50 50 C70 20 100 20 100 50 C100 80 70 80 50 50" fill="#EF4444" stroke="#B91C1C" strokeWidth="2"/>
                         <circle cx="50" cy="50" r="10" fill="#B91C1C" />
@@ -155,7 +155,7 @@ const GiftPacket = ({ onOpen }) => {
                 </div>
             </div>
             
-            {/* Instruction */}
+            {}
             <div className="absolute bottom-20 text-center animate-pulse opacity-50 pointer-events-none">
                 <span className="text-black text-xs tracking-[0.2em] font-light">
                     TAP TO UNTIE RIBBON

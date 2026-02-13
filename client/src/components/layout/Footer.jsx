@@ -1,6 +1,6 @@
 import React from 'react';
 import { Github, Instagram, Shield } from 'lucide-react';
-import { Link } from 'react-router-dom'; // Assuming Link comes from react-router-dom
+import { Link } from 'react-router-dom'; 
 
 const Footer = () => {
   return (
@@ -12,7 +12,7 @@ const Footer = () => {
         </div>
         
         <div className="flex flex-wrap justify-center gap-8 text-sm text-slate-500">
-            <a href="https://github.com/TeamCuriosity-web" className="flex items-center gap-2 hover:text-black transition-colors">
+            <a href="https:
                 <Github size={18} />
                 <span>Github</span>
             </a>

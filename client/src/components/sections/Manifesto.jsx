@@ -11,19 +11,19 @@ const Manifesto = () => {
   const leftColRef = useRef(null);
   const rightColRef = useRef(null);
 
-  // Apply play/reverse animations
+  
   useScrollReveal(leftColRef, { mode: 'left', distance: 60 });
   useScrollReveal(rightColRef, { selector: '.mission-item', mode: 'up', distance: 40, stagger: 0.1 });
 
   return (
     <section ref={containerRef} className="py-32 bg-white text-black relative overflow-hidden">
-      {/* Background Decor */}
+      {}
       <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-black/5 to-transparent pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-black/10 to-transparent" />
 
       <div className="container mx-auto px-6 max-w-6xl relative z-10">
           <div className="flex flex-col lg:flex-row gap-16 items-start">
-               {/* Left: The Manifesto Title */}
+               {}
                <div ref={leftColRef} className="lg:w-5/12">
                     <div className="inline-flex items-center gap-2 border border-black/10 rounded-full px-3 py-1 mb-8 bg-black/5 backdrop-blur-sm">
                          <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
@@ -48,7 +48,7 @@ const Manifesto = () => {
                     </div>
                </div>
 
-               {/* Right: The Tenets */}
+               {}
                <div ref={rightColRef} className="lg:w-7/12 grid gap-6">
                     {[
                         {

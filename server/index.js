@@ -7,36 +7,36 @@ dotenv.config();
 
 const http = require('http');
 const { Server } = require('socket.io');
-const Message = require('./models/Message'); // Import Message model
+const Message = require('./models/Message'); 
 
 const app = express();
-const server = http.createServer(app); // Create HTTP server
-// Initialize Socket.io
+const server = http.createServer(app); 
+
 const io = new Server(server, {
   cors: {
-    origin: "*", // Allow all origins for now (adjust for production)
+    origin: "*", 
     methods: ["GET", "POST"]
   }
 });
 
 const PORT = process.env.PORT || 5000;
 
-// Middleware
+
 app.use(express.json());
 app.use(cors());
 
-// Routes
+
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/projects', require('./routes/projectRoutes'));
 app.use('/api/hackathons', require('./routes/hackathonRoutes'));
 app.use('/api/team', require('./routes/teamRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
-app.use('/api/chat', require('./routes/chatRoutes')); // Chat HTTP routes
+app.use('/api/chat', require('./routes/chatRoutes')); 
 app.use('/api/courses', require('./routes/courseRoutes'));
 app.use('/api/notes', require('./routes/noteRoutes'));
 
-// Socket.io Logic
+
 io.on('connection', (socket) => {
   console.log(`User Connected: ${socket.id}`);
 
@@ -46,21 +46,21 @@ io.on('connection', (socket) => {
   });
 
   socket.on('send_message', async (data) => {
-    // Save message to DB
+    
     try {
       if (data.sender && data.content) {
-         // data.sender should be the User ID
+         
          const newMessage = new Message({
-            sender: data.senderId, // Expect senderId from client
+            sender: data.senderId, 
             content: data.content,
             room: data.room || 'general',
             timestamp: new Date()
          });
          await newMessage.save();
          
-         // Populate sender info before emitting back if possible, 
-         // OR client sends full sender object for immediate display
-         // For simplicity, we emit what we got + timestamp
+         
+         
+         
          const messageToEmit = {
             ...data,
             _id: newMessage._id,
@@ -75,7 +75,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('typing', (data) => {
-    // Broadcast to room excluding sender
+    
     socket.to(data.room).emit('display_typing', data);
   });
 
@@ -88,24 +88,24 @@ io.on('connection', (socket) => {
   });
 });
 
-// Database Connection
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/legendary-team')
+
+mongoose.connect(process.env.MONGO_URI || 'mongodb:
 .then(async () => {
     console.log('MongoDB Connected [Elite Mode]');
-    // Seed Admins on Startup to ensure access
+    
     const seedAdmins = require('./create_admin');
     await seedAdmins();
 })
 .catch(err => console.error('MongoDB Error:', err));
 
-// Basic Route
+
 app.get('/', (req, res) => {
   res.send('Server is Running - Unauthorized Access Prohibited (System v2.0 - Chat Active)');
 });
 
-// Start Server
+
 if (require.main === module) {
-  server.listen(PORT, () => { // Use server.listen instead of app.listen
+  server.listen(PORT, () => { 
     console.log(`Server running on port ${PORT}`);
     console.log(`Socket.io Initialized`);
   });

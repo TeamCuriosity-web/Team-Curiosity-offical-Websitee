@@ -4,14 +4,14 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const InviteLink = require('../models/InviteLink');
 
-// Generate JWT
+
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
 };
 
-// @desc    Register a new user
-// @route   POST /api/auth/register
-// @access  Public
+
+
+
 router.post('/register', async (req, res) => {
   console.log("Register Request Body:", req.body);
   const { 
@@ -23,17 +23,17 @@ router.post('/register', async (req, res) => {
   try {
     const userCount = await User.countDocuments({});
     
-    // Logic:
-    // 1. First user is SuperAdmin/Admin -> Approved
-    // 2. Verified Invite Token -> Approved
-    // 3. No Token/Public -> Pending Approval (isApproved: false)
+    
+    
+    
+    
 
     let isApproved = false;
     let role = 'member';
 
     if (userCount === 0) {
         isApproved = true;
-        role = 'admin'; // First user is admin
+        role = 'admin'; 
     } else {
         if (inviteToken) {
             const invite = await InviteLink.findOne({ token: inviteToken, isValid: true });
@@ -46,14 +46,14 @@ router.post('/register', async (req, res) => {
                 return res.status(400).json({ message: 'Invite Token Expired' });
             }
 
-            // Valid Invite -> Approve
+            
             isApproved = true;
             
-            // Invalidate token
+            
             invite.isValid = false;
             await invite.save();
         } else {
-            // No token -> Public Registration -> Pending Approval
+            
             isApproved = false;
         }
     }
@@ -76,11 +76,11 @@ router.post('/register', async (req, res) => {
       github,
       linkedin,
       isApproved,
-      // Default profile image to avatar if selected, or dicebear fallback
-      profileImage: avatar || `https://api.dicebear.com/7.x/notionists/svg?seed=${name}` 
+      
+      profileImage: avatar || `https:
     });
 
-    // Mark invite as used if applicable
+    
     if (inviteToken) {
        await InviteLink.findOneAndUpdate({ token: inviteToken }, { usedBy: user._id });
     }
@@ -91,7 +91,7 @@ router.post('/register', async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
-        isApproved: user.isApproved, // Frontend needs this to decide redirect
+        isApproved: user.isApproved, 
         token: generateToken(user._id),
       });
     } else {
@@ -102,9 +102,9 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// @desc    Auth user & get token
-// @route   POST /api/auth/login
-// @access  Public
+
+
+
 router.post('/login', async (req, res) => {
   const { email, password, inviteToken } = req.body;
 
@@ -113,7 +113,7 @@ router.post('/login', async (req, res) => {
 
     if (user && (await user.comparePassword(password))) {
       
-      // Check for invite token to upgrade status
+      
       if (inviteToken && !user.isApproved) {
            const invite = await InviteLink.findOne({ token: inviteToken, isValid: true });
            if (invite) {
@@ -121,7 +121,7 @@ router.post('/login', async (req, res) => {
                     user.isApproved = true;
                     await user.save();
                     
-                    // Invalidate token
+                    
                     invite.isValid = false;
                     invite.usedBy = user._id;
                     await invite.save();
@@ -154,22 +154,22 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// @desc    Update user details
-// @route   PUT /api/auth/updatedetails
-// @access  Private
+
+
+
 router.put('/updatedetails', async (req, res) => {
-    // Basic middleware replacement since we don't have the middleware imported yet
-    // Real app should use auth middleware. For now assuming client sends ID in body or we parse it
-    // Actually, let's look at how we can get the user.
-    // If not using middleware, we usually expect a header.
-    // Let's assume the client sends the ID to update or we trust the request for now if header is checked elsewhere.
-    // Ideally: Use the 'protect' middleware.
     
-    // Quick fix: Require ID in body for now, or just trust the update if we assume protected by frontend (NOT SECURE but matches current pattern if middleware isn't here).
-    // BETTER: Import verifyToken if available. 
-    // Let's check imports. Just 'jwt' and models. 
     
-    // Simple verify logic inline
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     let token;
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
         token = req.headers.authorization.split(' ')[1];
@@ -192,7 +192,7 @@ router.put('/updatedetails', async (req, res) => {
             user.linkedin = req.body.linkedin || user.linkedin;
             
             if (req.body.programmingLanguages) {
-                 user.programmingLanguages = req.body.programmingLanguages; // Expect array or handle split
+                 user.programmingLanguages = req.body.programmingLanguages; 
             }
             if (req.body.password) {
                 user.password = req.body.password;
@@ -225,9 +225,9 @@ router.put('/updatedetails', async (req, res) => {
     }
 });
 
-// @desc    Get current user details (Sync Status)
-// @route   GET /api/auth/me
-// @access  Private
+
+
+
 router.get('/me', async (req, res) => {
     let token;
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
@@ -248,8 +248,8 @@ router.get('/me', async (req, res) => {
                 name: user.name,
                 email: user.email,
                 role: user.role,
-                isApproved: user.isApproved, // This is the key field we need to sync
-                token: generateToken(user._id), // Optional: Refresh token
+                isApproved: user.isApproved, 
+                token: generateToken(user._id), 
                 profileImage: user.profileImage,
                 college: user.college,
                 branch: user.branch,

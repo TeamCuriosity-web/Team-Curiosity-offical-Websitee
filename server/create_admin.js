@@ -7,7 +7,7 @@ dotenv.config({ path: path.join(__dirname, '.env') });
 
 const seedAdmins = async () => {
   try {
-    // 1. Create/Update SUPER ADMIN
+    
     const superEmail = 'super@legendary.com';
     const superPassword = 'super123';
     
@@ -28,8 +28,8 @@ const seedAdmins = async () => {
       console.log('Super Admin created.');
     }
 
-    // 2. REMOVE STANDARD ADMIN (Commander)
-    // User requested permanent removal.
+    
+    
     await User.deleteOne({ email: 'admin@legendary.com' });
     console.log('Commander Admin removed perminanently.');
   } catch (err) {

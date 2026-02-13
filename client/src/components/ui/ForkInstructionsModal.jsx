@@ -7,7 +7,7 @@ const ForkInstructionsModal = ({ isOpen, onClose, repoLink }) => {
 
     if (!isOpen) return null;
 
-    // Ensure repoLink is valid
+    
     const safeRepoLink = repoLink || '';
     const cloneCommand = `git clone ${safeRepoLink}.git`;
 
@@ -20,7 +20,7 @@ const ForkInstructionsModal = ({ isOpen, onClose, repoLink }) => {
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
             <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden border border-gray-200">
-                {/* Header */}
+                {}
                 <div className="bg-black text-white p-4 flex justify-between items-center">
                     <div>
                         <h2 className="text-base font-bold uppercase tracking-wider flex items-center gap-2">
@@ -34,10 +34,10 @@ const ForkInstructionsModal = ({ isOpen, onClose, repoLink }) => {
                     </button>
                 </div>
 
-                {/* Content */}
+                {}
                 <div className="p-6 space-y-6">
                     
-                    {/* Step 1: Fork */}
+                    {}
                     <div className="flex gap-4">
                         <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold border border-blue-200 text-sm">1</div>
                         <div className="space-y-2 w-full">
@@ -57,7 +57,7 @@ const ForkInstructionsModal = ({ isOpen, onClose, repoLink }) => {
                         </div>
                     </div>
 
-                    {/* Step 2: Clone */}
+                    {}
                     <div className="flex gap-4">
                         <div className="flex-shrink-0 w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold border border-purple-200 text-sm">2</div>
                         <div className="space-y-2 w-full">
@@ -78,7 +78,7 @@ const ForkInstructionsModal = ({ isOpen, onClose, repoLink }) => {
                         </div>
                     </div>
 
-                    {/* Step 3: Open (Optional Helper) */}
+                    {}
                     <div className="flex gap-4">
                         <div className="flex-shrink-0 w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center font-bold border border-green-200 text-sm">3</div>
                         <div className="space-y-2 w-full">
@@ -90,7 +90,7 @@ const ForkInstructionsModal = ({ isOpen, onClose, repoLink }) => {
                                 onClick={() => {
                                     let url = safeRepoLink;
                                     if (!url.endsWith('.git')) url += '.git';
-                                    window.location.href = `vscode://vscode.git/clone?url=${encodeURIComponent(url)}`;
+                                    window.location.href = `vscode:
                                 }}
                                 className="text-[10px] font-bold uppercase tracking-widest text-blue-600 hover:underline border border-blue-100 bg-blue-50 px-3 py-1.5 rounded"
                             >
@@ -101,7 +101,7 @@ const ForkInstructionsModal = ({ isOpen, onClose, repoLink }) => {
 
                 </div>
 
-                {/* Footer */}
+                {}
                 <div className="bg-gray-50 p-3 border-t border-gray-100 flex justify-end">
                     <Button variant="outline" onClick={onClose} className="px-4 py-1.5 text-xs">
                         Done

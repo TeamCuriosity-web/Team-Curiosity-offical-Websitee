@@ -5,8 +5,8 @@ import api from '../../services/api';
 import { Send, Hash, Users, Terminal as TerminalIcon } from 'lucide-react';
 import Card from '../ui/Card';
 
-// Connect to socket backend
-const SOCKET_URL = 'https://team-curiosity-offical-websitee.onrender.com';
+
+const SOCKET_URL = 'https:
 const socket = io(SOCKET_URL);
 
 const ChatPage = () => {
@@ -29,15 +29,15 @@ const ChatPage = () => {
         }
         setUser(storedUser);
 
-        // Fetch history & projects
+        
         const fetchData = async () => {
             try {
-                // Fetch Chat History
+                
                 const historyRes = await api.get(`/chat/history?room=${room}`);
                 setMessageList(historyRes.data);
                 scrollToBottom();
 
-                // Fetch Projects for Sidebar
+                
                 const projectsRes = await api.get('/projects');
                 setProjects(projectsRes.data);
             } catch (err) {
@@ -46,19 +46,19 @@ const ChatPage = () => {
         };
         fetchData();
 
-        // Join Room
+        
         socket.emit('join_room', room);
 
-        // Listen for messages
+        
         const handleReceiveMessage = (data) => {
-             // Only append if it belongs to current room (though socket join handles filter usually, extra safety)
+             
              if(data.room === room) {
                 setMessageList((list) => [...list, data]);
                 scrollToBottom();
              }
         };
 
-        // Listen for typing
+        
         const handleDisplayTyping = (data) => {
             if (data.room === room && data.senderId !== (storedUser.id || storedUser._id)) {
                 setTypingUsers((prev) => {
@@ -96,17 +96,17 @@ const ChatPage = () => {
 
         if (!user) return;
 
-        // Emit typing event
+        
         socket.emit('typing', { 
             room, 
             senderName: user.name, 
             senderId: user.id || user._id 
         });
 
-        // Clear existing timeout
+        
         if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
 
-        // Set new timeout to stop typing
+        
         typingTimeoutRef.current = setTimeout(() => {
             socket.emit('stop_typing', { 
                 room, 
@@ -126,8 +126,8 @@ const ChatPage = () => {
 
         const messageData = {
             room: room,
-            senderId: user.id || user._id, // Ensure ID is present
-            sender: user, // For immediate UI update (optimistic or self)
+            senderId: user.id || user._id, 
+            sender: user, 
             content: message,
             timestamp: new Date().toISOString(),
         };
@@ -138,10 +138,10 @@ const ChatPage = () => {
         scrollToBottom();
     };
 
-    // Helper to switch rooms
+    
     const switchRoom = (newRoom) => {
         setRoom(newRoom);
-        setMessageList([]); // Clear current view
+        setMessageList([]); 
     };
 
     if (!user) return null;
@@ -149,15 +149,15 @@ const ChatPage = () => {
     return (
         <div className="h-screen overflow-hidden pt-20 pb-4 bg-gray-50 flex flex-col">
             <div className="flex-1 container mx-auto px-4 max-w-6xl flex gap-4 h-full min-h-0">
-                {/* Sidebar */}
+                {}
                 <div className="hidden md:flex w-64 flex-col gap-4 h-full">
                     <Card className="flex-1 flex flex-col bg-white border-black/10 shadow-lg relative overflow-hidden !p-0">
-                        {/* Fixed Header */}
+                        {}
                         <div className="p-4 flex-none border-b flex items-center gap-2 text-black font-bold uppercase tracking-widest bg-white z-10">
                             <TerminalIcon size={16} /> Project Channels
                         </div>
 
-                        {/* Scrollable List */}
+                        {}
                         <div className="flex-1 overflow-y-auto min-h-0 p-2 space-y-1 custom-scrollbar">
                             <div 
                                 onClick={() => switchRoom('general')}
@@ -177,7 +177,7 @@ const ChatPage = () => {
                             ))}
                         </div>
 
-                        {/* Fixed Footer */}
+                        {}
                         <div className="p-4 flex-none border-t bg-white z-10">
                             <div className="flex items-center gap-2 text-gray-500 text-xs font-mono uppercase">
                                 <Users size={12} /> Team Online: 1
@@ -186,9 +186,9 @@ const ChatPage = () => {
                     </Card>
                 </div>
 
-                {/* Chat Area */}
+                {}
                 <Card className="flex-1 flex flex-col bg-white border-black/10 shadow-lg relative overflow-hidden !p-0 h-full">
-                    {/* Fixed Header */}
+                    {}
                     <div className="p-4 flex-none border-b flex justify-between items-center bg-white z-10">
                         <div className="flex items-center gap-2">
                             <Hash size={20} className="text-gray-400" />
@@ -199,17 +199,17 @@ const ChatPage = () => {
                          </div>
                     </div>
 
-                    {/* Messages */}
+                    {}
                     <div className="flex-1 overflow-y-auto min-h-0 p-4 space-y-4 bg-dots-pattern custom-scrollbar">
                         {messageList.map((msg, index) => {
-                            // Robust ID comparison
+                            
                             const currentUserId = user.id || user._id;
                             const msgSenderId = msg.sender?._id || msg.sender?.id || msg.sender;
                             
-                            // Debug logging to help diagnose
-                            // console.log('Chat Debug:', { msgSenderId, currentUserId, match: msgSenderId == currentUserId });
+                            
+                            
 
-                            // Check if the message sender matches current user
+                            
                             const isMe = 
                                 (currentUserId && msgSenderId) && (
                                     (typeof msgSenderId === 'string' && msgSenderId === currentUserId) ||
@@ -252,7 +252,7 @@ const ChatPage = () => {
                         <div ref={bottomRef} />
                     </div>
 
-                    {/* Input */}
+                    {}
                     <div className="p-4 border-t bg-white flex-none z-10">
                         <form onSubmit={sendMessage} className="flex gap-2">
                             <input

@@ -1,21 +1,21 @@
-/** @type {import('tailwindcss').Config} */
+
 export default {
   content: [
     "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
+    "./src*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {
       colors: {
         background: '#ffffff',
         foreground: '#000000',
-        primary: '#000000',     // Jet Black
+        primary: '#000000',     
         'primary-hover': '#262626',
-        secondary: '#666666',   // Dark Gray
-        border: '#e5e5e5',      // Light Gray Border
+        secondary: '#666666',   
+        border: '#e5e5e5',      
         surface: '#ffffff',
         'surface-hover': '#fafafa',
-        'text-secondary': '#666666', // Explicit text color utility
+        'text-secondary': '#666666', 
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],

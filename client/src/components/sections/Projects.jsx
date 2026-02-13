@@ -8,12 +8,12 @@ const Projects = () => {
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('Ongoing');
-    const [projectFilter, setProjectFilter] = useState('all'); // 'all' | 'joined'
+    const [projectFilter, setProjectFilter] = useState('all'); 
     const [currentUser, setCurrentUser] = useState(null);
-    const [activeForkProject, setActiveForkProject] = useState(null); // Project object or null
+    const [activeForkProject, setActiveForkProject] = useState(null); 
     const navigate = useNavigate();
 
-    // Filter by Tab (Status) AND by Project Filter (Joined/All)
+    
     const filteredProjects = projects.filter(p => {
         const statusMatch = (p.status || 'ongoing').toLowerCase() === activeTab.toLowerCase();
         const joinMatch = projectFilter === 'all' || (projectFilter === 'joined' && p.teamMembers?.includes(currentUser?._id));
@@ -39,12 +39,12 @@ const Projects = () => {
     }, []);
 
     const handleJoinProject = async (e, projectId) => {
-        e.stopPropagation(); // Prevent card click
+        e.stopPropagation(); 
         try {
             const { data } = await api.post(`/projects/${projectId}/join`);
             setProjects(projects.map(p => p._id === projectId ? data : p));
-            // Optional: User feedback
-            // alert('Welcome to the team!'); 
+            
+            
         } catch (err) {
              console.error("Join Failed", err);
              alert(err.response?.data?.message || 'Failed to join project');
@@ -142,7 +142,7 @@ const Projects = () => {
                 </div>
 
                     <div className="flex items-center justify-end gap-4 w-full md:w-1/3 pl-0 md:pl-10 mt-4 md:mt-0">
-                        {/* Join / Open in VS Code Button */}
+                        {}
                         {project.teamMembers?.includes(currentUser?._id) ? (
                             <button
                                 onClick={(e) => {

@@ -16,7 +16,7 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close mobile menu when route changes
+  
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [location.pathname]);
@@ -36,9 +36,9 @@ const Navbar = () => {
     <>
         <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-white/80 backdrop-blur-md border-b border-transparent ${scrolled ? 'border-border' : ''}`}>
         <div className="container mx-auto px-6 h-20 flex items-center justify-between">
-            {/* Logo - Abstract Kinetic Emblem */}
+            {}
             <Link to="/" className="flex items-center gap-4 z-50 relative hover:opacity-80 transition-opacity group">
-                 <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-10 w-10">
+                 <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http:
                     <defs>
                         <style>
                             {`
@@ -52,7 +52,7 @@ const Navbar = () => {
                                 .core-glow {
                                     animation: pulse-core 3s infinite ease-in-out;
                                     opacity: 0;
-                                    animation-delay: 1.5s; /* Wait for assembly */
+                                    animation-delay: 1.5s; 
                                     animation-fill-mode: forwards; 
                                 }
                                 
@@ -67,12 +67,12 @@ const Navbar = () => {
                         </style>
                     </defs>
                     
-                    {/* The Impossible Triangle Fragments */}
+                    {}
                     <path d="M20 5L30 25H10L20 5Z" fill="#171717" stroke="#00F3FF" strokeWidth="1" className="shard shard-1"/>
                     <path d="M10 25L5 35L15 35L10 25Z" fill="#171717" stroke="#00F3FF" strokeWidth="1" className="shard shard-2"/>
                     <path d="M30 25L35 35L25 35L30 25Z" fill="#171717" stroke="#00F3FF" strokeWidth="1" className="shard shard-3"/>
                     
-                    {/* Central Bind Point (Invisible until lock) */}
+                    {}
                     <circle cx="20" cy="27" r="2" fill="#00F3FF" className="core-glow"/>
                 </svg>
                 
@@ -82,7 +82,7 @@ const Navbar = () => {
                 </div>
             </Link>
 
-            {/* Desktop Nav */}
+            {}
             <div className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
                 <Link
@@ -112,7 +112,7 @@ const Navbar = () => {
                                 <Link to="/profile" className="flex items-center gap-3 pl-1 pr-4 py-1 rounded-full border border-gray-200 hover:border-black transition-all bg-white hover:bg-gray-50 group">
                                     <div className="w-8 h-8 rounded-full border border-gray-200 overflow-hidden relative">
                                         <img 
-                                            src={user?.profileImage || `https://api.dicebear.com/7.x/notionists/svg?seed=${user?.name}`} 
+                                            src={user?.profileImage || `https:
                                             alt="Profile" 
                                             className="w-full h-full object-cover"
                                         />
@@ -134,7 +134,7 @@ const Navbar = () => {
                 )}
             </div>
 
-            {/* Mobile Hamburger */}
+            {}
             <button 
                 className="md:hidden z-50 relative text-black p-2 hover:bg-black hover:text-white transition-colors border border-transparent hover:border-black rounded-none"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -144,7 +144,7 @@ const Navbar = () => {
         </div>
         </nav>
 
-        {/* Backdrop */}
+        {}
         {mobileMenuOpen && (
             <div 
                 className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden"
@@ -152,7 +152,7 @@ const Navbar = () => {
             />
         )}
 
-        {/* Mobile Sidebar (Drawer) */}
+        {}
         <div 
             className={`fixed top-0 right-0 bottom-0 w-[85%] max-w-sm bg-white z-50 transition-transform duration-300 ease-in-out transform border-l-4 border-black ${mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'} md:hidden flex flex-col`}
         >
@@ -170,7 +170,7 @@ const Navbar = () => {
                             className={`group flex items-center justify-between p-4 border border-black hover:bg-black hover:text-white transition-all duration-200 ${location.pathname === link.path ? 'bg-black text-white' : 'text-black'}`}
                         >
                             <span className="font-mono text-lg uppercase tracking-wider">
-                                <span className="text-xs mr-4 opacity-50 group-hover:text-white">0{idx + 1} //</span>
+                                <span className="text-xs mr-4 opacity-50 group-hover:text-white">0{idx + 1} 
                                 {link.name}
                             </span>
                             <ChevronRight size={16} className={`opacity-0 group-hover:opacity-100 transition-opacity -translate-x-2 group-hover:translate-x-0 duration-200`} />
@@ -195,7 +195,7 @@ const Navbar = () => {
                 </div>
             </div>
             
-            {/* Decorative Footer */}
+            {}
             <div className="h-2 w-full bg-stripes-black opacity-10"></div>
         </div>
     </>

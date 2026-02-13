@@ -7,10 +7,10 @@ const UserGuide = () => {
     const [page, setPage] = useState(0);
 
     useEffect(() => {
-        // Check if user has seen the guide
+        
         const hasSeenGuide = localStorage.getItem('hasSeenGuide_v1');
         if (!hasSeenGuide) {
-            // Small delay to allow fade-in
+            
             const timer = setTimeout(() => setIsOpen(true), 1500);
             return () => clearTimeout(timer);
         }
@@ -124,10 +124,10 @@ const UserGuide = () => {
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in font-serif">
             <div className="bg-[#fcfbf7] w-full max-w-2xl rounded-sm shadow-2xl overflow-hidden relative border-4 border-double border-gray-300" style={{ boxShadow: "10px 10px 30px rgba(0,0,0,0.5)" }}>
                 
-                {/* Paper texture overlay */}
-                <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/cream-paper.png')" }}></div>
+                {}
+                <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: "url('https:
 
-                {/* Header */}
+                {}
                 <div className="bg-[#1a1a1a] text-[#fcfbf7] p-6 flex justify-between items-center relative z-10 border-b-2 border-[#b8b8b8]">
                     <div className="flex items-center gap-3">
                         <div className="bg-[#fcfbf7] text-black p-2 rounded-sm">
@@ -143,14 +143,14 @@ const UserGuide = () => {
                     </button>
                 </div>
 
-                {/* Content */}
+                {}
                 <div className="p-8 md:p-10 min-h-[300px] relative z-10">
                     <div className="prose prose-lg text-gray-800">
                         {currentSection.content}
                     </div>
                 </div>
 
-                {/* Footer / Navigation */}
+                {}
                 <div className="bg-[#f0ece2] p-6 border-t border-[#dcdcdc] flex justify-between items-center relative z-10">
                     <div className="flex gap-2">
                         {sections.map((_, idx) => (

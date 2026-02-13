@@ -7,7 +7,7 @@ const CharacterTween = ({ text, className = '' }) => {
   const charsRef = useRef([]);
 
   useGSAP(() => {
-    // Initial state
+    
     gsap.set(charsRef.current, { yPercent: 0 });
   }, { scope: containerRef });
 

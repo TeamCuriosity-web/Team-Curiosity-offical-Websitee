@@ -12,8 +12,8 @@ const ProjectDetails = () => {
     const [joining, setJoining] = useState(false);
     
     const user = JSON.parse(localStorage.getItem('user'));
-    // Safe check if teamMembers exists and is array, and if user is in it
-    // Safe check: teamMembers is array of objects (populated) or strings (if not populated)
+    
+    
     const isMember = project?.teamMembers?.some(member => 
         (typeof member === 'string' ? member : member._id) === user?._id
     );
@@ -29,7 +29,7 @@ const ProjectDetails = () => {
                 const { data } = await api.get(`/projects/${id}`);
                 setProject(data);
                 
-                // Fetch GitHub Stats if repoLink exists
+                
                 if (data.repoLink) {
                     api.get(`/projects/${id}/github-stats`)
                        .then(res => setContributors(res.data))
@@ -45,19 +45,19 @@ const ProjectDetails = () => {
     }, [id]);
 
     const handleJoinProject = async () => {
-        // ... existing code ...
+        
     };
 
     if (loading) return <div className="min-h-screen flex items-center justify-center font-mono text-xs">DECRYPTING FILE...</div>;
     if (!project) return <div className="min-h-screen flex items-center justify-center font-mono text-xs text-red-500">FILE CORRUPTED OR NOT FOUND</div>;
 
     const getDifficultyColor = (level) => {
-         // ... existing code ...
+         
     };
 
     return (
         <main className="min-h-screen pt-32 pb-20 px-6 container mx-auto animate-fade-in">
-            {/* ... existing header and content ... */}
+            {}
             
             <ForkInstructionsModal 
                 isOpen={isForkModalOpen} 
@@ -69,11 +69,11 @@ const ProjectDetails = () => {
                 <ArrowLeft size={16} /> RETURN TO PROJECTS
             </Link>
 
-            {/* ... rest of the component ... */}
+            {}
             
 
 
-            {/* Header */}
+            {}
             <header className="mb-12 border-b border-black pb-8">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                     <div>
@@ -95,7 +95,7 @@ const ProjectDetails = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
                 
-                {/* Main Content */}
+                {}
                 <div className="lg:col-span-2 space-y-12">
                     <section>
                         <div className="flex justify-between items-end mb-4">
@@ -135,7 +135,7 @@ const ProjectDetails = () => {
                             {project.teamMembers?.filter(m => m.role !== 'admin' && m.role !== 'superadmin').map(member => (
                                 <div key={member._id} className="flex items-center gap-3 p-3 bg-gray-50 border border-gray-100 rounded-lg min-w-[200px]">
                                         <img 
-                                            src={member.profileImage || `https://api.dicebear.com/7.x/notionists/svg?seed=${member.name}`} 
+                                            src={member.profileImage || `https:
                                             alt={member.name} 
                                             className="w-10 h-10 rounded-full bg-gray-200"
                                         />
@@ -193,7 +193,7 @@ const ProjectDetails = () => {
                      </section>
                 </div>
 
-                {/* Sidebar */}
+                {}
                 <div className="space-y-8">
                     <div className="bg-black text-white p-8 rounded-lg">
                         <h3 className="font-bold text-xl mb-6 uppercase tracking-widest text-gray-400">Eligibility Analysis</h3>
@@ -244,7 +244,7 @@ const ProjectDetails = () => {
                             </a>
                         )}
 
-                        {/* Join / Open Project Button */}
+                        {}
                         {user ? (
                             isMember ? (
                                 <div className="space-y-3">

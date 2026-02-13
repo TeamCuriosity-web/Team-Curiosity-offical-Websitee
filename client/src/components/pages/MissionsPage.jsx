@@ -73,7 +73,7 @@ const MissionsPage = () => {
                 <div className="grid grid-cols-1 gap-8">
                     {missions.map((mission) => (
                         <div key={mission.id} className="bg-white border-2 border-black p-8 relative overflow-hidden group hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all duration-300">
-                            {/* Watermark ID */}
+                            {}
                             <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
                                 <span className="text-9xl font-black font-mono">{mission.id.split('-')[1]}</span>
                             </div>
@@ -118,7 +118,7 @@ const MissionsPage = () => {
                                                 className={`h-full ${mission.progress === 100 ? 'bg-green-500' : 'bg-black'} transition-all duration-1000 ease-in-out`} 
                                                 style={{ width: `${mission.progress}%` }}
                                             >
-                                                 {/* Striped pattern overlay */}
+                                                 {}
                                                 <div className="w-full h-full opacity-20 bg-[linear-gradient(45deg,rgba(255,255,255,.15)_25%,transparent_25%,transparent_50%,rgba(255,255,255,.15)_50%,rgba(255,255,255,.15)_75%,transparent_75%,transparent)] bg-[length:1rem_1rem]"></div>
                                             </div>
                                         </div>

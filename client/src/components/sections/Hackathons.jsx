@@ -12,7 +12,7 @@ const Hackathons = () => {
             try {
                 const { data } = await api.get('/hackathons');
 
-                // Sort by date usually, but here we just process
+                
                 const enhancedData = data.map(hack => ({
                     ...hack,
                     formattedDate: new Date(hack.date || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
@@ -38,7 +38,7 @@ const Hackathons = () => {
   return (
     <section className="py-12 animate-fade-in container mx-auto px-6">
       
-      {/* Header Section */}
+      {}
       <div className="flex flex-col md:flex-row justify-between items-end mb-16 border-b-4 border-black pb-6">
           <div className="space-y-3">
             <h2 className="text-5xl md:text-6xl font-black text-black tracking-tighter uppercase relative inline-block">
@@ -60,7 +60,7 @@ const Hackathons = () => {
           </div>
       </div>
 
-      {/* Tabs */}
+      {}
       <div className="flex gap-2 mb-10">
         {['Upcoming', 'Past'].map((tab) => (
             <button
@@ -77,14 +77,14 @@ const Hackathons = () => {
         ))}
       </div>
 
-      {/* Grid */}
+      {}
       <div className="grid grid-cols-1 gap-8">
         {filteredEvents.map((event, idx) => (
             <div 
                 key={event._id}
                 className={`group relative overflow-hidden bg-white border-2 border-black transition-all duration-300 hover:-translate-y-1 ${event.status === 'won' ? 'shadow-[12px_12px_0px_0px_#fbbf24]' : 'shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]'}`}
             >
-                {/* Winner Banner */}
+                {}
                 {event.status === 'won' && (
                     <div className="absolute top-6 -right-8 w-32 bg-yellow-400 text-black text-[10px] font-bold uppercase tracking-widest text-center transform rotate-45 border-y-2 border-black z-10 py-1 shadow-sm">
                         Winner
@@ -93,7 +93,7 @@ const Hackathons = () => {
 
                 <div className="flex flex-col md:flex-row">
                     
-                    {/* Left: Visual & Status */}
+                    {}
                     <div className="w-full md:w-1/4 p-8 bg-gray-50 border-b-2 md:border-b-0 md:border-r-2 border-black flex flex-col items-center justify-center text-center group-hover:bg-yellow-50 transition-colors">
                         <div className={`w-20 h-20 mb-4 rounded-full border-2 border-black flex items-center justify-center bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ${event.status === 'won' ? 'text-yellow-500' : 'text-gray-800'}`}>
                             {event.status === 'won' ? <Trophy size={32} /> : (event.status === 'upcoming' ? <Clock size={32} /> : <Target size={32} />)}
@@ -106,7 +106,7 @@ const Hackathons = () => {
                         </div>
                     </div>
 
-                    {/* Middle: Content */}
+                    {}
                     <div className="w-full md:w-2/4 p-8 flex flex-col justify-center">
                         <h3 className="text-3xl font-black uppercase tracking-tighter mb-3 group-hover:text-red-600 transition-colors">
                             {event.name}
@@ -124,7 +124,7 @@ const Hackathons = () => {
                         </p>
 
                         <div className="flex flex-wrap gap-2">
-                             {/* Mock Tags if none exist yet */}
+                             {}
                              {['React', 'Node.js', 'AI'].map(tag => (
                                  <span key={tag} className="flex items-center gap-1 text-[10px] font-bold uppercase border border-black px-2 py-1 bg-white hover:bg-black hover:text-white transition-colors">
                                      <Code size={10} /> {tag}
@@ -133,7 +133,7 @@ const Hackathons = () => {
                         </div>
                     </div>
 
-                    {/* Right: Action & Results */}
+                    {}
                     <div className="w-full md:w-1/4 p-8 flex flex-col justify-between items-end border-t-2 md:border-t-0 md:border-l-2 border-black bg-gray-50/50">
                         <div className="text-right">
                              <p className="text-[10px] font-bold uppercase text-gray-400 tracking-widest mb-1">Squad Size</p>

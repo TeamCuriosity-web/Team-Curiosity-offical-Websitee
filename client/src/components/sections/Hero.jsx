@@ -12,13 +12,13 @@ const Typewriter = ({ text, delay = 0, speed = 30 }) => {
     let timeout;
     let currentIndex = 0;
     
-    // Initial delay before starting to type
+    
     const startTimeout = setTimeout(() => {
         const typeChar = () => {
             if (currentIndex < text.length) {
                 setDisplayText(text.substring(0, currentIndex + 1));
                 currentIndex++;
-                // Randomize speed slightly for realism
+                
                 const randomSpeed = speed + (Math.random() * 20 - 10); 
                 timeout = setTimeout(typeChar, randomSpeed);
             }
@@ -42,7 +42,7 @@ const Hero = () => {
     const ctx = gsap.context(() => {
        const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
-       // Boot text & Subtitle immediate entry
+       
        tl.from(".hero-boot-item", {
            opacity: 0,
            x: -20,
@@ -68,7 +68,7 @@ const Hero = () => {
            ease: "back.out(1.7)"
        }, "-=0.5");
 
-       // Right side visual (staggered list)
+       
        gsap.from(".data-row", {
            x: 50,
            opacity: 0,
@@ -83,15 +83,15 @@ const Hero = () => {
 
   return (
     <section ref={containerRef} className="relative min-h-screen flex flex-col justify-center pt-24 pb-12 overflow-hidden border-b-2 border-black">
-        {/* Background Grid */}
+        {}
         <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
 
         <div className="container mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             
-            {/* Left Content Column */}
+            {}
             <div className="lg:col-span-8 flex flex-col gap-8">
                 
-                {/* Boot Sequence Header */}
+                {}
                 <div className="flex flex-col gap-1 font-mono text-xs text-secondary mb-4 min-h-[60px]">
                     <div className="flex items-center gap-2 hero-boot-item">
                         <Terminal size={12} /> 
@@ -107,14 +107,14 @@ const Hero = () => {
                     </div>
                 </div>
 
-                {/* Massive Typography with SplitText */}
+                {}
                 <div className="perspective-text">
                     <h1 className="text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter text-black leading-[0.85] uppercase">
                         <div className="block overflow-hidden">
                              <SplitText className="text-black" stagger={0.03} delay={0.5}>We Build</SplitText>
                         </div>
                         <div className="block overflow-hidden mt-2">
-                             {/* Gradient text often breaks with char splitting due to bg-clip. Using standard block reveal for this part. */}
+                             {}
                              <span className="hero-gradient-text block text-transparent bg-clip-text bg-gradient-to-r from-black via-black to-gray-500">The Future</span>
                         </div>
                     </h1>
@@ -141,7 +141,7 @@ const Hero = () => {
                 </div>
             </div>
 
-            {/* Right Visual Column (Abstract Data) */}
+            {}
             <div className="hidden lg:flex lg:col-span-4 flex-col justify-end h-full min-h-[500px] border-l-2 border-black pl-8">
                  <div className="mt-auto space-y-4 font-mono text-xs">
                     <div className="border-b border-black pb-2 mb-4 data-row">

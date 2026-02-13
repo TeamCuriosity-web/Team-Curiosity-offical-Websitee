@@ -32,13 +32,13 @@ body {
   min-height: 100vh;
 }
 
-/* Custom Selection */
+
 ::selection {
   background: #000000;
   color: #ffffff;
 }
 
-/* Utility Animations */
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -57,7 +57,7 @@ body {
   }
 }
 
-/* Navbar Drawer Animations */
+
 @keyframes slideRight {
   from { opacity: 0; transform: translateX(-10px); }
   to { opacity: 1; transform: translateX(0); }
@@ -67,7 +67,7 @@ body {
   animation: slideRight 0.3s ease-out forwards;
 }
 
-/* Glitch Effect */
+
 .glitch-text {
   position: relative;
   animation: glitch-skew 1s infinite linear alternate-reverse;
@@ -129,7 +129,7 @@ body {
   background-size: 1rem 1rem;
 }
 
-/* Breathing Effect */
+
 @keyframes breathe {
   0%, 100% { transform: scale(1); opacity: 1; }
   50% { transform: scale(1.02); opacity: 0.9; }

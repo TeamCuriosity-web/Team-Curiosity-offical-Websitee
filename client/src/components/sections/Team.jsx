@@ -10,14 +10,14 @@ const Team = () => {
     const fetchTeam = async () => {
         try {
             const { data } = await api.get('/team');
-            // Augment real data with aesthetic attributes
+            
             const enhancedData = data.map((user, idx) => ({
                 ...user,
-                // Hardcode Super Admin Name as requested
+                
                 name: user.role === 'superadmin' ? 'Naseer Pasha' : user.name,
                 codename: `OPERATIVE_0${idx + 1}`,
                 status: "Active",
-                image: `https://api.dicebear.com/7.x/notionists/svg?seed=${user.role === 'superadmin' ? 'Naseer Pasha' : user.name}`
+                image: `https:
             }));
             const sortedMembers = enhancedData.sort((a, b) => (a.role === 'superadmin' ? -1 : 1));
             setMembers(sortedMembers);
@@ -47,10 +47,10 @@ const Team = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {members.map((member, idx) => (
             <div key={member._id} className="group relative bg-white border-2 border-black p-0 overflow-hidden hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all duration-300">
-                {/* ID Header */}
+                {}
                 <div className="bg-black text-white p-2 flex justify-between items-center font-mono text-[10px] uppercase border-b-2 border-black">
                     <span>ID: 00{idx + 1}</span>
-                    <span>// {member.codename}</span>
+                    <span>
                 </div>
                 
                 <div className="p-6 flex flex-col items-center">
@@ -76,9 +76,9 @@ const Team = () => {
                     </div>
                 </div>
                 
-                {/* Decorative Footer */}
+                {}
                 <div className="h-4 w-full bg-gray-50 border-t-2 border-black flex gap-0.5 opacity-50">
-                     {/* Barcode effect */}
+                     {}
                      {Array(20).fill(0).map((_, i) => (
                         <div key={i} className="h-full bg-black" style={{ width: Math.random() > 0.5 ? '4px' : '1px', marginLeft: Math.random() * 4 }}></div>
                     ))}

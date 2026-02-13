@@ -14,7 +14,7 @@ const MagneticButton = ({ children, onClick }) => {
             const x = e.clientX - rect.left - rect.width / 2;
             const y = e.clientY - rect.top - rect.height / 2;
             
-            // Move button slightly towards mouse
+            
             gsap.to(button, {
                 x: x * 0.3,
                 y: y * 0.3,
@@ -22,7 +22,7 @@ const MagneticButton = ({ children, onClick }) => {
                 ease: "power2.out"
             });
             
-            // Move text a bit more for parallax feeling
+            
             gsap.to(text, {
                 x: x * 0.1,
                 y: y * 0.1,
@@ -58,7 +58,7 @@ const MagneticButton = ({ children, onClick }) => {
             <span ref={textRef} className="relative z-10 block tracking-widest text-xs font-mono">
                 {children}
             </span>
-            {/* Hover Glow */}
+            {}
             <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         </button>
     );
@@ -68,7 +68,7 @@ const InvitationCard = () => {
     const cardRef = useRef(null);
 
     useEffect(() => {
-        // Entrance Animation
+        
         gsap.fromTo(cardRef.current, 
             { scale: 0.8, opacity: 0, y: 50 },
             { scale: 1, opacity: 1, y: 0, duration: 1, ease: "back.out(1.7)", delay: 0.2 }
@@ -76,7 +76,7 @@ const InvitationCard = () => {
     }, []);
 
     const handleJoin = () => {
-        // Handle join logic
+        
         window.location.href = "/Team-Curiosity-offical-Websitee/join"; 
     };
 
@@ -89,11 +89,11 @@ const InvitationCard = () => {
                     boxShadow: '0 20px 50px rgba(0,0,0,0.2)'
                 }}
             >
-                {/* Logo Area */}
+                {}
                 <div className="mb-6 flex flex-col items-center">
-                    {/* Official Kinetic Emblem */}
+                    {}
                     <div className="w-16 h-16 mb-4 flex items-center justify-center">
-                        <svg width="60" height="60" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <svg width="60" height="60" viewBox="0 0 40 40" fill="none" xmlns="http:
                             <defs>
                                 <style>
                                     {`
@@ -118,10 +118,10 @@ const InvitationCard = () => {
                     </h2>
                 </div>
 
-                {/* Divider */}
+                {}
                 <div className="w-full h-[1px] bg-gray-200 mb-6"></div>
 
-                {/* Welcome Message */}
+                {}
                 <div className="mb-8 space-y-2">
                     <h3 className="text-xl text-black font-medium">Welcome</h3>
                     <p className="text-gray-600 text-sm leading-relaxed">
@@ -130,12 +130,12 @@ const InvitationCard = () => {
                     </p>
                 </div>
 
-                {/* Magnetic Button */}
+                {}
                 <MagneticButton onClick={handleJoin}>
                     JOIN TEAM NOW
                 </MagneticButton>
                 
-                {/* Decorative Elements */}
+                {}
                 <div className="absolute top-0 left-0 w-20 h-20 border-t border-l border-black/10 rounded-tl-2xl -m-1"></div>
                 <div className="absolute bottom-0 right-0 w-20 h-20 border-b border-r border-black/10 rounded-br-2xl -m-1"></div>
             </div>

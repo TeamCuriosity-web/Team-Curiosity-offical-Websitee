@@ -4,12 +4,12 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-// --- Component: SplitText ---
-// Manually splits text into characters or words for staggered animations
+
+
 export const SplitText = ({ children, className = "", stagger = 0.05, delay = 0 }) => {
   const comp = useRef(null);
   
-  // If children is not a string, just render it wrapped
+  
   if (typeof children !== 'string') {
      return <div className={className}>{children}</div>;
   }
@@ -18,7 +18,7 @@ export const SplitText = ({ children, className = "", stagger = 0.05, delay = 0 
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      // Animate characters
+      
       gsap.from(".char", {
         y: 100,
         opacity: 0,
@@ -47,9 +47,9 @@ export const SplitText = ({ children, className = "", stagger = 0.05, delay = 0 
   );
 };
 
-// --- Hook: useScrollReveal ---
-// Standard scroll trigger hook for sections
-// mode: 'up', 'left', 'right', 'fade'
+
+
+
 export const useScrollReveal = (targetRef, options = {}) => {
   const {
       mode = 'up',
@@ -72,12 +72,12 @@ export const useScrollReveal = (targetRef, options = {}) => {
         case 'left': fromVars.x = distance; break;
         case 'right': fromVars.x = -distance; break;
         case 'scale': fromVars.scale = 0.8; break;
-        default: break; // fade only
+        default: break; 
     }
 
     const ctx = gsap.context(() => {
-        // If targetRef has children with a specific class, animate them
-        // otherwise animate the target itself
+        
+        
         const targets = options.selector 
             ? targetRef.current.querySelectorAll(options.selector)
             : targetRef.current;
@@ -96,7 +96,7 @@ export const useScrollReveal = (targetRef, options = {}) => {
                 scrollTrigger: {
                     trigger: targetRef.current,
                     start: start,
-                    toggleActions: "play reverse play reverse", // Play on enter, reverse on leave, play on enter back, reverse on leave back
+                    toggleActions: "play reverse play reverse", 
                     markers: markers
                 }
             }
@@ -107,8 +107,8 @@ export const useScrollReveal = (targetRef, options = {}) => {
   }, [targetRef, mode, distance, duration, stagger, delay, start]);
 };
 
-// --- Component: GsapText ---
-// Specific component for ScrollTriggered Text Reveal
+
+
 export const GsapText = ({ children, className = "", delay = 0 }) => {
     const el = useRef(null);
     

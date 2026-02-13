@@ -2,22 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Card from '../ui/Card';
 import Button from '../ui/Button';
-import api from '../../services/adminApi'; // Use Admin Authenticated API
+import api from '../../services/adminApi'; 
 import { Copy, Users, Shield, Terminal, Database, Code, Trash2, Plus, Video, ExternalLink, Play } from 'lucide-react';
 
 const AdminDashboard = () => {
     const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState('projects'); // projects, hackathons, team
+    const [activeTab, setActiveTab] = useState('projects'); 
     const [loading, setLoading] = useState(true);
     
-    // Data State
+    
     const [users, setUsers] = useState([]);
     const [projects, setProjects] = useState([]);
     const [hackathons, setHackathons] = useState([]);
     const [courses, setCourses] = useState([]);
     const [notes, setNotes] = useState([]);
     
-    // Forms State
+    
     const [projectForm, setProjectForm] = useState({ title: '', description: '', longDescription: '', techStack: '', repoLink: '', liveLink: '', status: 'ongoing', progress: 0, difficulty: 'intermediate' });
     const [hackathonForm, setHackathonForm] = useState({ name: '', description: '', achievement: '', status: 'upcoming' });
     const [courseForm, setCourseForm] = useState({ title: '', youtubeLink: '', domain: 'Frontend', instructor: 'Team Curiosity', duration: '', youtubeId: '', thumbnailUrl: '' });
@@ -27,11 +27,11 @@ const AdminDashboard = () => {
     const [editingCourseId, setEditingCourseId] = useState(null);
     const [editingNoteId, setEditingNoteId] = useState(null);
     const [currentUser, setCurrentUser] = useState(null);
-    const [projectFilter, setProjectFilter] = useState('all'); // 'all' or 'joined'
+    const [projectFilter, setProjectFilter] = useState('all'); 
     const [systemStatus, setSystemStatus] = useState({ githubConnected: false, status: 'CHECKING...' });
 
     useEffect(() => {
-        const user = JSON.parse(localStorage.getItem('adminUser')); // Check Admin User
+        const user = JSON.parse(localStorage.getItem('adminUser')); 
         if (user) {
             if (user.role === 'superadmin') {
                 navigate('/super-admin');
@@ -49,7 +49,7 @@ const AdminDashboard = () => {
         try {
             const [usersRes, projectsRes, hackathonsRes, coursesRes, notesRes] = await Promise.all([
                 api.get('/admin/users'),
-                api.get('/projects'), // Public read is fine
+                api.get('/projects'), 
                 api.get('/hackathons'),
                 api.get('/courses'),
                 api.get('/notes'),
@@ -69,7 +69,7 @@ const AdminDashboard = () => {
         }
     };
 
-    // --- Actions ---
+    
 
     const handleLogout = () => {
         if (window.confirm('Terminate session?')) {
@@ -82,15 +82,15 @@ const AdminDashboard = () => {
     const generateInvite = async () => {
         try {
             const { data } = await api.post('/admin/invite', { expiresInHours: 24 });
-            // FORCE FRONTEND URL (GitHub Pages or Localhost)
-            // Backend returns its own host, which is wrong for separated deployment.
-            // We use the token to build the correct link here.
-            // Check if we are on localhost or production to decide on base path if needed.
-            // But usually window.location.href handles origin.
             
-            // If on localhost, origin is http://localhost:5173
-            // If on GH Pages, origin is https://teamcuriosity-web.github.io
-            // We need to append the repo path if on GH Pages.
+            
+            
+            
+            
+            
+            
+            
+            
             
             const isLocal = window.location.hostname === 'localhost';
             const basePath = isLocal ? '' : '/Team-Curiosity-offical-Websitee';
@@ -100,7 +100,7 @@ const AdminDashboard = () => {
         } catch (err) { console.error(err); }
     };
     
-    // ... deleteItem and other actions ...
+    
 
     const deleteItem = async (type, id) => {
         if (!window.confirm(`WARNING: Confirm ${type} deletion protocol?`)) return;
@@ -118,7 +118,7 @@ const AdminDashboard = () => {
                 await api.delete(`/notes/${id}`);
                 setNotes(notes.filter(n => n._id !== id));
             } else if (type === 'user') {
-                // For requests tab
+                
                 await api.delete(`/admin/users/${id}`);
                 setUsers(users.filter(u => u._id !== id));
             }
@@ -131,7 +131,7 @@ const AdminDashboard = () => {
     const handleJoinProject = async (projectId) => {
         try {
             const { data } = await api.post(`/projects/${projectId}/join`);
-            // Update local state to reflect membership
+            
             setProjects(projects.map(p => p._id === projectId ? data : p));
             alert('Welcome to the team! Access granted.');
         } catch (err) {
@@ -140,7 +140,7 @@ const AdminDashboard = () => {
         }
     };
 
-    // ... (rest of actions) ...
+    
 
     const handleProjectSubmit = async (e) => {
         e.preventDefault();
@@ -201,7 +201,7 @@ const AdminDashboard = () => {
         } catch (err) { alert('Approval failed'); }
     };
 
-    // ... (existing functions)
+    
 
     const handleYoutubeLinkChange = async (url) => {
         setCourseForm(prev => ({ ...prev, youtubeLink: url }));
@@ -210,7 +210,7 @@ const AdminDashboard = () => {
         const videoId = (match && match[2].length === 11) ? match[2] : '';
 
         if (videoId) {
-            const thumbUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+            const thumbUrl = `https:
             setCourseForm(prev => ({ ...prev, youtubeId: videoId, thumbnailUrl: thumbUrl }));
             try {
                 const { data } = await api.get(`/courses/yt-metadata/${videoId}`);
@@ -221,9 +221,9 @@ const AdminDashboard = () => {
                 }));
             } catch (err) { 
                 console.error("METADATA_FETCH_PROTOCOL_ERROR:", err);
-                // Fallback to noembed for title only if legacy proxy fails
+                
                 try {
-                    const resp = await fetch(`https://noembed.com/embed?url=${url}`);
+                    const resp = await fetch(`https:
                     const data = await resp.json();
                     if (data.title) setCourseForm(prev => ({ ...prev, title: data.title }));
                 } catch (e) { console.error(e); }
@@ -289,7 +289,7 @@ const AdminDashboard = () => {
 
     return (
         <div className="min-h-screen pt-32 px-6 container mx-auto pb-20">
-            {/* Header */}
+            {}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-12">
                 <div className="flex items-center gap-4">
                     <div className="p-3 bg-black text-white rounded">
@@ -317,7 +317,7 @@ const AdminDashboard = () => {
                 </div>
             </div>
 
-            {/* Navigation Tabs */}
+            {}
             <div className="flex gap-1 mb-8 border-b border-gray-200 overflow-x-auto">
                 {['requests', 'projects', 'hackathons', 'courses', 'notes', 'team', 'comms'].map(tab => (
                     <button
@@ -337,10 +337,10 @@ const AdminDashboard = () => {
                 ))}
             </div>
 
-            {/* Content Area */}
+            {}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-                 {/* --- TEAM TAB --- */}
+                 {}
                  {activeTab === 'team' && (
                     <>
                         <div className="lg:col-span-2 space-y-6">
@@ -386,11 +386,11 @@ const AdminDashboard = () => {
                 
 
 
-                {/* --- PROJECTS TAB --- */}
+                {}
                 {activeTab === 'projects' && (
                     <>
                         <div className="lg:col-span-2 space-y-6">
-                            {/* Sub-Tabs for Projects */}
+                            {}
                             <div className="flex items-center gap-4 mb-4 pb-2 border-b border-gray-100">
                                 <button 
                                     onClick={() => setProjectFilter('all')}
@@ -454,7 +454,7 @@ const AdminDashboard = () => {
                                             )}
                                             {project.liveLink && (
                                                 <a href={project.liveLink} target="_blank" rel="noopener noreferrer" className="text-[10px] text-gray-400 hover:text-green-600 font-mono transition-colors border-b border-transparent hover:border-green-200">
-                                                    {project.liveLink.replace('https://', '')}
+                                                    {project.liveLink.replace('https:
                                                 </a>
                                             )}
                                         </div>
@@ -513,7 +513,7 @@ const AdminDashboard = () => {
                                             </div>
                                             {projectForm.title && (
                                                 <div className="text-[10px] text-gray-400 font-mono pl-4">
-                                                    Target: https://TeamCuriosity-web.github.io/{projectForm.title.trim().replace(/\s+/g, '-').replace(/[^\w-]/g, '')}/
+                                                    Target: https:
                                                 </div>
                                             )}
                                         </div>
@@ -528,7 +528,7 @@ const AdminDashboard = () => {
                     </>
                 )}
 
-                {/* --- REQUESTS TAB --- */}
+                {}
                 {activeTab === 'requests' && (
                     <div className="lg:col-span-3 space-y-6">
                          <Card className="p-0 overflow-hidden">
@@ -549,14 +549,14 @@ const AdminDashboard = () => {
                                 <tbody>
                                     {users.filter(u => !u.isApproved).length === 0 ? (
                                         <tr>
-                                            <td colSpan="3" className="py-8 text-center text-gray-400 text-xs font-mono">NO PENDING REQUESTS // ALL SYSTEMS SECURE</td>
+                                            <td colSpan="3" className="py-8 text-center text-gray-400 text-xs font-mono">NO PENDING REQUESTS 
                                         </tr>
                                     ) : (
                                         users.filter(u => !u.isApproved).map(user => (
                                             <tr key={user._id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50">
                                                 <td className="py-3 px-6">
                                                     <div className="flex items-center gap-3">
-                                                        <img src={user.profileImage || `https://api.dicebear.com/7.x/notionists/svg?seed=${user.name}`} className="w-8 h-8 rounded-full bg-gray-100" alt="" />
+                                                        <img src={user.profileImage || `https:
                                                         <div>
                                                             <div className="font-bold text-sm">{user.name}</div>
                                                             <div className="text-[10px] text-gray-400 font-mono">{user.email}</div>
@@ -588,7 +588,7 @@ const AdminDashboard = () => {
                     </div>
                 )}
 
-                {/* --- HACKATHONS TAB --- */}
+                {}
                 {activeTab === 'hackathons' && (
                     <>
                          <div className="lg:col-span-2 space-y-6">
@@ -626,7 +626,7 @@ const AdminDashboard = () => {
                     </>
                 )}
 
-                {/* --- COMMS TAB --- */}
+                {}
                 {activeTab === 'comms' && (
                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <Card className="p-6">
@@ -643,7 +643,7 @@ const AdminDashboard = () => {
                                 };
                                 try {
                                     await api.post('/notifications', payload);
-                                    alert('Message Dispatched'); // "Transmission Sent" equivalent
+                                    alert('Message Dispatched'); 
                                     e.target.reset();
                                 } catch(err) { alert('Dispatch Failed'); }
                             }} className="space-y-4">
@@ -672,7 +672,7 @@ const AdminDashboard = () => {
                         </Card>
                     </div>
                 )}
-                {/* --- COURSES TAB --- */}
+                {}
                 {activeTab === 'courses' && (
                     <>
                          <div className="lg:col-span-2 space-y-4">
@@ -702,7 +702,7 @@ const AdminDashboard = () => {
                             ))}
                             {courses.length === 0 && (
                                 <div className="text-center py-20 bg-gray-50 border border-dashed rounded text-gray-400 text-[10px] uppercase tracking-widest">
-                                    No Courses Found // All Systems Clear
+                                    No Courses Found 
                                 </div>
                             )}
                         </div>
@@ -712,7 +712,7 @@ const AdminDashboard = () => {
                                 <form onSubmit={handleCourseSubmit} className="space-y-4">
                                     <div>
                                         <label className="text-[10px] uppercase font-bold text-gray-400">YouTube Link</label>
-                                        <input className="w-full border p-2 text-sm mt-1" placeholder="https://youtube.com/..." value={courseForm.youtubeLink} onChange={e => handleYoutubeLinkChange(e.target.value)} required />
+                                        <input className="w-full border p-2 text-sm mt-1" placeholder="https:
                                     </div>
                                     {courseForm.thumbnailUrl && (
                                         <div className="h-20 w-full rounded overflow-hidden border border-gray-100 mb-2">
@@ -766,7 +766,7 @@ const AdminDashboard = () => {
                     </>
                 )}
 
-                {/* --- NOTES TAB --- */}
+                {}
                 {activeTab === 'notes' && (
                     <>
                          <div className="lg:col-span-2 space-y-4">
@@ -798,7 +798,7 @@ const AdminDashboard = () => {
                             ))}
                             {notes.length === 0 && (
                                 <div className="text-center py-20 bg-gray-50 border border-dashed rounded text-gray-400 text-[10px] uppercase tracking-widest">
-                                    No Academic Notes // Repository Empty
+                                    No Academic Notes 
                                 </div>
                             )}
                         </div>
@@ -808,7 +808,7 @@ const AdminDashboard = () => {
                                 <form onSubmit={handleNoteSubmit} className="space-y-4">
                                     <div>
                                         <label className="text-[10px] uppercase font-bold text-gray-400">PDF Uplink [Link]</label>
-                                        <input className="w-full border p-2 text-sm mt-1" placeholder="https://..." value={noteForm.pdfUrl} onChange={e => setNoteForm({...noteForm, pdfUrl: e.target.value})} required />
+                                        <input className="w-full border p-2 text-sm mt-1" placeholder="https:
                                     </div>
                                     <div>
                                         <label className="text-[10px] uppercase font-bold text-gray-400">Title</label>

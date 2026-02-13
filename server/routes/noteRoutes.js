@@ -3,9 +3,9 @@ const router = express.Router();
 const Note = require('../models/Note');
 const { protect, admin } = require('../middleware/authMiddleware');
 
-// @desc    Get all notes
-// @route   GET /api/notes
-// @access  Public
+
+
+
 router.get('/', async (req, res) => {
   try {
     const { domain } = req.query;
@@ -17,9 +17,9 @@ router.get('/', async (req, res) => {
   }
 });
 
-// @desc    Create a new note
-// @route   POST /api/notes
-// @access  Private/Admin
+
+
+
 router.post('/', protect, admin, async (req, res) => {
   try {
     const { title, description, pdfUrl, domain, author } = req.body;
@@ -42,9 +42,9 @@ router.post('/', protect, admin, async (req, res) => {
   }
 });
 
-// @desc    Update a note
-// @route   PUT /api/notes/:id
-// @access  Private/Admin
+
+
+
 router.put('/:id', protect, admin, async (req, res) => {
   try {
     const { title, description, pdfUrl, domain, author } = req.body;
@@ -67,9 +67,9 @@ router.put('/:id', protect, admin, async (req, res) => {
   }
 });
 
-// @desc    Delete a note
-// @route   DELETE /api/notes/:id
-// @access  Private/Admin
+
+
+
 router.delete('/:id', protect, admin, async (req, res) => {
   try {
     const note = await Note.findById(req.params.id);

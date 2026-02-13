@@ -11,8 +11,8 @@ const Leaderboard = () => {
             try {
                 const { data: teamMembers } = await api.get('/team');
                 
-                // Show ALL members, filtered by role (No Admins)
-                // Sort: Commits (desc), then hasGitHub (yes first), then Name (asc)
+                
+                
                 const filteredMembers = teamMembers.filter(m => m.role !== 'admin' && m.role !== 'superadmin');
                 
                 const sorted = filteredMembers.sort((a, b) => {
@@ -36,11 +36,11 @@ const Leaderboard = () => {
         fetchLeaderboardData();
     }, []);
 
-    // Format relative time
+    
     const formatTimeAgo = (dateString) => {
         if (!dateString) return 'OFFLINE';
         const date = new Date(dateString);
-        if (isNaN(date.getTime())) return 'UNKNOWN'; // Handle invalid dates
+        if (isNaN(date.getTime())) return 'UNKNOWN'; 
         
         const now = new Date();
         const seconds = Math.floor((now - date) / 1000);
@@ -60,12 +60,12 @@ const Leaderboard = () => {
 
     return (
         <section className="py-24 relative min-h-screen bg-white text-black font-mono border-t-2 border-black">
-             {/* Background Grid */}
+             {}
              <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:2rem_2rem] opacity-50"></div>
 
             <div className="container mx-auto px-6 z-10">
                 
-                {/* Header Terminal Block */}
+                {}
                 <div className="mb-16 border-l-4 border-black pl-6 py-2 max-w-4xl">
                     <div className="flex flex-col gap-1 text-sm uppercase tracking-wider">
                         <div className="flex items-center gap-2 text-gray-500">
@@ -98,7 +98,7 @@ const Leaderboard = () => {
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 gap-4">
-                        {/* Headers */}
+                        {}
                         <div className="hidden md:grid grid-cols-12 gap-4 px-6 pb-2 text-xs font-bold text-gray-400 uppercase tracking-widest border-b border-black">
                             <div className="col-span-1">Rank</div>
                             <div className="col-span-5">Operative</div>
@@ -109,7 +109,7 @@ const Leaderboard = () => {
                         {leaders.map((member, idx) => (
                             <div key={member._id} className="group relative bg-white border border-black hover:bg-black hover:text-white transition-all duration-200 p-4 md:px-6 md:py-4 flex flex-col md:grid md:grid-cols-12 md:items-center gap-4 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
                                 
-                                {/* Rank */}
+                                {}
                                 <div className="col-span-1 flex items-center gap-2">
                                     <span className="font-black text-2xl md:text-xl text-gray-300 group-hover:text-gray-600">
                                         {String(idx + 1).padStart(2, '0')}
@@ -117,11 +117,11 @@ const Leaderboard = () => {
                                     {idx === 0 && member.commitCount > 0 && <span className="bg-yellow-400 text-black text-[10px] px-1 font-bold border border-black transform -translate-y-2 lg:translate-y-0">TOP</span>}
                                 </div>
 
-                                {/* Operative Info */}
+                                {}
                                 <div className="col-span-5 flex items-center gap-4">
                                     <div className="w-12 h-12 border-2 border-black p-0.5 shrink-0 bg-white">
                                         <img 
-                                            src={member.profileImage || member.avatar || "https://github.com/github.png"} 
+                                            src={member.profileImage || member.avatar || "https:
                                             alt={member.name} 
                                             className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" 
                                         />
@@ -138,7 +138,7 @@ const Leaderboard = () => {
                                     </div>
                                 </div>
 
-                                {/* Commits */}
+                                {}
                                 <div className="col-span-3 flex md:justify-end items-center gap-2">
                                     <div className="md:hidden text-xs text-gray-500 group-hover:text-gray-400 uppercase">Commits:</div>
                                     <span className={`font-black text-2xl flex items-center gap-2 ${member.commitCount > 0 ? 'group-hover:text-green-400' : 'text-gray-300'}`}>
@@ -146,7 +146,7 @@ const Leaderboard = () => {
                                     </span>
                                 </div>
 
-                                {/* Last Active */}
+                                {}
                                 <div className="col-span-3 flex md:justify-end items-center gap-2">
                                     <div className="md:hidden text-xs text-gray-500 group-hover:text-gray-400 uppercase">Last Signal:</div>
                                     <div className={`text-xs font-bold px-2 py-1 border ${member.lastCommit ? 'border-green-600 text-green-700 bg-green-50 group-hover:bg-green-900 group-hover:text-green-300 group-hover:border-green-400' : 'border-gray-200 text-gray-400 bg-gray-100'}`}>

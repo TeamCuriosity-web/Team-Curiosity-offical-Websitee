@@ -3,10 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Card from '../ui/Card';
 import Button from '../ui/Button';
-import api from '../../services/adminApi'; // Use Admin Authenticated API
+import api from '../../services/adminApi'; 
 import { Shield, Users, Trash2, Lock, Cpu, Activity, Database, Code, Key, UserPlus, Zap, LayoutGrid, Layers, Globe, GitBranch, Server, Video, ExternalLink, Play } from 'lucide-react';
 
-    // --- UI HELPERS ---
+    
     const TabButton = ({ id, label, icon: Icon, activeTab, setActiveTab }) => (
         <button
             onClick={() => setActiveTab(id)}
@@ -41,9 +41,9 @@ import { Shield, Users, Trash2, Lock, Cpu, Activity, Database, Code, Key, UserPl
 const SuperAdminDashboard = () => {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
-    const [activeTab, setActiveTab] = useState('requests'); // requests, admins, members, projects, hackathons, comms, system, courses
+    const [activeTab, setActiveTab] = useState('requests'); 
     
-    // Forms & State
+    
     const [createAdminForm, setCreateAdminForm] = useState({ name: '', email: '' });
     const [newAdminCreds, setNewAdminCreds] = useState(null);
     const [inviteLink, setInviteLink] = useState('');
@@ -59,7 +59,7 @@ const SuperAdminDashboard = () => {
     const [noteForm, setNoteForm] = useState({ title: '', description: '', pdfUrl: '', domain: 'Frontend', author: 'Team Curiosity' });
     const [editingNoteId, setEditingNoteId] = useState(null);
 
-    // --- QUERIES ---
+    
     const { data: users = [], isLoading: usersLoading, error: usersError } = useQuery({
         queryKey: ['admin-users'],
         queryFn: async () => {
@@ -106,7 +106,7 @@ const SuperAdminDashboard = () => {
         navigate('/admin/login');
     }
 
-    // --- MUTATIONS ---
+    
     const createAdminMutation = useMutation({
         mutationFn: (data) => api.post('/admin/create-admin', data),
         onSuccess: (res) => {
@@ -230,7 +230,7 @@ const SuperAdminDashboard = () => {
     });
 
 
-    // --- HANDLERS ---
+    
 
     const handleCreateAdmin = (e) => {
         e.preventDefault();
@@ -300,19 +300,19 @@ const SuperAdminDashboard = () => {
     const generateInvite = async () => {
         try {
             const { data } = await api.post('/admin/invite', { expiresInHours: 24 });
-            // Construct link on frontend to ensure it matches the current environment (e.g. GitHub Pages)
-            // Assuming data.inviteLink contains the full URL or just the token. 
-            // We'll extract the token if it's a URL, or use it directly if it's a token.
-            // But usually backend returns full link. Let's safeguard.
+            
+            
+            
+            
             
             let token = '';
             if (data.inviteLink.includes('token=')) {
                 token = data.inviteLink.split('token=')[1];
             } else {
-                // If it's just the token or something else, this might be risky without seeing backend.
-                // Let's assume the standard format is base_url/join?token=...
-                // If the backend returns a relative path, we might be fine.
-                // Safest approach: replace the origin of the returned link with window.location.origin
+                
+                
+                
+                
                 try {
                     const url = new URL(data.inviteLink);
                     token = url.searchParams.get('token');
@@ -325,10 +325,10 @@ const SuperAdminDashboard = () => {
                  const clientUrl = `${window.location.origin}${window.location.pathname.startsWith('/Team-Curiosity-offical-Websitee') ? '/Team-Curiosity-offical-Websitee' : ''}/invite?token=${token}`;
                  setInviteLink(clientUrl);
             } else {
-                // Fallback if parsing fails (e.g. if backend just returns the link and our logic fails)
-                // We'll just replace 'localhost:5000' or whatever backend host with client host
-                // This is a rough patch.
-                // FORCE FRONTEND URL (GitHub Pages or Localhost)
+                
+                
+                
+                
             const isLocal = window.location.hostname === 'localhost';
             const basePath = isLocal ? '' : '/Team-Curiosity-offical-Websitee';
             const fullLink = `${window.location.origin}${basePath}/invite?token=${data.token}`;
@@ -358,7 +358,7 @@ const SuperAdminDashboard = () => {
         }
 
         if (videoId) {
-            const thumbUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+            const thumbUrl = `https:
             setCourseForm(prev => ({ ...prev, youtubeId: videoId, thumbnailUrl: thumbUrl }));
             
             try {
@@ -371,7 +371,7 @@ const SuperAdminDashboard = () => {
             } catch (err) {
                 console.error("Meta fetch error", err);
                 try {
-                    const response = await fetch(`https://noembed.com/embed?url=${url}`);
+                    const response = await fetch(`https:
                     const data = await response.json();
                     if (data.title) {
                         setCourseForm(prev => ({ ...prev, title: data.title }));
@@ -401,7 +401,7 @@ const SuperAdminDashboard = () => {
             youtubeId: course.youtubeId,
             thumbnailUrl: course.thumbnailUrl
         });
-        setActiveTab('courses'); // Ensure we are on the right tab
+        setActiveTab('courses'); 
     };
 
     return (
@@ -409,7 +409,7 @@ const SuperAdminDashboard = () => {
             
             <div className="max-w-7xl mx-auto">
                 
-                {/* Header */}
+                {}
                 <div className="flex justify-between items-end mb-12 border-b border-gray-200 pb-6">
                     <div>
                         <div className="flex items-center gap-3 mb-2">
@@ -433,7 +433,7 @@ const SuperAdminDashboard = () => {
                     </button>
                 </div>
 
-                {/* Tabs */}
+                {}
                 <div className="flex mb-8 border-b border-gray-200 overflow-x-auto">
                     <TabButton id="requests" label="Requests" icon={Lock} activeTab={activeTab} setActiveTab={setActiveTab} />
                     <TabButton id="admins" label="Admins" icon={Shield} activeTab={activeTab} setActiveTab={setActiveTab} />
@@ -446,7 +446,7 @@ const SuperAdminDashboard = () => {
                     <TabButton id="system" label="System" icon={Database} activeTab={activeTab} setActiveTab={setActiveTab} />
                 </div>
 
-                {/* --- REQUESTS TAB --- */}
+                {}
                 {activeTab === 'requests' && (
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <div className="lg:col-span-3">
@@ -467,14 +467,14 @@ const SuperAdminDashboard = () => {
                                         <tbody className="divide-y divide-gray-50">
                                             {users.filter(u => !u.isApproved).length === 0 ? (
                                                 <tr>
-                                                    <td colSpan="3" className="py-8 text-center text-gray-400 text-xs font-mono">NO PENDING REQUESTS // ALL SYSTEMS SECURE</td>
+                                                    <td colSpan="3" className="py-8 text-center text-gray-400 text-xs font-mono">NO PENDING REQUESTS 
                                                 </tr>
                                             ) : (
                                                 users.filter(u => !u.isApproved).map(user => (
                                                     <tr key={user._id} className="group hover:bg-gray-50 transition-colors">
                                                         <td className="py-4">
                                                             <div className="flex items-center gap-3">
-                                                                <img src={user.profileImage || `https://api.dicebear.com/7.x/notionists/svg?seed=${user.name}`} className="w-8 h-8 rounded-full bg-gray-100" alt="" />
+                                                                <img src={user.profileImage || `https:
                                                                 <div>
                                                                     <div className="font-bold text-gray-900 text-sm">{user.name}</div>
                                                                     <div className="text-[10px] text-gray-400 font-mono">{user.email}</div>
@@ -508,7 +508,7 @@ const SuperAdminDashboard = () => {
                     </div>
                 )}
                 
-                {/* --- ADMINS TAB --- */}
+                {}
                 {activeTab === 'admins' && (
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <div className="lg:col-span-2">
@@ -578,7 +578,7 @@ const SuperAdminDashboard = () => {
                     </div>
                 )}
 
-                {/* --- MEMBERS TAB --- */}
+                {}
                 {activeTab === 'members' && (
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <div className="lg:col-span-2">
@@ -627,7 +627,7 @@ const SuperAdminDashboard = () => {
                     </div>
                 )}
 
-                {/* --- PROJECTS TAB --- */}
+                {}
                 {activeTab === 'projects' && (
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <div className="lg:col-span-2 space-y-4">
@@ -661,7 +661,7 @@ const SuperAdminDashboard = () => {
                                         </div>
                                         {p.liveLink && (
                                             <a href={p.liveLink} target="_blank" rel="noopener noreferrer" className="text-[10px] text-gray-400 hover:text-green-600 font-mono transition-colors border-b border-transparent hover:border-green-200 opacity-0 group-hover:opacity-100">
-                                                {p.liveLink.replace('https://', '')}
+                                                {p.liveLink.replace('https:
                                             </a>
                                         )}
                                     </div>
@@ -721,7 +721,7 @@ const SuperAdminDashboard = () => {
                                             </div>
                                             {projectForm.title && (
                                                 <div className="text-[10px] text-blue-600/70 font-mono pl-4">
-                                                    Target: https://TeamCuriosity-web.github.io/{projectForm.title.trim().replace(/\s+/g, '-').replace(/[^\w-]/g, '')}/
+                                                    Target: https:
                                                 </div>
                                             )}
                                         </div>
@@ -736,7 +736,7 @@ const SuperAdminDashboard = () => {
                     </div>
                 )}
 
-                {/* --- HACKATHONS TAB --- */}
+                {}
                 {activeTab === 'hackathons' && (
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <div className="lg:col-span-2 space-y-4">
@@ -776,7 +776,7 @@ const SuperAdminDashboard = () => {
                     </div>
                 )}
 
-                {/* --- COMMS TAB --- */}
+                {}
                 {activeTab === 'comms' && (
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <LightCard>
@@ -835,7 +835,7 @@ const SuperAdminDashboard = () => {
                     </div>
                 )}
 
-                {/* --- SYSTEM TAB --- */}
+                {}
                 {activeTab === 'system' && (
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <LightCard className="border-red-200">
@@ -866,7 +866,7 @@ const SuperAdminDashboard = () => {
                         </LightCard>
                     </div>
                 )}
-                {/* --- COURSES TAB --- */}
+                {}
                 {activeTab === 'courses' && (
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <div className="lg:col-span-2">
@@ -906,7 +906,7 @@ const SuperAdminDashboard = () => {
                             </div>
                             {courses.length === 0 && (
                                 <div className="p-20 text-center bg-gray-50 rounded-xl border border-dashed border-gray-200">
-                                    <div className="text-gray-300 mb-2 font-mono text-xs uppercase tracking-[0.2em]">No Courses Deployed // Empty Repository</div>
+                                    <div className="text-gray-300 mb-2 font-mono text-xs uppercase tracking-[0.2em]">No Courses Deployed 
                                     <p className="text-gray-400 text-[10px] uppercase">Add your first YouTube course using the uplink protocol.</p>
                                 </div>
                             )}
@@ -919,7 +919,7 @@ const SuperAdminDashboard = () => {
                                         <label className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">YouTube Uplink [URL]</label>
                                         <input 
                                             className="w-full bg-white border border-gray-200 p-3 rounded text-sm text-gray-900 focus:border-red-500 outline-none mt-1 shadow-sm" 
-                                            placeholder="https://youtube.com/watch?v=..." 
+                                            placeholder="https:
                                             value={courseForm.youtubeLink} 
                                             onChange={e => handleYoutubeLinkChange(e.target.value)} 
                                             required 
@@ -1007,7 +1007,7 @@ const SuperAdminDashboard = () => {
                     </div>
                 )}
 
-                {/* --- NOTES TAB --- */}
+                {}
                 {activeTab === 'notes' && (
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <div className="lg:col-span-2">
@@ -1047,7 +1047,7 @@ const SuperAdminDashboard = () => {
                             </div>
                             {notes.length === 0 && (
                                 <div className="p-20 text-center bg-gray-50 rounded-xl border border-dashed border-gray-200">
-                                    <div className="text-gray-300 mb-2 font-mono text-xs uppercase tracking-[0.2em]">No Academic Archives // Empty Repository</div>
+                                    <div className="text-gray-300 mb-2 font-mono text-xs uppercase tracking-[0.2em]">No Academic Archives 
                                     <p className="text-gray-400 text-[10px] uppercase">Upload your first PDF resource to the central archive.</p>
                                 </div>
                             )}
@@ -1060,7 +1060,7 @@ const SuperAdminDashboard = () => {
                                         <label className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">PDF Source Uplink</label>
                                         <input 
                                             className="w-full bg-white border border-gray-200 p-3 rounded text-sm text-gray-900 focus:border-red-500 outline-none mt-1 shadow-sm" 
-                                            placeholder="https://..." 
+                                            placeholder="https:
                                             value={noteForm.pdfUrl} 
                                             onChange={e => setNoteForm({...noteForm, pdfUrl: e.target.value})} 
                                             required 

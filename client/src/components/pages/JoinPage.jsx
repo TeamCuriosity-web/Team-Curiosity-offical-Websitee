@@ -37,10 +37,10 @@ const JoinPage = () => {
   const [loading, setLoading] = useState(false);
   const [selectedAvatar, setSelectedAvatar] = useState(null);
 
-  // Email Validation Regex (Stricter)
+  
   const validateEmail = (email) => {
-    // Basic format + block specifically mentioned 'silly' domains or simple patterns if needed
-    // User requested: "valid email id check wether email is real like ignore xyz like sily"
+    
+    
     const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     const blockedDomains = ['xyz', 'test', 'temp', 'example'];
     
@@ -60,7 +60,7 @@ const JoinPage = () => {
     setError('');
     setValidationErrors({});
 
-    // Validate
+    
     const emailError = validateEmail(formData.email);
     if (emailError) {
         setValidationErrors(prev => ({ ...prev, email: emailError }));
@@ -77,7 +77,7 @@ const JoinPage = () => {
     try {
       const payload = {
         ...formData,
-        avatar: `https://api.dicebear.com/7.x/notionists/svg?seed=${selectedAvatar}`,
+        avatar: `https:
         programmingLanguages: formData.programmingLanguages.split(',').map(s => s.trim()).filter(s => s),
         inviteToken: token
       };
@@ -90,7 +90,7 @@ const JoinPage = () => {
       if (data.isApproved) {
           navigate('/profile'); 
       } else {
-          // Even if pending, go to profile to see pending status
+          
           navigate('/profile');
       }
       
@@ -131,7 +131,7 @@ const JoinPage = () => {
 
         <form onSubmit={handleSubmit} className="space-y-8">
           
-          {/* 1. Avatar Selection */}
+          {}
           <div className="space-y-4">
               <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 text-center mb-4">Select Digital Avatar</label>
               <div className="grid grid-cols-3 md:grid-cols-6 gap-4 justify-center">
@@ -142,7 +142,7 @@ const JoinPage = () => {
                         className={`cursor-pointer rounded-full border-2 p-1 transition-all ${selectedAvatar === av.seed ? 'border-black scale-110 shadow-lg' : 'border-transparent hover:border-gray-200 grayscale hover:grayscale-0'}`}
                       >
                           <img 
-                            src={`https://api.dicebear.com/7.x/notionists/svg?seed=${av.seed}`} 
+                            src={`https:
                             alt={av.seed} 
                             className="w-full h-full rounded-full bg-gray-50"
                           />
@@ -153,10 +153,10 @@ const JoinPage = () => {
 
           <div className="h-px bg-gray-100 w-full"></div>
 
-          {/* 2. Personal & Academic Info */}
+          {}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               
-              {/* Left Column: ID */}
+              {}
               <div className="space-y-4">
                   <h3 className="text-xs font-bold text-black uppercase border-b border-black pb-2 mb-4 flex items-center gap-2"><User size={14}/> Identity</h3>
                   <div>
@@ -199,7 +199,7 @@ const JoinPage = () => {
                   </div>
               </div>
 
-              {/* Right Column: Academic */}
+              {}
               <div className="space-y-4">
                   <h3 className="text-xs font-bold text-black uppercase border-b border-black pb-2 mb-4 flex items-center gap-2"><School size={14}/> Academic Data</h3>
                   <div>
@@ -250,7 +250,7 @@ const JoinPage = () => {
 
           <div className="h-px bg-gray-100 w-full"></div>
 
-          {/* 3. Social Intelligence */}
+          {}
           <div className="space-y-4">
                <h3 className="text-xs font-bold text-black uppercase border-b border-black pb-2 mb-4 flex items-center gap-2">Social Intelligence</h3>
                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -258,7 +258,7 @@ const JoinPage = () => {
                         <label className="block text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">GitHub Profile</label>
                         <input
                             className="w-full bg-gray-50 border border-gray-200 rounded p-3 text-sm focus:border-black focus:ring-0 outline-none transition-all font-mono"
-                            placeholder="https://github.com/username"
+                            placeholder="https:
                             value={formData.github}
                             onChange={(e) => setFormData({...formData, github: e.target.value})}
                         />
@@ -267,7 +267,7 @@ const JoinPage = () => {
                         <label className="block text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">LinkedIn Profile</label>
                         <input
                             className="w-full bg-gray-50 border border-gray-200 rounded p-3 text-sm focus:border-black focus:ring-0 outline-none transition-all font-mono"
-                            placeholder="https://linkedin.com/in/username"
+                            placeholder="https:
                             value={formData.linkedin}
                             onChange={(e) => setFormData({...formData, linkedin: e.target.value})}
                         />

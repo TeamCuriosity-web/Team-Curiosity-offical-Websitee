@@ -20,11 +20,11 @@ const ManifestoPage = () => {
     <main className="min-h-screen bg-white pt-32 pb-20">
       <div className="container mx-auto px-6 max-w-5xl">
           
-          {/* Header */}
+          {}
           <div className="mb-16 border-b-2 border-black pb-8">
               <div className="flex items-center gap-2 mb-4 text-red-600 animate-pulse">
                   <Lock size={16} />
-                  <span className="font-mono text-xs uppercase font-bold tracking-[0.2em]">Top Secret // Eyes Only</span>
+                  <span className="font-mono text-xs uppercase font-bold tracking-[0.2em]">Top Secret 
               </div>
               <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-black mb-4 uppercas leading-none">
                 The Legendary<br/>Doctrine
@@ -36,7 +36,7 @@ const ManifestoPage = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
               
-              {/* Sidebar / Index */}
+              {}
               <div className="lg:col-span-4 space-y-8">
                   <Card className="p-6 bg-black text-white rounded-none">
                       <h4 className="font-mono text-xs uppercase text-gray-500 mb-4 border-b border-gray-800 pb-2">Status Report</h4>
@@ -56,10 +56,10 @@ const ManifestoPage = () => {
                   </div>
               </div>
 
-              {/* Main Content */}
+              {}
               <div className="lg:col-span-8 space-y-16">
                   
-                  {/* Section 1: Philosophy */}
+                  {}
                   <section>
                       <h2 className="text-2xl font-bold bg-black text-white inline-block px-2 py-1 mb-8 uppercase">01. Core Philosophy</h2>
                       <div className="space-y-8">
@@ -84,7 +84,7 @@ const ManifestoPage = () => {
                       </div>
                   </section>
 
-                  {/* Section 2: Global Ambition */}
+                  {}
                   <section>
                       <h2 className="text-2xl font-bold bg-black text-white inline-block px-2 py-1 mb-8 uppercase">02. Global Ambition</h2>
                       <div className="prose text-secondary mb-8">

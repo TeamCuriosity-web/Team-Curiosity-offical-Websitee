@@ -5,7 +5,7 @@ const hackathonSchema = new mongoose.Schema({
   description: { type: String },
   date: { type: Date },
   status: { type: String, enum: ['upcoming', 'ongoing', 'completed', 'won'], default: 'upcoming' },
-  achievement: { type: String }, // e.g., "1st Place", "Finalist"
+  achievement: { type: String }, 
   teamMembers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   link: { type: String },
   createdAt: { type: Date, default: Date.now }

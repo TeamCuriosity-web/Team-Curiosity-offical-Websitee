@@ -15,9 +15,9 @@ const notificationSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
-  // Recipient can be a specific user ID or 'admin' for all admins
+  
   recipient: { 
-    type: String, // Can be ObjectId string or 'admin'
+    type: String, 
     required: true 
   },
   isRead: { 

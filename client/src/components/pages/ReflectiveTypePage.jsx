@@ -7,13 +7,13 @@ const ReflectiveTypePage = () => {
 
     useEffect(() => {
         const ctx = gsap.context(() => {
-            // Set initial state
+            
             gsap.set(textRef.current, { opacity: 0, scale: 0.96 });
             gsap.set(shineRef.current, { x: '-100%' });
 
             const tl = gsap.timeline({ delay: 0.3 });
 
-            // ENTRY ANIMATION - Powerful and confident
+            
             tl.to(textRef.current, {
                 opacity: 1,
                 scale: 1,
@@ -21,7 +21,7 @@ const ReflectiveTypePage = () => {
                 ease: 'power3.out'
             });
 
-            // REFLECTION SWEEP - One elegant pass
+            
             tl.to(shineRef.current, {
                 x: '100%',
                 duration: 2,
@@ -50,7 +50,7 @@ const ReflectiveTypePage = () => {
                 >
                     Team Curiosity
                     
-                    {/* Reflective Light Sweep */}
+                    {}
                     <span 
                         ref={shineRef}
                         className="absolute inset-0 pointer-events-none"

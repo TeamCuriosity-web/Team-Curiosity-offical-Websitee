@@ -30,17 +30,17 @@ const StartBuildingPage = () => {
   return (
     <main ref={containerRef} className="container mx-auto px-6 pt-32 pb-20">
       
-      {/* Header */}
+      {}
       <div className="mb-12 border-b-2 border-black pb-4 fade-item">
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-black mb-2 uppercase">
             Initialize <span className="text-gray-400">Environment</span>
           </h1>
-          <p className="text-secondary font-mono text-sm uppercase">Protocol: GENESIS // Phase 1</p>
+          <p className="text-secondary font-mono text-sm uppercase">Protocol: GENESIS 
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           
-          {/* Left: Quick Start Terminal */}
+          {}
           <div className="space-y-8 fade-item">
               <div className="prose">
                   <p className="text-lg text-black font-medium leading-relaxed">
@@ -90,7 +90,7 @@ const StartBuildingPage = () => {
               </div>
           </div>
 
-          {/* Right: Architecture Modules */}
+          {}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 fade-item">
                <Card className="p-6 border-2 border-black hover:bg-black hover:text-white transition-colors group cursor-pointer">
                     <Box size={32} className="mb-4 text-black group-hover:text-white" />

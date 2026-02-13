@@ -11,7 +11,7 @@ const projectSchema = new mongoose.Schema({
   teamMembers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   repoLink: { type: String },
   liveLink: { type: String },
-  thumbnail: { type: String }, // URL
+  thumbnail: { type: String }, 
   createdAt: { type: Date, default: Date.now }
 });
 

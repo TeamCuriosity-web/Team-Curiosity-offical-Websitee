@@ -12,7 +12,7 @@ const ProfilePage = () => {
     const [sending, setSending] = useState(false);
     const [sentSuccess, setSentSuccess] = useState(false);
     
-    // Edit Mode State
+    
     const [isEditing, setIsEditing] = useState(false);
     const [editData, setEditData] = useState({
         github: user?.github || '',
@@ -22,10 +22,10 @@ const ProfilePage = () => {
     const handleSaveProfile = async () => {
         try {
             const { data } = await api.put('/auth/updatedetails', editData);
-            // Update local storage and user state
+            
             localStorage.setItem('user', JSON.stringify(data));
             setIsEditing(false);
-            window.location.reload(); // Quick refresh to reflect changes everywhere
+            window.location.reload(); 
         } catch (err) {
             alert("Failed to update profile. " + (err.response?.data?.message || ''));
         }
@@ -50,7 +50,7 @@ const ProfilePage = () => {
         try {
             await api.post('/notifications', { 
                 message: message,
-                recipient: 'admin' // Explicitly targeting admin channel
+                recipient: 'admin' 
             });
             setSentSuccess(true);
             setMessage('');
@@ -66,12 +66,12 @@ const ProfilePage = () => {
     return (
         <div className="min-h-screen pt-32 pb-20 px-6 container mx-auto bg-white text-black">
             <div className="max-w-4xl mx-auto">
-                {/* Header */}
+                {}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 border-b border-gray-200 pb-8">
                     <div className="flex items-center gap-6">
                         <div className="w-24 h-24 rounded-full border-2 border-black p-1">
                             <img 
-                                src={user.profileImage || `https://api.dicebear.com/7.x/notionists/svg?seed=${user.name}`} 
+                                src={user.profileImage || `https:
                                 alt="Profile" 
                                 className="w-full h-full rounded-full bg-gray-50 object-cover"
                             />
@@ -115,7 +115,7 @@ const ProfilePage = () => {
                 )}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                    {/* Personal Detail */}
+                    {}
                     <Card className="p-8">
                         <h3 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2">
                             <User size={16} /> Personal Dossier
@@ -142,7 +142,7 @@ const ProfilePage = () => {
                         </div>
                     </Card>
 
-                    {/* Tech & Status */}
+                    {}
                     <Card className="p-8 flex flex-col justify-between">
                         <div>
                              <h3 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2">
@@ -161,7 +161,7 @@ const ProfilePage = () => {
                             )}
                         </div>
                         
-                        {/* Social Uplinks - Editable */}
+                        {}
                         <div className="mt-8 pt-8 border-t border-gray-100">
                              <h3 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-4 flex items-center gap-2">
                                 <Shield size={16} /> Social Uplinks
@@ -174,7 +174,7 @@ const ProfilePage = () => {
                                             className="flex-1 bg-gray-50 border border-black rounded px-2 py-1 text-xs font-mono"
                                             value={editData.github}
                                             onChange={(e) => setEditData({...editData, github: e.target.value})}
-                                            placeholder="https://github.com/..."
+                                            placeholder="https:
                                         />
                                     ) : (
                                         <a href={user.github} target="_blank" rel="noreferrer" className="text-sm font-mono truncate text-blue-600 hover:underline">{user.github || 'N/A'}</a>
@@ -187,7 +187,7 @@ const ProfilePage = () => {
                                             className="flex-1 bg-gray-50 border border-black rounded px-2 py-1 text-xs font-mono"
                                             value={editData.linkedin}
                                             onChange={(e) => setEditData({...editData, linkedin: e.target.value})}
-                                            placeholder="https://linkedin.com/..."
+                                            placeholder="https:
                                         />
                                     ) : (
                                         <a href={user.linkedin} target="_blank" rel="noreferrer" className="text-sm font-mono truncate text-blue-600 hover:underline">{user.linkedin || 'N/A'}</a>
@@ -219,7 +219,7 @@ const ProfilePage = () => {
                     </Card>
                 </div>
 
-                {/* Comms Channel */}
+                {}
                 <Card className="p-8 border-t-4 border-black">
                     <h3 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2">
                         <MessageSquare size={16} /> Secure Comms Channel

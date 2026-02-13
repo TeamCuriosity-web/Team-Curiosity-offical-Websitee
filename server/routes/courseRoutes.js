@@ -3,13 +3,13 @@ const router = express.Router();
 const Course = require('../models/Course');
 const { protect, admin } = require('../middleware/authMiddleware');
 
-// @desc    Get YouTube Metadata (Proxy to avoid CORS for duration)
-// @route   GET /api/courses/yt-metadata/:videoId
-// @access  Private/Admin
+
+
+
 router.get('/yt-metadata/:videoId', protect, admin, async (req, res) => {
   try {
     const { videoId } = req.params;
-    const response = await fetch(`https://www.youtube.com/watch?v=${videoId}`, {
+    const response = await fetch(`https:
       headers: { 'User-Agent': 'Mozilla/5.0' }
     });
     
@@ -19,7 +19,7 @@ router.get('/yt-metadata/:videoId', protect, admin, async (req, res) => {
 
     const html = await response.text();
     
-    // Extract duration (lengthSeconds)
+    
     const durationMatch = html.match(/"lengthSeconds":"(\d+)"/);
     let duration = '';
     if (durationMatch) {
@@ -35,7 +35,7 @@ router.get('/yt-metadata/:videoId', protect, admin, async (req, res) => {
       }
     }
 
-    // Extract title as backup
+    
     const titleMatch = html.match(/<title>(.*?) - YouTube<\/title>/);
     const title = titleMatch ? titleMatch[1] : '';
 
@@ -47,9 +47,9 @@ router.get('/yt-metadata/:videoId', protect, admin, async (req, res) => {
 });
 
 
-// @desc    Get all courses (with optional domain filter)
-// @route   GET /api/courses
-// @access  Public
+
+
+
 router.get('/', async (req, res) => {
   try {
     const { domain } = req.query;
@@ -61,9 +61,9 @@ router.get('/', async (req, res) => {
   }
 });
 
-// @desc    Create a new course
-// @route   POST /api/courses
-// @access  Private/Admin
+
+
+
 router.post('/', protect, admin, async (req, res) => {
   try {
     const { title, youtubeLink, youtubeId, thumbnailUrl, domain, instructor, duration } = req.body;
@@ -93,9 +93,9 @@ router.post('/', protect, admin, async (req, res) => {
   }
 });
 
-// @desc    Update a course
-// @route   PUT /api/courses/:id
-// @access  Private/Admin
+
+
+
 router.put('/:id', protect, admin, async (req, res) => {
   try {
     const { title, youtubeLink, youtubeId, thumbnailUrl, domain, instructor, duration, rating } = req.body;
@@ -121,9 +121,9 @@ router.put('/:id', protect, admin, async (req, res) => {
   }
 });
 
-// @desc    Delete a course
-// @route   DELETE /api/courses/:id
-// @access  Private/Admin
+
+
+
 router.delete('/:id', protect, admin, async (req, res) => {
   try {
     const course = await Course.findById(req.params.id);

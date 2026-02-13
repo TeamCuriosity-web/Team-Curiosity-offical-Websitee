@@ -5,10 +5,10 @@ import { Link } from 'react-router-dom';
 const LockedView = ({ title = "Restricted Area" }) => {
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-gray-50 flex items-center justify-center">
-      {/* Blurred Background Layer (Simulated Content) */}
+      {}
       <div className="absolute inset-0 filter blur-xl opacity-30 pointer-events-none select-none overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-full bg-grid-pattern transform scale-110"></div>
-          {/* Mock Content Elements to create 'blurred page' feel */}
+          {}
           <div className="container mx-auto px-6 py-20 space-y-12">
                <div className="h-20 bg-gray-300 w-1/3 rounded"></div>
                <div className="grid grid-cols-3 gap-8">
@@ -20,7 +20,7 @@ const LockedView = ({ title = "Restricted Area" }) => {
           </div>
       </div>
 
-      {/* Locked Overlay Content */}
+      {}
       <div className="relative z-10 max-w-lg w-full p-8 text-center">
           <div className="mb-6 flex justify-center">
               <div className="w-20 h-20 bg-black text-white rounded-full flex items-center justify-center shadow-2xl">

@@ -12,7 +12,7 @@ const ChatGlimpse = () => {
     const contentRef = useRef(null);
 
     useScrollReveal(containerRef, { mode: 'up', distance: 20 });
-    // Scale up the chat window like it's opening
+    
     useScrollReveal(contentRef, { mode: 'scale', duration: 0.8, delay: 0.2 });
 
     useEffect(() => {
@@ -22,13 +22,13 @@ const ChatGlimpse = () => {
         if (token) {
             const fetchPreview = async () => {
                 try {
-                    // Determine API URL based on environment
-                    const baseUrl = 'https://team-curiosity-offical-websitee.onrender.com/api';
-                    // Adjust fetch logic if needed, reusing api instance
+                    
+                    const baseUrl = 'https:
+                    
                     const { data } = await api.get('/chat/history?room=general'); 
-                    setRecentMessages(data.slice(0, 3)); // Show only last 3
+                    setRecentMessages(data.slice(0, 3)); 
                 } catch (err) {
-                    // console.error("Failed to fetch chat preview");
+                    
                 }
             };
             fetchPreview();
