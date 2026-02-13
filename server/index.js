@@ -89,7 +89,7 @@ io.on('connection', (socket) => {
 });
 
 
-mongoose.connect(process.env.MONGO_URI || 'mongodb:
+mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/legendary-team')
 .then(async () => {
     console.log('MongoDB Connected [Elite Mode]');
     

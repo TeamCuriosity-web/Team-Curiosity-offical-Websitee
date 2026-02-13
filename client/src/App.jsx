@@ -112,7 +112,7 @@ const AppContent = () => {
                  
                  
                  
-                 const response = await fetch('https:
+                 const response = await fetch('https://team-curiosity-offical-websitee.onrender.com/api/auth/me', {
                      headers: {
                          'Authorization': `Bearer ${token}`
                      }

@@ -77,7 +77,7 @@ body {
   position: absolute;
   left: 0;
   text-shadow: -2px 0 #ff00c1;
-  clip: rect(44px, 450px, 56px, 0);
+  clip-path: polygon(0 44px, 450px 44px, 450px 56px, 0 56px);
   animation: glitch-anim 5s infinite linear alternate-reverse;
 }
 .glitch-text::after {
@@ -85,25 +85,25 @@ body {
   position: absolute;
   left: 0;
   text-shadow: -2px 0 #00fff9;
-  clip: rect(44px, 450px, 56px, 0);
+  clip-path: polygon(0 44px, 450px 44px, 450px 56px, 0 56px);
   animation: glitch-anim2 5s infinite linear alternate-reverse;
 }
 
 @keyframes glitch-anim {
-  0% { clip: rect(31px, 9999px, 94px, 0); }
-  20% { clip: rect(62px, 9999px, 42px, 0); }
-  40% { clip: rect(16px, 9999px, 78px, 0); }
-  60% { clip: rect(89px, 9999px, 13px, 0); }
-  80% { clip: rect(24px, 9999px, 5px, 0); }
-  100% { clip: rect(65px, 9999px, 83px, 0); }
+  0% { clip-path: polygon(0 31px, 9999px 31px, 9999px 94px, 0 94px); }
+  20% { clip-path: polygon(0 62px, 9999px 62px, 9999px 42px, 0 42px); }
+  40% { clip-path: polygon(0 16px, 9999px 16px, 9999px 78px, 0 78px); }
+  60% { clip-path: polygon(0 89px, 9999px 89px, 9999px 13px, 0 13px); }
+  80% { clip-path: polygon(0 24px, 9999px 24px, 9999px 5px, 0 5px); }
+  100% { clip-path: polygon(0 65px, 9999px 65px, 9999px 83px, 0 83px); }
 }
 @keyframes glitch-anim2 {
-  0% { clip: rect(65px, 9999px, 100px, 0); }
-  20% { clip: rect(9px, 9999px, 74px, 0); }
-  40% { clip: rect(42px, 9999px, 16px, 0); }
-  60% { clip: rect(85px, 9999px, 3px, 0); }
-  80% { clip: rect(54px, 9999px, 47px, 0); }
-  100% { clip: rect(2px, 9999px, 63px, 0); }
+  0% { clip-path: polygon(0 65px, 9999px 65px, 9999px 100px, 0 100px); }
+  20% { clip-path: polygon(0 9px, 9999px 9px, 9999px 74px, 0 74px); }
+  40% { clip-path: polygon(0 42px, 9999px 42px, 9999px 16px, 0 16px); }
+  60% { clip-path: polygon(0 85px, 9999px 85px, 9999px 3px, 0 3px); }
+  80% { clip-path: polygon(0 54px, 9999px 54px, 9999px 47px, 0 47px); }
+  100% { clip-path: polygon(0 2px, 9999px 2px, 9999px 63px, 0 63px); }
 }
 @keyframes glitch-skew {
   0% { transform: skew(1deg); }
