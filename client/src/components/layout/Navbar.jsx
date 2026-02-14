@@ -38,7 +38,7 @@ const Navbar = () => {
         <div className="container mx-auto px-6 h-20 flex items-center justify-between">
             {}
             <Link to="/" className="flex items-center gap-4 z-50 relative hover:opacity-80 transition-opacity group">
-                 <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http:
+                 <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <defs>
                         <style>
                             {`
@@ -68,12 +68,12 @@ const Navbar = () => {
                     </defs>
                     
                     {}
-                    <path d="M20 5L30 25H10L20 5Z" fill="#171717" stroke="#00F3FF" strokeWidth="1" className="shard shard-1"/>
-                    <path d="M10 25L5 35L15 35L10 25Z" fill="#171717" stroke="#00F3FF" strokeWidth="1" className="shard shard-2"/>
-                    <path d="M30 25L35 35L25 35L30 25Z" fill="#171717" stroke="#00F3FF" strokeWidth="1" className="shard shard-3"/>
+                    <path d="M20 5L30 25H10L20 5Z" fill="#000000" stroke="#000000" strokeWidth="1" className="shard shard-1"/>
+                    <path d="M10 25L5 35L15 35L10 25Z" fill="#000000" stroke="#000000" strokeWidth="1" className="shard shard-2"/>
+                    <path d="M30 25L35 35L25 35L30 25Z" fill="#000000" stroke="#000000" strokeWidth="1" className="shard shard-3"/>
                     
                     {}
-                    <circle cx="20" cy="27" r="2" fill="#00F3FF" className="core-glow"/>
+                    <circle cx="20" cy="27" r="2" fill="#000000" className="core-glow"/>
                 </svg>
                 
                 <div className="flex flex-col justify-center animate-[fadeIn_1s_ease-out_1.5s_forwards] opacity-0">
@@ -112,7 +112,7 @@ const Navbar = () => {
                                 <Link to="/profile" className="flex items-center gap-3 pl-1 pr-4 py-1 rounded-full border border-gray-200 hover:border-black transition-all bg-white hover:bg-gray-50 group">
                                     <div className="w-8 h-8 rounded-full border border-gray-200 overflow-hidden relative">
                                         <img 
-                                            src={user?.profileImage || `https:
+                                            src={user?.profileImage || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name}`}
                                             alt="Profile" 
                                             className="w-full h-full object-cover"
                                         />
@@ -170,7 +170,7 @@ const Navbar = () => {
                             className={`group flex items-center justify-between p-4 border border-black hover:bg-black hover:text-white transition-all duration-200 ${location.pathname === link.path ? 'bg-black text-white' : 'text-black'}`}
                         >
                             <span className="font-mono text-lg uppercase tracking-wider">
-                                <span className="text-xs mr-4 opacity-50 group-hover:text-white">0{idx + 1} 
+                                <span className="text-xs mr-4 opacity-50 group-hover:text-white">0{idx + 1}</span>
                                 {link.name}
                             </span>
                             <ChevronRight size={16} className={`opacity-0 group-hover:opacity-100 transition-opacity -translate-x-2 group-hover:translate-x-0 duration-200`} />

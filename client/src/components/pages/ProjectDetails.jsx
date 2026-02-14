@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Clock, Shield, Code2, GitBranch, Globe, Cpu, UserPlus, Lock, Activity } from 'lucide-react';
 import api from '../../services/api';
 import Button from '../ui/Button';
@@ -10,6 +10,7 @@ const ProjectDetails = () => {
     const [project, setProject] = useState(null);
     const [loading, setLoading] = useState(true);
     const [joining, setJoining] = useState(false);
+    const navigate = useNavigate();
     
     const user = JSON.parse(localStorage.getItem('user'));
     
@@ -45,7 +46,22 @@ const ProjectDetails = () => {
     }, [id]);
 
     const handleJoinProject = async () => {
-        
+        if (!user) {
+            navigate('/login');
+            return;
+        }
+
+        setJoining(true);
+        try {
+            const { data } = await api.post(`/projects/${id}/join`);
+            setProject(data);
+            alert("Application submitted successfully!");
+        } catch (err) {
+            console.error("Join Failed", err);
+            alert(err.response?.data?.message || 'Failed to join project');
+        } finally {
+            setJoining(false);
+        }
     };
 
     if (loading) return <div className="min-h-screen flex items-center justify-center font-mono text-xs">DECRYPTING FILE...</div>;
@@ -135,7 +151,7 @@ const ProjectDetails = () => {
                             {project.teamMembers?.filter(m => m.role !== 'admin' && m.role !== 'superadmin').map(member => (
                                 <div key={member._id} className="flex items-center gap-3 p-3 bg-gray-50 border border-gray-100 rounded-lg min-w-[200px]">
                                         <img 
-                                            src={member.profileImage || `https:
+                                            src={member.profileImage || `https://api.dicebear.com/7.x/avataaars/svg?seed=${member.name}`}
                                             alt={member.name} 
                                             className="w-10 h-10 rounded-full bg-gray-200"
                                         />
@@ -209,11 +225,11 @@ const ProjectDetails = () => {
                                     </span>
                                 </div>
                                 <div className="w-full bg-gray-800 h-2 rounded-full overflow-hidden">
-                                     <div className={`h-full ${project.difficulty === 'legendary' ? 'bg-purple-500' : 'bg-white'} w-[${
+                                     <div className={`h-full ${project.difficulty === 'legendary' ? 'bg-purple-500' : 'bg-white'}`} style={{ width: 
                                          project.difficulty === 'beginner' ? '25%' : 
                                          project.difficulty === 'intermediate' ? '50%' : 
                                          project.difficulty === 'advanced' ? '75%' : '99%'
-                                     }]`}></div>
+                                     }}></div>
                                 </div>
                             </div>
                             
