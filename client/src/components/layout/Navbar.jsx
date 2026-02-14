@@ -69,43 +69,7 @@ const Navbar = () => {
         <div className="container mx-auto px-6 h-20 flex items-center justify-between">
             {}
             <Link to="/" className="flex items-center gap-4 z-50 relative hover:opacity-80 transition-opacity group">
-                 <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <style>
-                            {`
-                                .shard {
-                                    transform-origin: center;
-                                    animation: assemble 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-                                }
-                                .shard-1 { animation-delay: 0.1s; transform: translate(-10px, -10px) rotate(-45deg); opacity: 0; }
-                                .shard-2 { animation-delay: 0.2s; transform: translate(10px, -5px) rotate(30deg); opacity: 0; }
-                                .shard-3 { animation-delay: 0.3s; transform: translate(-5px, 15px) rotate(90deg); opacity: 0; }
-                                .core-glow {
-                                    animation: pulse-core 3s infinite ease-in-out;
-                                    opacity: 0;
-                                    animation-delay: 1.5s; 
-                                    animation-fill-mode: forwards; 
-                                }
-                                
-                                @keyframes assemble {
-                                    to { transform: translate(0, 0) rotate(0deg); opacity: 1; }
-                                }
-                                @keyframes pulse-core {
-                                    0%, 100% { opacity: 0.3; transform: scale(0.95); }
-                                    50% { opacity: 0.8; transform: scale(1.05); }
-                                }
-                            `}
-                        </style>
-                    </defs>
-                    
-                    {}
-                    <path d="M20 5L30 25H10L20 5Z" fill="#171717" stroke="#00F3FF" strokeWidth="1" className="shard shard-1"/>
-                    <path d="M10 25L5 35L15 35L10 25Z" fill="#171717" stroke="#00F3FF" strokeWidth="1" className="shard shard-2"/>
-                    <path d="M30 25L35 35L25 35L30 25Z" fill="#171717" stroke="#00F3FF" strokeWidth="1" className="shard shard-3"/>
-                    
-                    {}
-                    <circle cx="20" cy="27" r="2" fill="#00F3FF" className="core-glow"/>
-                </svg>
+                 <img src={`${import.meta.env.BASE_URL}pwa-logo.svg`} alt="Team Curiosity" className="w-10 h-10 object-contain" />
                 
                 <div className="flex flex-col justify-center animate-[fadeIn_1s_ease-out_1.5s_forwards] opacity-0">
                     <span className="text-sm font-bold tracking-[0.2em] text-black leading-none">TEAM</span>

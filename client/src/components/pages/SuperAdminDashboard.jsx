@@ -358,7 +358,7 @@ const SuperAdminDashboard = () => {
         }
 
         if (videoId) {
-            const thumbUrl = `https:
+            const thumbUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
             setCourseForm(prev => ({ ...prev, youtubeId: videoId, thumbnailUrl: thumbUrl }));
             
             try {
@@ -371,7 +371,7 @@ const SuperAdminDashboard = () => {
             } catch (err) {
                 console.error("Meta fetch error", err);
                 try {
-                    const response = await fetch(`https:
+                    const response = await fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`);
                     const data = await response.json();
                     if (data.title) {
                         setCourseForm(prev => ({ ...prev, title: data.title }));
@@ -467,14 +467,14 @@ const SuperAdminDashboard = () => {
                                         <tbody className="divide-y divide-gray-50">
                                             {users.filter(u => !u.isApproved).length === 0 ? (
                                                 <tr>
-                                                    <td colSpan="3" className="py-8 text-center text-gray-400 text-xs font-mono">NO PENDING REQUESTS 
+                                                    <td colSpan="3" className="py-8 text-center text-gray-400 text-xs font-mono">NO PENDING REQUESTS</td>
                                                 </tr>
                                             ) : (
                                                 users.filter(u => !u.isApproved).map(user => (
                                                     <tr key={user._id} className="group hover:bg-gray-50 transition-colors">
                                                         <td className="py-4">
                                                             <div className="flex items-center gap-3">
-                                                                <img src={user.profileImage || `https:
+                                                                <img src={user.profileImage || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}`} className="w-8 h-8 rounded-full border border-gray-100" alt="" />
                                                                 <div>
                                                                     <div className="font-bold text-gray-900 text-sm">{user.name}</div>
                                                                     <div className="text-[10px] text-gray-400 font-mono">{user.email}</div>
@@ -661,7 +661,7 @@ const SuperAdminDashboard = () => {
                                         </div>
                                         {p.liveLink && (
                                             <a href={p.liveLink} target="_blank" rel="noopener noreferrer" className="text-[10px] text-gray-400 hover:text-green-600 font-mono transition-colors border-b border-transparent hover:border-green-200 opacity-0 group-hover:opacity-100">
-                                                {p.liveLink.replace('https:
+                                                {p.liveLink.replace('https://', '')}
                                             </a>
                                         )}
                                     </div>
@@ -721,7 +721,7 @@ const SuperAdminDashboard = () => {
                                             </div>
                                             {projectForm.title && (
                                                 <div className="text-[10px] text-blue-600/70 font-mono pl-4">
-                                                    Target: https:
+                                                    Target: https://${projectForm.title.toLowerCase().replace(/\s+/g, '-')}.github.io/Team-Curiosity-offical-Websitee/
                                                 </div>
                                             )}
                                         </div>
@@ -906,7 +906,7 @@ const SuperAdminDashboard = () => {
                             </div>
                             {courses.length === 0 && (
                                 <div className="p-20 text-center bg-gray-50 rounded-xl border border-dashed border-gray-200">
-                                    <div className="text-gray-300 mb-2 font-mono text-xs uppercase tracking-[0.2em]">No Courses Deployed 
+                                    <div className="text-gray-300 mb-2 font-mono text-xs uppercase tracking-[0.2em]">No Courses Deployed</div>
                                     <p className="text-gray-400 text-[10px] uppercase">Add your first YouTube course using the uplink protocol.</p>
                                 </div>
                             )}
@@ -919,7 +919,7 @@ const SuperAdminDashboard = () => {
                                         <label className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">YouTube Uplink [URL]</label>
                                         <input 
                                             className="w-full bg-white border border-gray-200 p-3 rounded text-sm text-gray-900 focus:border-red-500 outline-none mt-1 shadow-sm" 
-                                            placeholder="https:
+                                            placeholder="https://www.youtube.com/watch?v=..."
                                             value={courseForm.youtubeLink} 
                                             onChange={e => handleYoutubeLinkChange(e.target.value)} 
                                             required 
@@ -1047,7 +1047,7 @@ const SuperAdminDashboard = () => {
                             </div>
                             {notes.length === 0 && (
                                 <div className="p-20 text-center bg-gray-50 rounded-xl border border-dashed border-gray-200">
-                                    <div className="text-gray-300 mb-2 font-mono text-xs uppercase tracking-[0.2em]">No Academic Archives 
+                                    <div className="text-gray-300 mb-2 font-mono text-xs uppercase tracking-[0.2em]">No Academic Archives</div>
                                     <p className="text-gray-400 text-[10px] uppercase">Upload your first PDF resource to the central archive.</p>
                                 </div>
                             )}
@@ -1060,7 +1060,7 @@ const SuperAdminDashboard = () => {
                                         <label className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">PDF Source Uplink</label>
                                         <input 
                                             className="w-full bg-white border border-gray-200 p-3 rounded text-sm text-gray-900 focus:border-red-500 outline-none mt-1 shadow-sm" 
-                                            placeholder="https:
+                                            placeholder="https://github.com/username"
                                             value={noteForm.pdfUrl} 
                                             onChange={e => setNoteForm({...noteForm, pdfUrl: e.target.value})} 
                                             required 

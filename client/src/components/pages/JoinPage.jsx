@@ -77,7 +77,7 @@ const JoinPage = () => {
     try {
       const payload = {
         ...formData,
-        avatar: `https:
+        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${selectedAvatar}`,
         programmingLanguages: formData.programmingLanguages.split(',').map(s => s.trim()).filter(s => s),
         inviteToken: token
       };
@@ -142,7 +142,7 @@ const JoinPage = () => {
                         className={`cursor-pointer rounded-full border-2 p-1 transition-all ${selectedAvatar === av.seed ? 'border-black scale-110 shadow-lg' : 'border-transparent hover:border-gray-200 grayscale hover:grayscale-0'}`}
                       >
                           <img 
-                            src={`https:
+                            src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${av.seed}`}
                             alt={av.seed} 
                             className="w-full h-full rounded-full bg-gray-50"
                           />
@@ -258,7 +258,7 @@ const JoinPage = () => {
                         <label className="block text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">GitHub Profile</label>
                         <input
                             className="w-full bg-gray-50 border border-gray-200 rounded p-3 text-sm focus:border-black focus:ring-0 outline-none transition-all font-mono"
-                            placeholder="https:
+                            placeholder="https://github.com/username"
                             value={formData.github}
                             onChange={(e) => setFormData({...formData, github: e.target.value})}
                         />
@@ -267,7 +267,7 @@ const JoinPage = () => {
                         <label className="block text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">LinkedIn Profile</label>
                         <input
                             className="w-full bg-gray-50 border border-gray-200 rounded p-3 text-sm focus:border-black focus:ring-0 outline-none transition-all font-mono"
-                            placeholder="https:
+                            placeholder="https://linkedin.com/in/username"
                             value={formData.linkedin}
                             onChange={(e) => setFormData({...formData, linkedin: e.target.value})}
                         />

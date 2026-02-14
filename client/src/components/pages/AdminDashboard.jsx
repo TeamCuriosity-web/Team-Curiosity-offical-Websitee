@@ -210,7 +210,7 @@ const AdminDashboard = () => {
         const videoId = (match && match[2].length === 11) ? match[2] : '';
 
         if (videoId) {
-            const thumbUrl = `https:
+            const thumbUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
             setCourseForm(prev => ({ ...prev, youtubeId: videoId, thumbnailUrl: thumbUrl }));
             try {
                 const { data } = await api.get(`/courses/yt-metadata/${videoId}`);
@@ -223,7 +223,7 @@ const AdminDashboard = () => {
                 console.error("METADATA_FETCH_PROTOCOL_ERROR:", err);
                 
                 try {
-                    const resp = await fetch(`https:
+                    const resp = await fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`);
                     const data = await resp.json();
                     if (data.title) setCourseForm(prev => ({ ...prev, title: data.title }));
                 } catch (e) { console.error(e); }
@@ -454,7 +454,7 @@ const AdminDashboard = () => {
                                             )}
                                             {project.liveLink && (
                                                 <a href={project.liveLink} target="_blank" rel="noopener noreferrer" className="text-[10px] text-gray-400 hover:text-green-600 font-mono transition-colors border-b border-transparent hover:border-green-200">
-                                                    {project.liveLink.replace('https:
+                                                    {project.liveLink.replace('https://', '')}
                                                 </a>
                                             )}
                                         </div>
@@ -513,7 +513,7 @@ const AdminDashboard = () => {
                                             </div>
                                             {projectForm.title && (
                                                 <div className="text-[10px] text-gray-400 font-mono pl-4">
-                                                    Target: https:
+                                                    Target: https://${projectForm.title.toLowerCase().replace(/\s+/g, '-')}.github.io/Team-Curiosity-offical-Websitee/
                                                 </div>
                                             )}
                                         </div>
@@ -549,14 +549,14 @@ const AdminDashboard = () => {
                                 <tbody>
                                     {users.filter(u => !u.isApproved).length === 0 ? (
                                         <tr>
-                                            <td colSpan="3" className="py-8 text-center text-gray-400 text-xs font-mono">NO PENDING REQUESTS 
+                                            <td colSpan="3" className="py-8 text-center text-gray-400 text-xs font-mono">NO PENDING REQUESTS</td>
                                         </tr>
                                     ) : (
                                         users.filter(u => !u.isApproved).map(user => (
                                             <tr key={user._id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50">
                                                 <td className="py-3 px-6">
                                                     <div className="flex items-center gap-3">
-                                                        <img src={user.profileImage || `https:
+                                                        <img src={user.profileImage || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}`} className="w-8 h-8 rounded-full border border-gray-100" alt="" />
                                                         <div>
                                                             <div className="font-bold text-sm">{user.name}</div>
                                                             <div className="text-[10px] text-gray-400 font-mono">{user.email}</div>
@@ -702,7 +702,7 @@ const AdminDashboard = () => {
                             ))}
                             {courses.length === 0 && (
                                 <div className="text-center py-20 bg-gray-50 border border-dashed rounded text-gray-400 text-[10px] uppercase tracking-widest">
-                                    No Courses Found 
+                                    No Courses Found
                                 </div>
                             )}
                         </div>
@@ -712,7 +712,7 @@ const AdminDashboard = () => {
                                 <form onSubmit={handleCourseSubmit} className="space-y-4">
                                     <div>
                                         <label className="text-[10px] uppercase font-bold text-gray-400">YouTube Link</label>
-                                        <input className="w-full border p-2 text-sm mt-1" placeholder="https:
+                                        <input className="w-full border p-2 text-sm mt-1" placeholder="https://www.youtube.com/watch?v=..." value={courseForm.youtubeLink} onChange={e => handleYoutubeLinkChange(e.target.value)} required />
                                     </div>
                                     {courseForm.thumbnailUrl && (
                                         <div className="h-20 w-full rounded overflow-hidden border border-gray-100 mb-2">
@@ -798,7 +798,7 @@ const AdminDashboard = () => {
                             ))}
                             {notes.length === 0 && (
                                 <div className="text-center py-20 bg-gray-50 border border-dashed rounded text-gray-400 text-[10px] uppercase tracking-widest">
-                                    No Academic Notes 
+                                    No Academic Notes
                                 </div>
                             )}
                         </div>
@@ -808,7 +808,7 @@ const AdminDashboard = () => {
                                 <form onSubmit={handleNoteSubmit} className="space-y-4">
                                     <div>
                                         <label className="text-[10px] uppercase font-bold text-gray-400">PDF Uplink [Link]</label>
-                                        <input className="w-full border p-2 text-sm mt-1" placeholder="https:
+                                        <input className="w-full border p-2 text-sm mt-1" placeholder="https://github.com/username" value={noteForm.pdfUrl} onChange={e => setNoteForm({...noteForm, pdfUrl: e.target.value})} required />
                                     </div>
                                     <div>
                                         <label className="text-[10px] uppercase font-bold text-gray-400">Title</label>

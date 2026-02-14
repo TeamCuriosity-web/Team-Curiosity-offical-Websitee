@@ -93,7 +93,7 @@ const InvitationCard = () => {
                 <div className="mb-6 flex flex-col items-center">
                     {}
                     <div className="w-16 h-16 mb-4 flex items-center justify-center">
-                        <svg width="60" height="60" viewBox="0 0 40 40" fill="none" xmlns="http:
+                        <svg width="60" height="60" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <defs>
                                 <style>
                                     {`

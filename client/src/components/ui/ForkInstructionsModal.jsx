@@ -90,7 +90,7 @@ const ForkInstructionsModal = ({ isOpen, onClose, repoLink }) => {
                                 onClick={() => {
                                     let url = safeRepoLink;
                                     if (!url.endsWith('.git')) url += '.git';
-                                    window.location.href = `vscode:
+                                    window.location.href = `vscode://vscode.git/clone?url=${url}`;
                                 }}
                                 className="text-[10px] font-bold uppercase tracking-widest text-blue-600 hover:underline border border-blue-100 bg-blue-50 px-3 py-1.5 rounded"
                             >

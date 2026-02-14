@@ -85,7 +85,7 @@ const LoginPage = () => {
           </Button>
 
           <div className="text-center pt-4 border-t border-gray-100 mt-6 pointer-events-none opacity-50">
-             <span className="text-[10px] uppercase text-gray-400">Secure Connection 
+             <span className="text-[10px] uppercase text-gray-400">Secure Connection</span>
           </div>
         </form>
       </Card>

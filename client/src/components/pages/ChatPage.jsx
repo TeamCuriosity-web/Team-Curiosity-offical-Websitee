@@ -6,7 +6,7 @@ import { Send, Hash, Users, Terminal as TerminalIcon } from 'lucide-react';
 import Card from '../ui/Card';
 
 
-const SOCKET_URL = 'https:
+const SOCKET_URL = 'https://team-curiosity-offical-websitee.onrender.com';
 const socket = io(SOCKET_URL);
 
 const ChatPage = () => {

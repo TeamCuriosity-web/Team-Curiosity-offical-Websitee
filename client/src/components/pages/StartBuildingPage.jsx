@@ -35,7 +35,7 @@ const StartBuildingPage = () => {
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-black mb-2 uppercase">
             Initialize <span className="text-gray-400">Environment</span>
           </h1>
-          <p className="text-secondary font-mono text-sm uppercase">Protocol: GENESIS 
+          <p className="text-secondary font-mono text-sm uppercase">Protocol: GENESIS</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">

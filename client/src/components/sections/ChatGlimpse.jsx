@@ -23,7 +23,7 @@ const ChatGlimpse = () => {
             const fetchPreview = async () => {
                 try {
                     
-                    const baseUrl = 'https:
+                    const baseUrl = 'https://api.teamcuriosity.com';
                     
                     const { data } = await api.get('/chat/history?room=general'); 
                     setRecentMessages(data.slice(0, 3)); 

@@ -17,7 +17,7 @@ const Team = () => {
                 name: user.role === 'superadmin' ? 'Naseer Pasha' : user.name,
                 codename: `OPERATIVE_0${idx + 1}`,
                 status: "Active",
-                image: `https:
+                image: `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}`,
             }));
             const sortedMembers = enhancedData.sort((a, b) => (a.role === 'superadmin' ? -1 : 1));
             setMembers(sortedMembers);
@@ -49,8 +49,7 @@ const Team = () => {
             <div key={member._id} className="group relative bg-white border-2 border-black p-0 overflow-hidden hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all duration-300">
                 {}
                 <div className="bg-black text-white p-2 flex justify-between items-center font-mono text-[10px] uppercase border-b-2 border-black">
-                    <span>ID: 00{idx + 1}</span>
-                    <span>
+                    <span>{member.codename}</span>
                 </div>
                 
                 <div className="p-6 flex flex-col items-center">

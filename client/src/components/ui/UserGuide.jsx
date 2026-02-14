@@ -125,7 +125,7 @@ const UserGuide = () => {
             <div className="bg-[#fcfbf7] w-full max-w-2xl rounded-sm shadow-2xl overflow-hidden relative border-4 border-double border-gray-300" style={{ boxShadow: "10px 10px 30px rgba(0,0,0,0.5)" }}>
                 
                 {}
-                <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: "url('https:
+                <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/carbon-fibre.png')" }}></div>
 
                 {}
                 <div className="bg-[#1a1a1a] text-[#fcfbf7] p-6 flex justify-between items-center relative z-10 border-b-2 border-[#b8b8b8]">

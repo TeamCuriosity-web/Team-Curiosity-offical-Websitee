@@ -190,7 +190,7 @@ const StudyStuffPage = () => {
                     <div className="max-w-4xl mx-auto">
                         <div className="text-center mb-16">
                             <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter mb-4">Study Vault</h2>
-                            <p className="font-mono text-gray-500">
+                            <p className="font-mono text-gray-500">ACCESSING CENTRAL DATABASE... AUTHORIZED PERSONNEL ONLY</p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                             <DomainCard 

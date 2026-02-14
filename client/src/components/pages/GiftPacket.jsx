@@ -142,7 +142,7 @@ const GiftPacket = ({ onOpen }) => {
                     className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 cursor-pointer hover:scale-110 transition-transform"
                 >
                     {}
-                    <svg width="120" height="120" viewBox="0 0 100 100" fill="none" xmlns="http:
+                    <svg width="120" height="120" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M50 50 C30 20 0 20 0 50 C0 80 30 80 50 50" fill="#EF4444" stroke="#B91C1C" strokeWidth="2"/>
                         <path d="M50 50 C70 20 100 20 100 50 C100 80 70 80 50 50" fill="#EF4444" stroke="#B91C1C" strokeWidth="2"/>
                         <circle cx="50" cy="50" r="10" fill="#B91C1C" />

@@ -24,7 +24,7 @@ const ManifestoPage = () => {
           <div className="mb-16 border-b-2 border-black pb-8">
               <div className="flex items-center gap-2 mb-4 text-red-600 animate-pulse">
                   <Lock size={16} />
-                  <span className="font-mono text-xs uppercase font-bold tracking-[0.2em]">Top Secret 
+                  <span className="font-mono text-xs uppercase font-bold tracking-[0.2em]">Top Secret</span>
               </div>
               <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-black mb-4 uppercas leading-none">
                 The Legendary<br/>Doctrine

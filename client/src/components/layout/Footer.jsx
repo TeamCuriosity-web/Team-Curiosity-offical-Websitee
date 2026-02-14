@@ -12,10 +12,10 @@ const Footer = () => {
         </div>
         
         <div className="flex flex-wrap justify-center gap-8 text-sm text-slate-500">
-            <a href="https:
-                <Github size={18} />
-                <span>Github</span>
-            </a>
+             <a href="https://github.com/TeamCuriosity-web" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-black transition-colors">
+                 <Github size={18} />
+                 <span>Github</span>
+             </a>
             <a href="#" className="flex items-center gap-2 hover:text-black transition-colors">
                 <Instagram size={18} />
                 <span>Instagram</span>

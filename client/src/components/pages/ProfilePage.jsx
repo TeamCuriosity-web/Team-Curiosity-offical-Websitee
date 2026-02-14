@@ -71,7 +71,7 @@ const ProfilePage = () => {
                     <div className="flex items-center gap-6">
                         <div className="w-24 h-24 rounded-full border-2 border-black p-1">
                             <img 
-                                src={user.profileImage || `https:
+                                src={user.profileImage || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}`}
                                 alt="Profile" 
                                 className="w-full h-full rounded-full bg-gray-50 object-cover"
                             />
@@ -174,7 +174,7 @@ const ProfilePage = () => {
                                             className="flex-1 bg-gray-50 border border-black rounded px-2 py-1 text-xs font-mono"
                                             value={editData.github}
                                             onChange={(e) => setEditData({...editData, github: e.target.value})}
-                                            placeholder="https:
+                                            placeholder="https://github.com/username"
                                         />
                                     ) : (
                                         <a href={user.github} target="_blank" rel="noreferrer" className="text-sm font-mono truncate text-blue-600 hover:underline">{user.github || 'N/A'}</a>
@@ -187,7 +187,7 @@ const ProfilePage = () => {
                                             className="flex-1 bg-gray-50 border border-black rounded px-2 py-1 text-xs font-mono"
                                             value={editData.linkedin}
                                             onChange={(e) => setEditData({...editData, linkedin: e.target.value})}
-                                            placeholder="https:
+                                            placeholder="https://linkedin.com/in/username"
                                         />
                                     ) : (
                                         <a href={user.linkedin} target="_blank" rel="noreferrer" className="text-sm font-mono truncate text-blue-600 hover:underline">{user.linkedin || 'N/A'}</a>
