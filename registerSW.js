@@ -1,0 +1,1 @@
+if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/Team-Curiosity-offical-Websitee/sw.js', { scope: '/Team-Curiosity-offical-Websitee/' })})}
