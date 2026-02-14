@@ -8,6 +8,8 @@ import NotificationBell from '../common/NotificationBell';
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [showInstallBtn, setShowInstallBtn] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -20,6 +22,35 @@ const Navbar = () => {
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [location.pathname]);
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstallBtn(true);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    window.addEventListener('appinstalled', () => {
+      setShowInstallBtn(false);
+      setDeferredPrompt(null);
+    });
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setShowInstallBtn(false);
+      setDeferredPrompt(null);
+    }
+  };
 
   const navLinks = [
     { name: 'Home', path: '/' },
@@ -68,12 +99,12 @@ const Navbar = () => {
                     </defs>
                     
                     {}
-                    <path d="M20 5L30 25H10L20 5Z" fill="#000000" stroke="#000000" strokeWidth="1" className="shard shard-1"/>
-                    <path d="M10 25L5 35L15 35L10 25Z" fill="#000000" stroke="#000000" strokeWidth="1" className="shard shard-2"/>
-                    <path d="M30 25L35 35L25 35L30 25Z" fill="#000000" stroke="#000000" strokeWidth="1" className="shard shard-3"/>
+                    <path d="M20 5L30 25H10L20 5Z" fill="#171717" stroke="#00F3FF" strokeWidth="1" className="shard shard-1"/>
+                    <path d="M10 25L5 35L15 35L10 25Z" fill="#171717" stroke="#00F3FF" strokeWidth="1" className="shard shard-2"/>
+                    <path d="M30 25L35 35L25 35L30 25Z" fill="#171717" stroke="#00F3FF" strokeWidth="1" className="shard shard-3"/>
                     
                     {}
-                    <circle cx="20" cy="27" r="2" fill="#000000" className="core-glow"/>
+                    <circle cx="20" cy="27" r="2" fill="#00F3FF" className="core-glow"/>
                 </svg>
                 
                 <div className="flex flex-col justify-center animate-[fadeIn_1s_ease-out_1.5s_forwards] opacity-0">
@@ -131,6 +162,15 @@ const Navbar = () => {
                             Join Project <ChevronRight size={12} />
                         </Button>
                     </Link>
+                )}
+                {showInstallBtn && (
+                    <Button 
+                        variant="outline" 
+                        onClick={handleInstallClick}
+                        className="h-9 px-4 text-xs font-mono tracking-wide border-black text-black hover:bg-black hover:text-white"
+                    >
+                        Install App
+                    </Button>
                 )}
             </div>
 
@@ -191,6 +231,14 @@ const Navbar = () => {
                                 Join Project <ChevronRight size={14} />
                             </button>
                          </Link>
+                     )}
+                     {showInstallBtn && (
+                        <button 
+                            onClick={handleInstallClick}
+                            className="w-full mt-4 bg-white text-black font-mono text-sm py-4 border-2 border-dashed border-black hover:bg-black hover:text-white transition-colors uppercase tracking-widest flex items-center justify-center gap-2"
+                        >
+                            Install Official App
+                        </button>
                      )}
                 </div>
             </div>

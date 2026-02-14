@@ -46,22 +46,7 @@ const ProjectDetails = () => {
     }, [id]);
 
     const handleJoinProject = async () => {
-        if (!user) {
-            navigate('/login');
-            return;
-        }
-
-        setJoining(true);
-        try {
-            const { data } = await api.post(`/projects/${id}/join`);
-            setProject(data);
-            alert("Application submitted successfully!");
-        } catch (err) {
-            console.error("Join Failed", err);
-            alert(err.response?.data?.message || 'Failed to join project');
-        } finally {
-            setJoining(false);
-        }
+        
     };
 
     if (loading) return <div className="min-h-screen flex items-center justify-center font-mono text-xs">DECRYPTING FILE...</div>;
