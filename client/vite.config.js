@@ -9,10 +9,15 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
       manifest: {
-        name: 'Team Curiosity',
+        name: 'Team Curiosity Official App',
         short_name: 'TeamCuriosity',
-        description: 'Team Curiosity Official Website',
+        description: 'Collaborative development platform for Team Curiosity',
         theme_color: '#000000',
+        background_color: '#000000',
+        display: 'standalone',
+        orientation: 'portrait',
+        scope: '/Team-Curiosity-offical-Websitee/',
+        start_url: '/Team-Curiosity-offical-Websitee/',
         icons: [
           {
             src: 'pwa-logo.svg',
@@ -31,6 +36,9 @@ export default defineConfig({
             type: 'image/png'
           }
         ]
+      },
+      devOptions: {
+        enabled: true
       }
     })
   ],

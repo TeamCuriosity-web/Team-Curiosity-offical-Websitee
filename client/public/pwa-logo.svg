@@ -1,7 +1,15 @@
-<svg width="512" height="512" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="40" height="40" fill="white" fill-opacity="0.01"/>
-    <path d="M20 5L30 25H10L20 5Z" fill="#171717" stroke="#00F3FF" strokeWidth="1"/>
-    <path d="M10 25L5 35L15 35L10 25Z" fill="#171717" stroke="#00F3FF" strokeWidth="1"/>
-    <path d="M30 25L35 35L25 35L30 25Z" fill="#171717" stroke="#00F3FF" strokeWidth="1"/>
-    <circle cx="20" cy="27" r="2" fill="#00F3FF"/>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00F3FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0099FF;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="100" fill="#0A0A0A"/>
+  <path d="M256 80L410 160V352L256 432L102 352V160L256 80Z" fill="#0A0A0A" stroke="url(#cyanGrad)" stroke-width="8"/>
+  <path d="M256 140L360 200V312L256 372L152 312V200L256 140Z" fill="#171717" stroke="url(#cyanGrad)" stroke-width="4"/>
+  <circle cx="256" cy="256" r="40" fill="url(#cyanGrad)" fill-opacity="0.8">
+    <animate attributeName="r" values="35;45;35" dur="3s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="256" cy="256" r="20" fill="#00F3FF"/>
 </svg>
