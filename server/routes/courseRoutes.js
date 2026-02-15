@@ -9,7 +9,7 @@ const { protect, admin } = require('../middleware/authMiddleware');
 router.get('/yt-metadata/:videoId', protect, admin, async (req, res) => {
   try {
     const { videoId } = req.params;
-    const response = await fetch(`https:
+    const response = await fetch(`https://www.youtube.com/watch?v=${videoId}`, {
       headers: { 'User-Agent': 'Mozilla/5.0' }
     });
     

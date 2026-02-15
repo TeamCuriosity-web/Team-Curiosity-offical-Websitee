@@ -32,7 +32,7 @@ router.get('/:id/github-stats', async (req, res) => {
 
     const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
     
-    const response = await fetch(`https:
+    const response = await fetch(`https://api.github.com/repos/${owner}/${repoName}/contributors`, {
         headers: {
             'Authorization': GITHUB_TOKEN ? `token ${GITHUB_TOKEN}` : '',
             'Accept': 'application/vnd.github.v3+json',
@@ -97,7 +97,7 @@ router.post('/', protect, admin, async (req, res) => {
     const repoName = title.trim().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
     
     let githubData;
-    let githubResponse = await fetch(`https:
+    let githubResponse = await fetch(`https://api.github.com/orgs/${GITHUB_ORG}/repos`, {
       method: 'POST',
       headers: {
         'Authorization': `token ${GITHUB_TOKEN}`,
@@ -119,7 +119,7 @@ router.post('/', protect, admin, async (req, res) => {
     if (githubResponse.status === 404 || githubResponse.status === 403) {
         console.warn(`Org ${GITHUB_ORG} not found or accessible. Attempting personal repo creation...`);
         
-        githubResponse = await fetch(`https:
+        githubResponse = await fetch(`https://api.github.com/user/repos`, {
             method: 'POST',
             headers: {
                 'Authorization': `token ${GITHUB_TOKEN}`,
@@ -152,7 +152,7 @@ router.post('/', protect, admin, async (req, res) => {
              const uniqueRepoName = `${repoName}-${Math.floor(Math.random() * 1000)}`;
              
              
-             githubResponse = await fetch(`https:
+             githubResponse = await fetch(`https://api.github.com/orgs/${GITHUB_ORG}/repos`, {
                  method: 'POST',
                  headers: {
                     'Authorization': `token ${GITHUB_TOKEN}`,
@@ -173,7 +173,7 @@ router.post('/', protect, admin, async (req, res) => {
 
              
              if (!githubResponse.ok) {
-                 githubResponse = await fetch(`https:
+                 githubResponse = await fetch(`https://api.github.com/user/repos`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `token ${GITHUB_TOKEN}`,
@@ -214,7 +214,7 @@ router.post('/', protect, admin, async (req, res) => {
         const defaultBranch = githubData.default_branch || 'main'; 
 
         
-        const pagesResponse = await fetch(`https:
+        const pagesResponse = await fetch(`https://api.github.com/repos/${repoOwner}/${finalRepoName}/pages`, {
             method: 'POST',
             headers: {
                 'Authorization': `token ${GITHUB_TOKEN}`,
@@ -235,7 +235,7 @@ router.post('/', protect, admin, async (req, res) => {
             liveDeploymentLink = pagesData.html_url; 
         } else {
             
-            liveDeploymentLink = `https:
+            liveDeploymentLink = `https://${repoOwner}.github.io/${finalRepoName}`;
             console.warn("GitHub Pages API pending/failed. Using constructed link:", liveDeploymentLink);
         }
 

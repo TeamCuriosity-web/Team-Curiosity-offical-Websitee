@@ -24,7 +24,7 @@ async function fetchGithubStats(username) {
     }
 
     
-    const response = await fetch(`https:
+    const response = await fetch(`https://api.github.com/search/commits?q=author:${username}&sort=author-date&order=desc`, { headers });
     
     if (response.status === 429) {
         console.warn(`GitHub Rate Limit Exceeded for ${username}`);
