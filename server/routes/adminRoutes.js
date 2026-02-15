@@ -135,7 +135,7 @@ router.post('/invite', protect, admin, async (req, res) => {
         
         
         res.json({ 
-            inviteLink: `${req.protocol}:
+            inviteLink: `${req.protocol}://${req.get('host')}/invite?token=${token}`,
             token,
             expiresAt: expires
         });
