@@ -106,9 +106,21 @@ const ProfilePage = () => {
                             </div>
                         </div>
                     </div>
-                    <Button onClick={handleLogout} variant="secondary" className="mt-6 md:mt-0 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300">
-                        <LogOut size={14} className="mr-2"/> Terminate Session
-                    </Button>
+                    <div className="flex flex-col md:flex-row gap-4 mt-6 md:mt-0">
+                        {isEditing ? (
+                            <div className="flex gap-2">
+                                <Button onClick={handleSaveProfile} variant="primary" className="text-xs h-10 px-6">SAVE MODIFICATIONS</Button>
+                                <Button onClick={() => setIsEditing(false)} variant="outline" className="text-xs h-10 px-6">CANCEL</Button>
+                            </div>
+                        ) : (
+                            <Button onClick={() => setIsEditing(true)} variant="outline" className="text-xs h-10 px-6 flex items-center gap-2">
+                                <Shield size={14} /> EDIT PROFILE DATA
+                            </Button>
+                        )}
+                        <Button onClick={handleLogout} variant="secondary" className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 h-10 px-6">
+                            <LogOut size={14} className="mr-2"/> Terminate Session
+                        </Button>
+                    </div>
                 </div>
 
                 {!user.isApproved && (
@@ -265,17 +277,6 @@ const ProfilePage = () => {
                                         />
                                     ) : (
                                         <a href={user.linkedin} target="_blank" rel="noreferrer" className="text-sm font-mono truncate text-blue-600 hover:underline">{user.linkedin || 'N/A'}</a>
-                                    )}
-                                </div>
-                                
-                                <div className="pt-4">
-                                    {isEditing ? (
-                                        <div className="flex gap-2">
-                                            <Button onClick={handleSaveProfile} variant="primary" className="text-xs h-8 px-4">SAVE DATA</Button>
-                                            <Button onClick={() => setIsEditing(false)} variant="outline" className="text-xs h-8 px-4">CANCEL</Button>
-                                        </div>
-                                    ) : (
-                                        <Button onClick={() => setIsEditing(true)} variant="outline" className="text-xs h-8 px-4 w-full">EDIT PROFILE DATA</Button>
                                     )}
                                 </div>
                             </div>
