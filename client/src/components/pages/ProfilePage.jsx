@@ -81,7 +81,7 @@ const ProfilePage = () => {
                     <div className="flex items-center gap-6">
                         <div className="w-24 h-24 rounded-full border-2 border-black p-1">
                             <img 
-                                src={user.profileImage || `https://api.dicebear.com/7.x/bottts/svg?seed=${user.name}`}
+                                src={user.profileImage || `https://api.dicebear.com/7.x/open-peeps/svg?seed=${user.name}`}
                                 alt="Profile" 
                                 className="w-full h-full rounded-full bg-gray-50 object-cover"
                             />

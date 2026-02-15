@@ -17,7 +17,7 @@ const Team = () => {
                 name: user.role === 'superadmin' ? 'Naseer Pasha' : user.name,
                 codename: `OPERATIVE_0${idx + 1}`,
                 status: "Active",
-                image: `https://api.dicebear.com/7.x/bottts/svg?seed=${user.name}`,
+                image: `https://api.dicebear.com/7.x/open-peeps/svg?seed=${user.name}`,
             }));
             const sortedMembers = enhancedData.sort((a, b) => (a.role === 'superadmin' ? -1 : 1));
             setMembers(sortedMembers);

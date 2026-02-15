@@ -76,7 +76,7 @@ router.post('/register', async (req, res) => {
       github,
       linkedin,
       isApproved,
-      profileImage: avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${name}`
+      profileImage: avatar || `https://api.dicebear.com/7.x/open-peeps/svg?seed=${name}`
     });
 
     

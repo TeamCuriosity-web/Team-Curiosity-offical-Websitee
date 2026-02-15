@@ -142,7 +142,7 @@ const JoinPage = () => {
                         className={`cursor-pointer rounded-full border-2 p-1 transition-all ${selectedAvatar === av.seed ? 'border-black scale-110 shadow-lg' : 'border-transparent hover:border-gray-200 grayscale hover:grayscale-0'}`}
                       >
                           <img 
-                            src={`https://api.dicebear.com/7.x/bottts/svg?seed=${av.seed}`}
+                            src={`https://api.dicebear.com/7.x/open-peeps/svg?seed=${av.seed}`}
                             alt={av.seed} 
                             className="w-full h-full rounded-full bg-gray-50"
                           />
