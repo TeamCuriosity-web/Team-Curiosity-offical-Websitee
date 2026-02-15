@@ -76,8 +76,7 @@ router.post('/register', async (req, res) => {
       github,
       linkedin,
       isApproved,
-      
-      profileImage: avatar || `https:
+      profileImage: avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${name}`
     });
 
     
@@ -190,6 +189,7 @@ router.put('/updatedetails', async (req, res) => {
             user.section = req.body.section || user.section;
             user.github = req.body.github || user.github;
             user.linkedin = req.body.linkedin || user.linkedin;
+            user.bio = req.body.bio || user.bio;
             
             if (req.body.programmingLanguages) {
                  user.programmingLanguages = req.body.programmingLanguages; 

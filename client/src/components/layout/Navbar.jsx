@@ -132,7 +132,7 @@ const Navbar = () => {
                                 <Link to="/profile" className="flex items-center gap-3 pl-1 pr-4 py-1 rounded-full border border-gray-200 hover:border-black transition-all bg-white hover:bg-gray-50 group">
                                     <div className="w-8 h-8 rounded-full border border-gray-200 overflow-hidden relative">
                                         <img 
-                                            src={user?.profileImage || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name}`}
+                                            src={user?.profileImage || `https://api.dicebear.com/7.x/bottts/svg?seed=${user?.name}`}
                                             alt="Profile" 
                                             className="w-full h-full object-cover"
                                         />

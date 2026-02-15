@@ -15,13 +15,23 @@ const ProfilePage = () => {
     
     const [isEditing, setIsEditing] = useState(false);
     const [editData, setEditData] = useState({
+        name: user?.name || '',
+        college: user?.college || '',
+        branch: user?.branch || '',
+        section: user?.section || '',
+        programmingLanguages: user?.programmingLanguages ? user.programmingLanguages.join(', ') : '',
         github: user?.github || '',
-        linkedin: user?.linkedin || ''
+        linkedin: user?.linkedin || '',
+        bio: user?.bio || ''
     });
 
     const handleSaveProfile = async () => {
         try {
-            const { data } = await api.put('/auth/updatedetails', editData);
+            const payload = {
+                ...editData,
+                programmingLanguages: editData.programmingLanguages.split(',').map(s => s.trim()).filter(s => s)
+            };
+            const { data } = await api.put('/auth/updatedetails', payload);
             
             localStorage.setItem('user', JSON.stringify(data));
             setIsEditing(false);
@@ -71,7 +81,7 @@ const ProfilePage = () => {
                     <div className="flex items-center gap-6">
                         <div className="w-24 h-24 rounded-full border-2 border-black p-1">
                             <img 
-                                src={user.profileImage || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}`}
+                                src={user.profileImage || `https://api.dicebear.com/7.x/bottts/svg?seed=${user.name}`}
                                 alt="Profile" 
                                 className="w-full h-full rounded-full bg-gray-50 object-cover"
                             />
@@ -122,22 +132,72 @@ const ProfilePage = () => {
                         </h3>
                         <div className="space-y-4">
                             <div>
+                                <label className="block text-[10px] font-bold uppercase text-gray-400 mb-1">Name</label>
+                                {isEditing ? (
+                                    <input 
+                                        className="w-full bg-gray-50 border border-black rounded px-3 py-2 text-sm"
+                                        value={editData.name}
+                                        onChange={(e) => setEditData({...editData, name: e.target.value})}
+                                    />
+                                ) : (
+                                    <div className="font-bold text-lg">{user.name}</div>
+                                )}
+                            </div>
+                            <div>
                                 <label className="block text-[10px] font-bold uppercase text-gray-400 mb-1">Email</label>
-                                <div className="font-mono text-sm">{user.email}</div>
+                                <div className="font-mono text-sm text-gray-500">{user.email} (Non-editable)</div>
                             </div>
                             <div>
                                 <label className="block text-[10px] font-bold uppercase text-gray-400 mb-1">College</label>
-                                <div className="font-medium">{user.college || 'N/A'}</div>
+                                {isEditing ? (
+                                    <input 
+                                        className="w-full bg-gray-50 border border-black rounded px-3 py-2 text-sm"
+                                        value={editData.college}
+                                        onChange={(e) => setEditData({...editData, college: e.target.value})}
+                                    />
+                                ) : (
+                                    <div className="font-medium">{user.college || 'N/A'}</div>
+                                )}
                             </div>
                              <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-[10px] font-bold uppercase text-gray-400 mb-1">Branch</label>
-                                    <div className="font-medium">{user.branch || 'N/A'}</div>
+                                    {isEditing ? (
+                                        <input 
+                                            className="w-full bg-gray-50 border border-black rounded px-3 py-2 text-sm"
+                                            value={editData.branch}
+                                            onChange={(e) => setEditData({...editData, branch: e.target.value})}
+                                        />
+                                    ) : (
+                                        <div className="font-medium">{user.branch || 'N/A'}</div>
+                                    )}
                                 </div>
                                 <div>
                                     <label className="block text-[10px] font-bold uppercase text-gray-400 mb-1">Section</label>
-                                    <div className="font-medium">{user.section || 'N/A'}</div>
+                                    {isEditing ? (
+                                        <input 
+                                            className="w-full bg-gray-50 border border-black rounded px-3 py-2 text-sm"
+                                            value={editData.section}
+                                            onChange={(e) => setEditData({...editData, section: e.target.value})}
+                                        />
+                                    ) : (
+                                        <div className="font-medium">{user.section || 'N/A'}</div>
+                                    )}
                                 </div>
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-bold uppercase text-gray-400 mb-1">Personal Bio</label>
+                                {isEditing ? (
+                                    <textarea 
+                                        className="w-full bg-gray-50 border border-black rounded px-3 py-2 text-sm"
+                                        value={editData.bio}
+                                        onChange={(e) => setEditData({...editData, bio: e.target.value})}
+                                        rows={2}
+                                        placeholder="Enter your professional bio..."
+                                    />
+                                ) : (
+                                    <div className="text-sm italic text-gray-600 leading-relaxed font-sans">{user.bio || 'No bio on record.'}</div>
+                                )}
                             </div>
                         </div>
                     </Card>
@@ -148,16 +208,30 @@ const ProfilePage = () => {
                              <h3 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2">
                                 <Code size={16} /> Technical Arsenal
                             </h3>
-                            {user.programmingLanguages && user.programmingLanguages.length > 0 ? (
-                                <div className="flex flex-wrap gap-2">
-                                    {user.programmingLanguages.map((tech, i) => (
-                                        <span key={i} className="px-3 py-1 bg-gray-100 text-gray-700 rounded text-xs font-mono border border-gray-200">
-                                            {tech}
-                                        </span>
-                                    ))}
+                            {isEditing ? (
+                                <div>
+                                    <label className="block text-[10px] font-bold uppercase text-gray-400 mb-1">Programming Languages (Comma separated)</label>
+                                    <textarea 
+                                        className="w-full bg-gray-50 border border-black rounded px-3 py-2 text-sm font-mono"
+                                        value={editData.programmingLanguages}
+                                        onChange={(e) => setEditData({...editData, programmingLanguages: e.target.value})}
+                                        rows={3}
+                                    />
                                 </div>
                             ) : (
-                                <div className="text-gray-400 italic text-sm">No technical data recorded.</div>
+                                <>
+                                    {user.programmingLanguages && user.programmingLanguages.length > 0 ? (
+                                        <div className="flex flex-wrap gap-2">
+                                            {user.programmingLanguages.map((tech, i) => (
+                                                <span key={i} className="px-3 py-1 bg-gray-100 text-gray-700 rounded text-xs font-mono border border-gray-200">
+                                                    {tech}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="text-gray-400 italic text-sm">No technical data recorded.</div>
+                                    )}
+                                </>
                             )}
                         </div>
                         
@@ -201,7 +275,7 @@ const ProfilePage = () => {
                                             <Button onClick={() => setIsEditing(false)} variant="outline" className="text-xs h-8 px-4">CANCEL</Button>
                                         </div>
                                     ) : (
-                                        <Button onClick={() => setIsEditing(true)} variant="outline" className="text-xs h-8 px-4 w-full">EDIT UPLINKS</Button>
+                                        <Button onClick={() => setIsEditing(true)} variant="outline" className="text-xs h-8 px-4 w-full">EDIT PROFILE DATA</Button>
                                     )}
                                 </div>
                             </div>

@@ -13,7 +13,7 @@ const Leaderboard = () => {
                 
                 
                 
-                const filteredMembers = teamMembers.filter(m => m.role !== 'admin' && m.role !== 'superadmin');
+                const filteredMembers = teamMembers.filter(m => m.role !== 'superadmin');
                 
                 const sorted = filteredMembers.sort((a, b) => {
                     const commitDiff = (b.commitCount || 0) - (a.commitCount || 0);
@@ -121,7 +121,7 @@ const Leaderboard = () => {
                                 <div className="col-span-5 flex items-center gap-4">
                                     <div className="w-12 h-12 border-2 border-black p-0.5 shrink-0 bg-white">
                                         <img 
-                                            src={member.profileImage || member.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${member.name}`}
+                                            src={member.profileImage || member.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${member.name}`}
                                             alt={member.name} 
                                             className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" 
                                         />

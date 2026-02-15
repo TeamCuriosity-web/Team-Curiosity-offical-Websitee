@@ -556,7 +556,7 @@ const AdminDashboard = () => {
                                             <tr key={user._id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50">
                                                 <td className="py-3 px-6">
                                                     <div className="flex items-center gap-3">
-                                                        <img src={user.profileImage || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}`} className="w-8 h-8 rounded-full border border-gray-100" alt="" />
+                                                        <img src={user.profileImage || `https://api.dicebear.com/7.x/bottts/svg?seed=${user.name}`} className="w-8 h-8 rounded-full border border-gray-100" alt="" />
                                                         <div>
                                                             <div className="font-bold text-sm">{user.name}</div>
                                                             <div className="text-[10px] text-gray-400 font-mono">{user.email}</div>
