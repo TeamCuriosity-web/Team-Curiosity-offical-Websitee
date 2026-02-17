@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 const LockedView = ({ title = "Restricted Area" }) => {
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-gray-50 flex items-center justify-center">
+    <div className="relative min-h-screen w-full overflow-hidden bg-gray-50 flex items-center justify-center pt-32">
       {}
       <div className="absolute inset-0 filter blur-xl opacity-30 pointer-events-none select-none overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-full bg-grid-pattern transform scale-110"></div>
