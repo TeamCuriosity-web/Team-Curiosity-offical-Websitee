@@ -10,13 +10,21 @@ const Team = () => {
     const fetchTeam = async () => {
         try {
             const { data } = await api.get('/team');
-            const enhancedData = data.map((user, idx) => ({
-                ...user,
-                name: user.role === 'superadmin' ? 'Naseer Pasha' : user.name,
-                codename: `OPERATIVE_0${idx + 1}`,
-                status: "Active",
-                image: user.profileImage || user.avatar || `https://api.dicebear.com/7.x/lorelei/svg?seed=${user.name}`,
-            }));
+            const femaleSeeds = ['Abby', 'Sasha', 'Cleo'];
+            const maleSeeds = ['Aiden', 'Owen', 'Caleb'];
+            
+            const enhancedData = data.map((user, idx) => {
+                const isFemale = idx % 2 === 1; // Simple alternation for variety
+                const defaultSeed = isFemale ? femaleSeeds[Math.floor(idx/2) % 3] : maleSeeds[Math.floor(idx/2) % 3];
+                
+                return {
+                    ...user,
+                    name: user.role === 'superadmin' ? 'Naseer Pasha' : user.name,
+                    codename: `OPERATIVE_0${idx + 1}`,
+                    status: "Active",
+                    image: user.profileImage || user.avatar || `https://api.dicebear.com/7.x/notionists/svg?seed=${user.name || defaultSeed}`,
+                };
+            });
             const sortedMembers = enhancedData.sort((a, b) => (a.role === 'superadmin' ? -1 : 1));
             setMembers(sortedMembers);
         } catch (err) {
