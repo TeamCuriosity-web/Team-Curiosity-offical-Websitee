@@ -121,7 +121,7 @@ const Leaderboard = () => {
                                 <div className="col-span-5 flex items-center gap-4">
                                     <div className="w-12 h-12 border-2 border-black p-0.5 shrink-0 bg-white">
                                         <img 
-                                            src={member.profileImage || member.avatar || `https://api.dicebear.com/7.x/open-peeps/svg?seed=${member.name}`}
+                                            src={member.profileImage || member.avatar || `https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=256&h=256&auto=format&fit=crop`}
                                             alt={member.name} 
                                             className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" 
                                         />
