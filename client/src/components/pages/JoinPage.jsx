@@ -6,12 +6,12 @@ import api from '../../services/api';
 import { User, Mail, Lock, BookOpen, Layers, Code, CheckCircle, AlertCircle, School } from 'lucide-react';
 
 const AVATAR_SEEDS = [
-    { id: 'male1', url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=256&h=256&auto=format&fit=crop', gender: 'male' },
-    { id: 'male2', url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=256&h=256&auto=format&fit=crop', gender: 'male' },
-    { id: 'male3', url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=256&h=256&auto=format&fit=crop', gender: 'male' },
-    { id: 'female1', url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=256&h=256&auto=format&fit=crop', gender: 'female' },
-    { id: 'female2', url: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=256&h=256&auto=format&fit=crop', gender: 'female' },
-    { id: 'female3', url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=256&h=256&auto=format&fit=crop', gender: 'female' },
+    { id: 'male1', seed: 'Aiden', gender: 'male' },
+    { id: 'male2', seed: 'Owen', gender: 'male' },
+    { id: 'male3', seed: 'Caleb', gender: 'male' },
+    { id: 'female1', seed: 'Abby', gender: 'female' },
+    { id: 'female2', seed: 'Sasha', gender: 'female' },
+    { id: 'female3', seed: 'Cleo', gender: 'female' },
 ];
 
 const JoinPage = () => {
@@ -77,7 +77,7 @@ const JoinPage = () => {
     try {
       const payload = {
         ...formData,
-        avatar: selectedAvatar,
+        avatar: `https://api.dicebear.com/7.x/notionists/svg?seed=${selectedAvatar}`,
         programmingLanguages: formData.programmingLanguages.split(',').map(s => s.trim()).filter(s => s),
         inviteToken: token
       };
@@ -138,13 +138,13 @@ const JoinPage = () => {
                   {AVATAR_SEEDS.map((av) => (
                       <div 
                         key={av.id}
-                        onClick={() => handleAvatarSelect(av.url)}
-                        className={`cursor-pointer rounded-full border-2 p-1 transition-all ${selectedAvatar === av.url ? 'border-black scale-110 shadow-lg' : 'border-transparent hover:border-gray-200 grayscale hover:grayscale-0'}`}
+                        onClick={() => handleAvatarSelect(av.seed)}
+                        className={`cursor-pointer rounded-full border-2 p-1 transition-all ${selectedAvatar === av.seed ? 'border-black scale-110 shadow-lg' : 'border-transparent hover:border-gray-200 grayscale hover:grayscale-0'}`}
                       >
                           <img 
-                            src={av.url}
+                            src={`https://api.dicebear.com/7.x/notionists/svg?seed=${av.seed}`}
                             alt={av.id} 
-                            className="w-full h-full rounded-full bg-gray-50 object-cover aspect-square"
+                            className="w-full h-full rounded-full bg-white p-1"
                           />
                       </div>
                   ))}
