@@ -190,6 +190,8 @@ router.put('/updatedetails', async (req, res) => {
             user.github = req.body.github || user.github;
             user.linkedin = req.body.linkedin || user.linkedin;
             user.bio = req.body.bio || user.bio;
+            if (req.body.profileImage) user.profileImage = req.body.profileImage;
+            if (req.body.avatar) user.avatar = req.body.avatar;
             
             if (req.body.programmingLanguages) {
                  user.programmingLanguages = req.body.programmingLanguages; 

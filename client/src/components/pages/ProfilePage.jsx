@@ -5,6 +5,15 @@ import Button from '../ui/Button';
 import { User, Shield, Briefcase, Code, LogOut, Clock, CheckCircle, Lock, MessageSquare, Send } from 'lucide-react';
 import api from '../../services/api';
 
+const AVATAR_SEEDS = [
+    { id: 'male1', seed: 'Aiden', gender: 'male' },
+    { id: 'male2', seed: 'Owen', gender: 'male' },
+    { id: 'male3', seed: 'Caleb', gender: 'male' },
+    { id: 'female1', seed: 'Abby', gender: 'female' },
+    { id: 'female2', seed: 'Sasha', gender: 'female' },
+    { id: 'female3', seed: 'Cleo', gender: 'female' },
+];
+
 const ProfilePage = () => {
     const navigate = useNavigate();
     const user = JSON.parse(localStorage.getItem('user'));
@@ -22,7 +31,8 @@ const ProfilePage = () => {
         programmingLanguages: user?.programmingLanguages ? user.programmingLanguages.join(', ') : '',
         github: user?.github || '',
         linkedin: user?.linkedin || '',
-        bio: user?.bio || ''
+        bio: user?.bio || '',
+        profileImage: user?.profileImage || ''
     });
 
     const handleSaveProfile = async () => {
@@ -79,12 +89,31 @@ const ProfilePage = () => {
                 {}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 border-b border-gray-200 pb-8">
                     <div className="flex items-center gap-6">
-                        <div className="w-24 h-24 rounded-full border-2 border-black p-1">
-                            <img 
-                                src={user.profileImage || `https://api.dicebear.com/7.x/open-peeps/svg?seed=${user.name}`}
-                                alt="Profile" 
-                                className="w-full h-full rounded-full bg-gray-50 object-cover"
-                            />
+                        <div className="flex flex-col gap-4">
+                            <div className="w-24 h-24 rounded-full border-2 border-black p-1">
+                                <img 
+                                    src={isEditing ? (editData.profileImage || user.profileImage) : (user.profileImage || `https://api.dicebear.com/7.x/open-peeps/svg?seed=${user.name}`)}
+                                    alt="Profile" 
+                                    className="w-full h-full rounded-full bg-gray-50 object-cover"
+                                />
+                            </div>
+                            {isEditing && (
+                                <div className="grid grid-cols-3 gap-2">
+                                    {AVATAR_SEEDS.map((av) => (
+                                        <div 
+                                            key={av.id}
+                                            onClick={() => setEditData({...editData, profileImage: `https://api.dicebear.com/7.x/notionists/svg?seed=${av.seed}`})}
+                                            className={`cursor-pointer rounded-full border p-0.5 transition-all ${editData.profileImage && editData.profileImage.includes(av.seed) ? 'border-black scale-110' : 'border-gray-200 hover:border-black'}`}
+                                        >
+                                            <img 
+                                                src={`https://api.dicebear.com/7.x/notionists/svg?seed=${av.seed}`}
+                                                alt={av.id} 
+                                                className="w-full h-full rounded-full bg-white object-cover"
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                         <div>
                             <h1 className="text-3xl font-bold tracking-tight uppercase">{user.name}</h1>
