@@ -136,9 +136,9 @@ const ProjectDetails = () => {
                             {project.teamMembers?.filter(m => m.role !== 'superadmin').map(member => (
                                 <div key={member._id} className="flex items-center gap-3 p-3 bg-gray-50 border border-gray-100 rounded-lg min-w-[200px]">
                                         <img 
-                                            src={member.profileImage || `https://api.dicebear.com/7.x/notionists/svg?seed=${member.name}`}
+                                            src={member.profileImage || `https://api.dicebear.com/7.x/lorelei/svg?seed=${member.name}`}
                                             alt={member.name} 
-                                            className="w-10 h-10 rounded-full bg-white object-cover border border-gray-100"
+                                            className="w-10 h-10 rounded-full bg-white object-cover border border-gray-100 p-0.5"
                                         />
                                         <div>
                                             <div className="font-bold text-sm">{member.name}</div>

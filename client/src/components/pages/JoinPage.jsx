@@ -6,12 +6,12 @@ import api from '../../services/api';
 import { User, Mail, Lock, BookOpen, Layers, Code, CheckCircle, AlertCircle, School } from 'lucide-react';
 
 const AVATAR_SEEDS = [
-    { id: 'male1', seed: 'Aiden', gender: 'male' },
-    { id: 'male2', seed: 'Owen', gender: 'male' },
-    { id: 'male3', seed: 'Caleb', gender: 'male' },
-    { id: 'female1', seed: 'Abby', gender: 'female' },
-    { id: 'female2', seed: 'Sasha', gender: 'female' },
-    { id: 'female3', seed: 'Cleo', gender: 'female' },
+    { id: 'male1', seed: 'David', gender: 'male' },
+    { id: 'male2', seed: 'Ethan', gender: 'male' },
+    { id: 'male3', seed: 'Felix', gender: 'male' },
+    { id: 'female1', seed: 'Aria', gender: 'female' },
+    { id: 'female2', seed: 'Bella', gender: 'female' },
+    { id: 'female3', seed: 'Chloe', gender: 'female' },
 ];
 
 const JoinPage = () => {
@@ -77,7 +77,7 @@ const JoinPage = () => {
     try {
       const payload = {
         ...formData,
-        avatar: `https://api.dicebear.com/7.x/notionists/svg?seed=${selectedAvatar}`,
+        avatar: `https://api.dicebear.com/7.x/lorelei/svg?seed=${selectedAvatar}`,
         programmingLanguages: formData.programmingLanguages.split(',').map(s => s.trim()).filter(s => s),
         inviteToken: token
       };
@@ -141,11 +141,13 @@ const JoinPage = () => {
                         onClick={() => handleAvatarSelect(av.seed)}
                         className={`cursor-pointer rounded-full border-2 p-1 transition-all ${selectedAvatar === av.seed ? 'border-black scale-110 shadow-lg' : 'border-transparent hover:border-gray-200 grayscale hover:grayscale-0'}`}
                       >
-                          <img 
-                            src={`https://api.dicebear.com/7.x/notionists/svg?seed=${av.seed}`}
-                            alt={av.id} 
-                            className="w-full h-full rounded-full bg-white p-1"
-                          />
+                          <div className="w-full h-full rounded-full bg-white overflow-hidden p-1 border border-gray-100">
+                            <img 
+                                src={`https://api.dicebear.com/7.x/lorelei/svg?seed=${av.seed}`}
+                                alt={av.id} 
+                                className="w-full h-full object-cover"
+                            />
+                          </div>
                       </div>
                   ))}
               </div>
