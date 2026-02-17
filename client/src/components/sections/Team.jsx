@@ -10,14 +10,12 @@ const Team = () => {
     const fetchTeam = async () => {
         try {
             const { data } = await api.get('/team');
-            
             const enhancedData = data.map((user, idx) => ({
                 ...user,
-                
                 name: user.role === 'superadmin' ? 'Naseer Pasha' : user.name,
                 codename: `OPERATIVE_0${idx + 1}`,
                 status: "Active",
-                image: `https://api.dicebear.com/7.x/open-peeps/svg?seed=${user.name}`,
+                image: user.profileImage || user.avatar || `https://api.dicebear.com/7.x/lorelei/svg?seed=${user.name}`,
             }));
             const sortedMembers = enhancedData.sort((a, b) => (a.role === 'superadmin' ? -1 : 1));
             setMembers(sortedMembers);
