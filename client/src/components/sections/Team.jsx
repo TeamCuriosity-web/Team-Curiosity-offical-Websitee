@@ -13,19 +13,21 @@ const Team = () => {
             const femaleSeeds = ['Abby', 'Sasha', 'Cleo'];
             const maleSeeds = ['Aiden', 'Owen', 'Caleb'];
             
-            const enhancedData = data.map((user, idx) => {
+            const enhancedData = data
+                .filter(user => user.role !== 'superadmin')
+                .map((user, idx) => {
                 const isFemale = idx % 2 === 1; // Simple alternation for variety
                 const defaultSeed = isFemale ? femaleSeeds[Math.floor(idx/2) % 3] : maleSeeds[Math.floor(idx/2) % 3];
                 
                 return {
                     ...user,
-                    name: user.role === 'superadmin' ? 'Naseer Pasha' : user.name,
                     codename: `OPERATIVE_0${idx + 1}`,
                     status: "Active",
                     image: user.profileImage || user.avatar || `https://api.dicebear.com/7.x/notionists/svg?seed=${user.name || defaultSeed}`,
                 };
             });
-            const sortedMembers = enhancedData.sort((a, b) => (a.role === 'superadmin' ? -1 : 1));
+            // no need to sort if superadmin is gone, but keeping sort for stability
+            const sortedMembers = enhancedData.sort((a, b) => a.name.localeCompare(b.name));
             setMembers(sortedMembers);
         } catch (err) {
             console.error('Failed to load team data');
@@ -53,7 +55,7 @@ const Team = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {members.map((member, idx) => (
             <div key={member._id} className="group relative bg-white border-2 border-black p-0 overflow-hidden hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all duration-300">
-                {}
+                {/* ID Tag */}
                 <div className="bg-black text-white p-2 flex justify-between items-center font-mono text-[10px] uppercase border-b-2 border-black">
                     <span>{member.codename}</span>
                 </div>
@@ -75,9 +77,21 @@ const Team = () => {
                     </div>
 
                     <div className="flex gap-4 w-full justify-center pt-2">
-                         <Github size={18} className="text-gray-400 hover:text-black transition-colors cursor-pointer" />
-                         <Linkedin size={18} className="text-gray-400 hover:text-black transition-colors cursor-pointer" />
-                         <Code size={18} className="text-gray-400 hover:text-black transition-colors cursor-pointer" />
+                        {member.github && (
+                            <a href={member.github} target="_blank" rel="noopener noreferrer">
+                                <Github size={18} className="text-gray-400 hover:text-black transition-colors cursor-pointer" />
+                            </a>
+                        )}
+                        {member.linkedin && (
+                            <a href={member.linkedin} target="_blank" rel="noopener noreferrer">
+                                <Linkedin size={18} className="text-gray-400 hover:text-black transition-colors cursor-pointer" />
+                            </a>
+                        )}
+                        {member.portfolio && (
+                            <a href={member.portfolio} target="_blank" rel="noopener noreferrer">
+                                <Code size={18} className="text-gray-400 hover:text-black transition-colors cursor-pointer" />
+                            </a>
+                        )}
                     </div>
                 </div>
                 

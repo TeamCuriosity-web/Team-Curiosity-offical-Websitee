@@ -129,10 +129,19 @@ const Leaderboard = () => {
                                     <div className="overflow-hidden">
                                         <h4 className="font-black text-lg uppercase truncate">{member.name}</h4>
                                         <div className="flex items-center gap-2 text-xs text-gray-500 group-hover:text-gray-400 font-bold">
-                                            {member.githubUsername ? (
-                                                <><Github size={12} /> @{member.githubUsername}</>
+                                            {member.github || member.githubUsername ? (
+                                                <a 
+                                                    href={member.github || `https://github.com/${member.githubUsername}`} 
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer"
+                                                    className="flex items-center gap-2 hover:text-black transition-colors"
+                                                >
+                                                    <Github size={12} /> @{member.githubUsername || 'GITHUB'}
+                                                </a>
                                             ) : (
-                                                <><UserX size={12} /> NO GITHUB LINKED</>
+                                                <span className="flex items-center gap-2 cursor-not-allowed opacity-50">
+                                                    <UserX size={12} /> NO GITHUB LINKED
+                                                </span>
                                             )}
                                         </div>
                                     </div>
