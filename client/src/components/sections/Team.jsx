@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Github, Linkedin, Code } from 'lucide-react';
 import api from '../../services/api';
+import { ScrollContext } from '../../components/ui/SmoothScroll';
 
 const Team = () => {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { scroll } = useContext(ScrollContext);
 
   useEffect(() => {
     const fetchTeam = async () => {
@@ -29,6 +31,14 @@ const Team = () => {
             // no need to sort if superadmin is gone, but keeping sort for stability
             const sortedMembers = enhancedData.sort((a, b) => a.name.localeCompare(b.name));
             setMembers(sortedMembers);
+
+            // Update Locomotive Scroll after data load
+            if (scroll) {
+                setTimeout(() => {
+                    scroll.update();
+                }, 100); // Small delay to ensure DOM render
+            }
+
         } catch (err) {
             console.error('Failed to load team data');
         } finally {
@@ -36,7 +46,7 @@ const Team = () => {
         }
     };
     fetchTeam();
-  }, []);
+  }, [scroll]);
 
   if (loading) return <div className="py-24 text-center font-mono text-xs">INITIALIZING ROSTER...</div>;
 

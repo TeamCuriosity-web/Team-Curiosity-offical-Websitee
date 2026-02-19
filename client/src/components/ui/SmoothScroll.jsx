@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState, createContext } from 'react';
 import LocomotiveScroll from 'locomotive-scroll';
 import 'locomotive-scroll/dist/locomotive-scroll.css';
 import { useLocation } from 'react-router-dom';
@@ -7,9 +7,14 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
+export const ScrollContext = createContext({
+    scroll: null,
+});
+
 const SmoothScroll = ({ children }) => {
     const scrollRef = useRef(null);
     const scrollInstance = useRef(null);
+    const [scroll, setScroll] = useState(null);
     const location = useLocation();
 
     useEffect(() => {
@@ -30,6 +35,7 @@ const SmoothScroll = ({ children }) => {
             }
         });
         scrollInstance.current = scroll;
+        setScroll(scroll);
 
         // GSAP ScrollTrigger Proxy
         ScrollTrigger.scrollerProxy(scrollRef.current, {
@@ -79,9 +85,11 @@ const SmoothScroll = ({ children }) => {
     }, [location.pathname]);
 
     return (
-        <div data-scroll-container ref={scrollRef}>
-            {children}
-        </div>
+        <ScrollContext.Provider value={{ scroll }}>
+            <div data-scroll-container ref={scrollRef}>
+                {children}
+            </div>
+        </ScrollContext.Provider>
     );
 };
 
