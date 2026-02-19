@@ -68,12 +68,11 @@ router.get('/', async (req, res) => {
         
         if (member.github) {
              
-             let username = member.github;
-             if (username.includes('github.com')) {
-                const parts = username.split('github.com/');
-                if (parts[1]) {
-                    username = parts[1].replace('/', '');
-                }
+             // Handle different case variations like GitHub.com
+             const githubUrlPattern = /github\.com\/([^\/]+)/i;
+             const match = username.match(githubUrlPattern);
+             if (match && match[1]) {
+                 username = match[1];
              }
              
              memberObj.githubUsername = username;
