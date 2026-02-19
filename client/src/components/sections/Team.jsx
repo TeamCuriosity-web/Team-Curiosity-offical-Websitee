@@ -23,7 +23,7 @@ const Team = () => {
                 
                 // Calculate status based on lastCommit
                 let status = "Offline";
-                let statusColor = "gray";
+                let statusColor = "red";
                 
                 if (user.lastCommit) {
                     const lastCommitDate = new Date(user.lastCommit);
@@ -96,8 +96,8 @@ const Team = () => {
                     
                     <div className="w-full border-t-2 border-dashed border-gray-200 py-4 flex justify-between items-center text-xs font-mono">
                         <span className="text-secondary font-bold">Current Status:</span>
-                        <span className={`flex items-center gap-2 font-bold ${member.status === 'Active' ? 'text-green-600' : 'text-gray-400'}`}>
-                            <span className={`w-2 h-2 rounded-full border ${member.status === 'Active' ? 'bg-green-500 border-green-700 animate-pulse' : 'bg-gray-400 border-gray-500'}`}></span>
+                        <span className={`flex items-center gap-2 font-bold ${member.status === 'Active' ? 'text-green-600' : 'text-red-500'}`}>
+                            <span className={`w-2 h-2 rounded-full border ${member.status === 'Active' ? 'bg-green-500 border-green-700 animate-pulse' : 'bg-red-500 border-red-700'}`}></span>
                             {member.status.toUpperCase()}
                         </span>
                     </div>
