@@ -139,6 +139,10 @@ const AppContent = () => {
   
   const handleLoaderComplete = () => {
     setLoading(false);
+    // Dispatch event to notify SmoothScroll that loader is done
+    setTimeout(() => {
+        window.dispatchEvent(new Event('loader-complete'));
+    }, 100);
   };
 
   return (

@@ -53,17 +53,30 @@ const SmoothScroll = ({ children }) => {
             scroller: scrollRef.current
         });
 
+        // Update ScrollTrigger on scroll
         scroll.on('scroll', ScrollTrigger.update);
 
+        // Refresh on resizing
         ScrollTrigger.addEventListener('refresh', () => scroll.update());
         ScrollTrigger.refresh();
 
-        setTimeout(() => {
-            if (scroll) {
+        // Handle loader completion sync
+        const handleLoaderComplete = () => {
+             if (scroll) {
                 scroll.update();
                 ScrollTrigger.refresh();
-            }
-        }, 1000);
+             }
+        };
+        window.addEventListener('loader-complete', handleLoaderComplete);
+
+        // Robust ResizeObserver
+        const resizeObserver = new ResizeObserver(() => {
+             if (scroll) {
+                 scroll.update();
+                 ScrollTrigger.refresh();
+             }
+        });
+        resizeObserver.observe(scrollRef.current);
 
         // Clean up on unmount
         return () => {
@@ -72,6 +85,10 @@ const SmoothScroll = ({ children }) => {
                 scrollInstance.current = null;
             }
             ScrollTrigger.removeEventListener('refresh', () => scroll.update());
+            window.removeEventListener('loader-complete', handleLoaderComplete);
+            resizeObserver.disconnect();
+            
+            // Clear defaults on unmount to prevent side effects if component is removed
             ScrollTrigger.defaults({ scroller: undefined });
         };
     }, []); 
