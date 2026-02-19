@@ -53,12 +53,17 @@ const SmoothScroll = ({ children }) => {
             scroller: scrollRef.current
         });
 
-        // Update ScrollTrigger on scroll
         scroll.on('scroll', ScrollTrigger.update);
 
-        // Refresh on resizing
         ScrollTrigger.addEventListener('refresh', () => scroll.update());
         ScrollTrigger.refresh();
+
+        setTimeout(() => {
+            if (scroll) {
+                scroll.update();
+                ScrollTrigger.refresh();
+            }
+        }, 1000);
 
         // Clean up on unmount
         return () => {
@@ -67,20 +72,17 @@ const SmoothScroll = ({ children }) => {
                 scrollInstance.current = null;
             }
             ScrollTrigger.removeEventListener('refresh', () => scroll.update());
-            // Clear defaults on unmount to prevent side effects if component is removed
             ScrollTrigger.defaults({ scroller: undefined });
         };
     }, []); 
 
-    // Update scroll on route change
     useEffect(() => {
         if (scrollInstance.current) {
-            // Need a delay to let the new page content render
             setTimeout(() => {
                 scrollInstance.current.update();
-                ScrollTrigger.refresh(); // Refresh GSAP triggers
+                ScrollTrigger.refresh(); 
                 scrollInstance.current.scrollTo('top', { duration: 0, disableLerp: true });
-            }, 500); // 500ms delay to ensure heavy components render
+            }, 500); 
         }
     }, [location.pathname]);
 
