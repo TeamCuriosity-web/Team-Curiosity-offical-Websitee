@@ -42,6 +42,11 @@ const SmoothScroll = ({ children }) => {
             pinType: scrollRef.current.style.transform ? "transform" : "fixed"
         });
 
+        // Set default scroller for all ScrollTrigger instances
+        ScrollTrigger.defaults({
+            scroller: scrollRef.current
+        });
+
         // Update ScrollTrigger on scroll
         scroll.on('scroll', ScrollTrigger.update);
 
@@ -56,6 +61,8 @@ const SmoothScroll = ({ children }) => {
                 scrollInstance.current = null;
             }
             ScrollTrigger.removeEventListener('refresh', () => scroll.update());
+            // Clear defaults on unmount to prevent side effects if component is removed
+            ScrollTrigger.defaults({ scroller: undefined });
         };
     }, []); 
 
