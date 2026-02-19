@@ -21,10 +21,26 @@ const Team = () => {
                 const isFemale = idx % 2 === 1; // Simple alternation for variety
                 const defaultSeed = isFemale ? femaleSeeds[Math.floor(idx/2) % 3] : maleSeeds[Math.floor(idx/2) % 3];
                 
+                // Calculate status based on lastCommit
+                let status = "Offline";
+                let statusColor = "gray";
+                
+                if (user.lastCommit) {
+                    const lastCommitDate = new Date(user.lastCommit);
+                    const now = new Date();
+                    const hoursSinceCommit = (now - lastCommitDate) / (1000 * 60 * 60);
+                    
+                    if (hoursSinceCommit < 24) {
+                        status = "Active";
+                        statusColor = "green";
+                    }
+                }
+
                 return {
                     ...user,
                     codename: `OPERATIVE_0${idx + 1}`,
-                    status: "Active",
+                    status: status,
+                    statusColor: statusColor,
                     image: user.profileImage || user.avatar || `https://api.dicebear.com/7.x/notionists/svg?seed=${user.name || defaultSeed}`,
                 };
             });
@@ -80,9 +96,9 @@ const Team = () => {
                     
                     <div className="w-full border-t-2 border-dashed border-gray-200 py-4 flex justify-between items-center text-xs font-mono">
                         <span className="text-secondary font-bold">Current Status:</span>
-                        <span className="flex items-center gap-2 text-black font-bold">
-                            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse border border-green-700"></span>
-                            {member.status}
+                        <span className={`flex items-center gap-2 font-bold ${member.status === 'Active' ? 'text-green-600' : 'text-gray-400'}`}>
+                            <span className={`w-2 h-2 rounded-full border ${member.status === 'Active' ? 'bg-green-500 border-green-700 animate-pulse' : 'bg-gray-400 border-gray-500'}`}></span>
+                            {member.status.toUpperCase()}
                         </span>
                     </div>
 
