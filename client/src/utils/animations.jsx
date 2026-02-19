@@ -1,14 +1,13 @@
-import React, { useLayoutEffect, useRef } from 'react';
+import React, { useLayoutEffect, useRef, useContext } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { ScrollContext } from '../components/ui/SmoothScroll';
 
 gsap.registerPlugin(ScrollTrigger);
 
-
-
 export const SplitText = ({ children, className = "", stagger = 0.05, delay = 0 }) => {
   const comp = useRef(null);
-  
+  const { scroll } = useContext(ScrollContext);
   
   if (typeof children !== 'string') {
      return <div className={className}>{children}</div>;
@@ -17,6 +16,8 @@ export const SplitText = ({ children, className = "", stagger = 0.05, delay = 0 
   const words = children.split(" ");
 
   useLayoutEffect(() => {
+    if (!scroll) return; // Wait for scroll initialization
+
     const ctx = gsap.context(() => {
       
       gsap.from(".char", {
@@ -26,11 +27,17 @@ export const SplitText = ({ children, className = "", stagger = 0.05, delay = 0 
         stagger: stagger,
         duration: 1,
         ease: "power4.out",
-        delay: delay
+        delay: delay,
+        scrollTrigger: {
+            trigger: comp.current,
+            start: "top 95%",
+            toggleActions: "play reverse play reverse",
+            scroller: scroll.el // Explicitly use locomotive element
+        }
       });
     }, comp);
     return () => ctx.revert();
-  }, [stagger, delay]);
+  }, [stagger, delay, scroll]);
 
   return (
     <div ref={comp} className={`inline-block overflow-hidden ${className}`}>
@@ -47,9 +54,6 @@ export const SplitText = ({ children, className = "", stagger = 0.05, delay = 0 
   );
 };
 
-
-
-
 export const useScrollReveal = (targetRef, options = {}) => {
   const {
       mode = 'up',
@@ -60,9 +64,10 @@ export const useScrollReveal = (targetRef, options = {}) => {
       start = "top 95%",
       markers = false
   } = options;
+  const { scroll } = useContext(ScrollContext);
 
   useLayoutEffect(() => {
-    if (!targetRef.current) return;
+    if (!targetRef.current || !scroll) return; // Wait for scroll initialization
 
     let fromVars = { opacity: 0 };
     
@@ -76,7 +81,6 @@ export const useScrollReveal = (targetRef, options = {}) => {
     }
 
     const ctx = gsap.context(() => {
-        
         
         const targets = options.selector 
             ? targetRef.current.querySelectorAll(options.selector)
@@ -97,22 +101,24 @@ export const useScrollReveal = (targetRef, options = {}) => {
                     trigger: targetRef.current,
                     start: start,
                     toggleActions: "play reverse play reverse", 
-                    markers: markers
+                    markers: markers,
+                    scroller: scroll.el // Explicitly use locomotive element
                 }
             }
         );
     }, targetRef);
 
     return () => ctx.revert();
-  }, [targetRef, mode, distance, duration, stagger, delay, start]);
+  }, [targetRef, mode, distance, duration, stagger, delay, start, scroll]);
 };
-
-
 
 export const GsapText = ({ children, className = "", delay = 0 }) => {
     const el = useRef(null);
+    const { scroll } = useContext(ScrollContext);
     
     useLayoutEffect(() => {
+        if (!scroll) return; // Wait for scroll initialization
+
         const ctx = gsap.context(() => {
              gsap.fromTo(el.current,
                 { y: 50, opacity: 0, rotateX: 45 },
@@ -126,13 +132,14 @@ export const GsapText = ({ children, className = "", delay = 0 }) => {
                     scrollTrigger: {
                         trigger: el.current,
                         start: "top 95%",
-                        toggleActions: "play reverse play reverse"
+                        toggleActions: "play reverse play reverse",
+                        scroller: scroll.el // Explicitly use locomotive element
                     }
                 }
              );
         }, el);
         return () => ctx.revert();
-    }, [delay]);
+    }, [delay, scroll]);
 
     return <div ref={el} className={className}>{children}</div>
 };
