@@ -32,6 +32,7 @@ import ReflectiveTypePage from './components/pages/ReflectiveTypePage';
 
 
 import LegendaryLoader from './components/ui/LegendaryLoader';
+import SmoothScroll from './components/ui/SmoothScroll';
 
 
 import LockedView from './components/ui/LockedView';
@@ -146,31 +147,33 @@ const AppContent = () => {
       
       <div className="w-full min-h-screen bg-white text-black selection:bg-black selection:text-white">
         <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          
-          <Route path="/team" element={<RequireApproval><TeamPage /></RequireApproval>} />
-          <Route path="/projects" element={<RequireApproval><Projects /></RequireApproval>} />
-          <Route path="/projects/:id" element={<RequireApproval><ProjectDetails /></RequireApproval>} />
-          <Route path="/hackathons" element={<RequireApproval><HackathonsPage /></RequireApproval>} />
-          <Route path="/missions" element={<RequireApproval><MissionsPage /></RequireApproval>} />
-          <Route path="/chat" element={<RequireApproval><ChatPage /></RequireApproval>} />
-          
-          <Route path="/manifesto" element={<ManifestoPage />} />
-          <Route path="/start" element={<StartBuildingPage />} />
-          <Route path="/join" element={<JoinPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/login" element={<AdminLoginPage />} />
-          <Route path="/super-admin" element={<SuperAdminDashboard />} />
-          <Route path="/study-stuff" element={<StudyStuffPage />} />
-          <Route path="/invite" element={<InvitePage />} />
-          <Route path="/reflective" element={<ReflectiveTypePage />} />
-        </Routes>
+        <SmoothScroll>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              
+              <Route path="/team" element={<RequireApproval><TeamPage /></RequireApproval>} />
+              <Route path="/projects" element={<RequireApproval><Projects /></RequireApproval>} />
+              <Route path="/projects/:id" element={<RequireApproval><ProjectDetails /></RequireApproval>} />
+              <Route path="/hackathons" element={<RequireApproval><HackathonsPage /></RequireApproval>} />
+              <Route path="/missions" element={<RequireApproval><MissionsPage /></RequireApproval>} />
+              <Route path="/chat" element={<RequireApproval><ChatPage /></RequireApproval>} />
+              
+              <Route path="/manifesto" element={<ManifestoPage />} />
+              <Route path="/start" element={<StartBuildingPage />} />
+              <Route path="/join" element={<JoinPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              
+              <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/admin/login" element={<AdminLoginPage />} />
+              <Route path="/super-admin" element={<SuperAdminDashboard />} />
+              <Route path="/study-stuff" element={<StudyStuffPage />} />
+              <Route path="/invite" element={<InvitePage />} />
+              <Route path="/reflective" element={<ReflectiveTypePage />} />
+            </Routes>
+        </SmoothScroll>
       </div>
-    </>
+      </>
   );
 };
 
