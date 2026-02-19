@@ -107,28 +107,28 @@ const Leaderboard = () => {
                         </div>
 
                         {leaders.map((member, idx) => (
-                            <div key={member._id} className="group relative bg-white border border-black hover:bg-black hover:text-white transition-all duration-200 p-4 md:px-6 md:py-4 flex flex-col md:grid md:grid-cols-12 md:items-center gap-4 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+                            <div key={member._id} className="group relative bg-white border border-black transition-all duration-300 p-4 md:px-6 md:py-4 flex flex-col md:grid md:grid-cols-12 md:items-center gap-4 hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,180,0,1)] hover:border-green-600 hover:bg-green-50/10">
                                 
                                 {}
                                 <div className="col-span-1 flex items-center gap-2">
-                                    <span className="font-black text-2xl md:text-xl text-gray-300 group-hover:text-gray-600">
+                                    <span className="font-black text-2xl md:text-xl text-gray-300 group-hover:text-green-600 group-hover:scale-110 transition-all duration-300 origin-left">
                                         {String(idx + 1).padStart(2, '0')}
                                     </span>
-                                    {idx === 0 && member.commitCount > 0 && <span className="bg-yellow-400 text-black text-[10px] px-1 font-bold border border-black transform -translate-y-2 lg:translate-y-0">TOP</span>}
+                                    {idx === 0 && member.commitCount > 0 && <span className="bg-yellow-400 text-black text-[10px] px-1 font-bold border border-black transform -translate-y-2 lg:translate-y-0 group-hover:rotate-12 transition-transform">TOP</span>}
                                 </div>
 
                                 {}
                                 <div className="col-span-5 flex items-center gap-4">
-                                    <div className="w-12 h-12 border-2 border-black p-0.5 shrink-0 bg-white">
+                                    <div className="w-12 h-12 border-2 border-black p-0.5 shrink-0 bg-white group-hover:border-green-500 transition-colors duration-300">
                                         <img 
                                             src={member.profileImage || member.avatar || `https://api.dicebear.com/7.x/notionists/svg?seed=${member.name}`}
                                             alt={member.name} 
-                                            className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all bg-white" 
+                                            className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" 
                                         />
                                     </div>
                                     <div className="overflow-hidden">
-                                        <h4 className="font-black text-lg uppercase truncate">{member.name}</h4>
-                                        <div className="flex items-center gap-2 text-xs text-gray-500 group-hover:text-gray-400 font-bold">
+                                        <h4 className="font-black text-lg uppercase truncate group-hover:translate-x-1 transition-transform duration-300">{member.name}</h4>
+                                        <div className="flex items-center gap-2 text-xs text-gray-500 group-hover:text-green-700 font-bold transition-colors">
                                             {member.github || member.githubUsername ? (
                                                 <a 
                                                     href={member.github || `https://github.com/${member.githubUsername}`} 
@@ -149,16 +149,16 @@ const Leaderboard = () => {
 
                                 {}
                                 <div className="col-span-3 flex md:justify-end items-center gap-2">
-                                    <div className="md:hidden text-xs text-gray-500 group-hover:text-gray-400 uppercase">Commits:</div>
-                                    <span className={`font-black text-2xl flex items-center gap-2 ${member.commitCount > 0 ? 'group-hover:text-green-400' : 'text-gray-300'}`}>
-                                        <GitCommit size={18} /> {member.commitCount || 0}
+                                    <div className="md:hidden text-xs text-gray-500 group-hover:text-green-700 uppercase">Commits:</div>
+                                    <span className={`font-black text-2xl flex items-center gap-2 ${member.commitCount > 0 ? 'text-black group-hover:text-green-600' : 'text-gray-300'} transition-colors`}>
+                                        <GitCommit size={18} className="group-hover:animate-pulse" /> {member.commitCount || 0}
                                     </span>
                                 </div>
 
                                 {}
                                 <div className="col-span-3 flex md:justify-end items-center gap-2">
-                                    <div className="md:hidden text-xs text-gray-500 group-hover:text-gray-400 uppercase">Last Signal:</div>
-                                    <div className={`text-xs font-bold px-2 py-1 border ${member.lastCommit ? 'border-green-600 text-green-700 bg-green-50 group-hover:bg-green-900 group-hover:text-green-300 group-hover:border-green-400' : 'border-gray-200 text-gray-400 bg-gray-100'}`}>
+                                    <div className="md:hidden text-xs text-gray-500 group-hover:text-green-700 uppercase">Last Signal:</div>
+                                    <div className={`text-xs font-bold px-2 py-1 border transition-all duration-300 ${member.lastCommit ? 'border-green-600 text-green-700 bg-green-50 group-hover:bg-green-600 group-hover:text-white' : 'border-gray-200 text-gray-400 bg-gray-100 group-hover:border-gray-300'}`}>
                                         <span className="flex items-center gap-2">
                                            <Clock size={12} /> {formatTimeAgo(member.lastCommit)}
                                         </span>
